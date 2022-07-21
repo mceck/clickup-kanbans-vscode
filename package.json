@@ -1,0 +1,109 @@
+{
+	"name": "clickup-kanban",
+	"displayName": "clickup-kanban",
+	"publisher": "mcdev",
+	"repository": {},
+	"description": "Clickup Kanbans",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.51.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:clickup-kanban.helloWorld",
+		"onCommand:clickup-kanban.openKanban",
+		"onView:clickup-kanban-sidebar"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "clickup-kanban-sidebar-view",
+					"title": "Clickup Kanbans",
+					"icon": "media/ico.svg"
+				}
+			]
+		},
+		"views": {
+			"clickup-kanban-sidebar-view": [
+				{
+					"type": "webview",
+					"id": "clickup-kanban-sidebar",
+					"name": "Clickup Kanbans",
+					"icon": "media/ico.svg",
+					"contextualTitle": "Clickup Kanbans"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "clickup-kanban.openKanban",
+				"title": "Open kanban"
+			}
+		],
+		"configuration": {
+			"title": "clickup-kanban",
+			"properties": {
+				"clickup-kanban.auth.token": {
+					"type": "string",
+					"markdownDescription": "Clickup access token"
+				},
+				"clickup-kanban.auth.teamId": {
+					"type": "string",
+					"markdownDescription": "Clickup teamId"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "yarn run package",
+		"compile": "webpack --config ./build/node-extension.webpack.config.js",
+		"watch": "concurrently \"rollup -c -w\" \"webpack --watch --config ./build/node-extension.webpack.config.js\"",
+		"build": "rollup -c && vsce package",
+		"package": "webpack --mode production --devtool hidden-source-map --config ./build/node-extension.webpack.config.js",
+		"test-compile": "tsc -p ./",
+		"test-watch": "tsc -watch -p ./",
+		"pretest": "yarn run test-compile && yarn run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js",
+		"check": "svelte-check --tsconfig ./tsconfig.json"
+	},
+	"devDependencies": {
+		"@rollup/plugin-commonjs": "^22.0.1",
+		"@rollup/plugin-node-resolve": "^13.3.0",
+		"@rollup/plugin-typescript": "^8.3.3",
+		"@tsconfig/svelte": "^3.0.0",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.1",
+		"@types/node": "^18.0.6",
+		"@types/node-fetch": "^2.6.2",
+		"@types/vscode": "^1.69.0",
+		"@typescript-eslint/eslint-plugin": "^5.30.7",
+		"@typescript-eslint/parser": "^5.30.7",
+		"autoprefixer": "^9",
+		"concurrently": "^7.3.0",
+		"eslint": "^8.20.0",
+		"glob": "^8.0.3",
+		"mocha": "^10.0.0",
+		"postcss": "^7",
+		"rollup": "^2.77.0",
+		"rollup-plugin-svelte": "^7.1.0",
+		"rollup-plugin-terser": "^7.0.2",
+		"svelte": "^3.49.0",
+		"svelte-check": "^2.8.0",
+		"svelte-preprocess": "^4.10.7",
+		"tailwindcss": "npm:@tailwindcss/postcss7-compat",
+		"ts-loader": "^9.3.1",
+		"typescript": "^4.6.4",
+		"vsce": "^2.10.0",
+		"vscode-test": "^1.4.1",
+		"webpack": "^5.73.0",
+		"webpack-cli": "^4.10.0"
+	},
+	"dependencies": {
+		"node-fetch": "^3.2.9"
+	}
+}

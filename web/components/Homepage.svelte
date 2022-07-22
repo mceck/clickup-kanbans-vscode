@@ -1,7 +1,8 @@
 <script lang="ts">
+  import Layout from './Layout.svelte';
 </script>
 
-<div>HOME</div>
+<Layout />
 
 <style global lang="postcss">
   @tailwind base;

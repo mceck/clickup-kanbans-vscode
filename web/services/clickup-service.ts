@@ -1,3 +1,5 @@
+import type { SpacesTree } from '../store/spaces-tree';
+
 export function getNonce() {
   let text = '';
   const possible =
@@ -9,7 +11,7 @@ export function getNonce() {
 }
 
 export default class ClickupService {
-  private sendMessage(obj: any) {
+  private sendMessage(obj: any): Promise<any> {
     return new Promise((res, err) => {
       const nonce = getNonce();
       const fn = ({ data }) => {
@@ -24,12 +26,63 @@ export default class ClickupService {
         err('timeout');
       }, 10000);
       const message = { ...obj, nonce };
-      console.log('aio', message);
       window.addEventListener('message', fn);
       webVscode.postMessage(message);
     });
   }
+
   getUser() {
     return this.sendMessage({ type: 'getUser' });
+  }
+
+  getTasks(listId: string, params?: any) {
+    return this.sendMessage({ type: 'getTasks', listId, ...params });
+  }
+
+  findTasks(params?: any) {
+    return this.sendMessage({ type: 'findTasks', ...params });
+  }
+
+  getSpaces() {
+    return this.sendMessage({ type: 'getSpaces' });
+  }
+
+  getFolders(spaceId: string) {
+    return this.sendMessage({ type: 'getFolders', spaceId });
+  }
+
+  getFolderlessLists(spaceId: string) {
+    return this.sendMessage({ type: 'getFolderlessLists', spaceId });
+  }
+
+  getList(listId: string) {
+    return this.sendMessage({ type: 'getList', listId });
+  }
+
+  async getAllLists() {
+    const spacesTree: SpacesTree = { spaces: [] };
+    const { data: spaces } = await this.getSpaces();
+    const promises: Promise<any>[] = [];
+    spaces.forEach((space) => {
+      promises.push(this.getFolders(space.id));
+      promises.push(this.getFolderlessLists(space.id));
+      spacesTree.spaces.push(space);
+    });
+    const results = await Promise.all(promises);
+    for (let i = 0; i < results.length; i++) {
+      const res = results[i].data;
+      const space = spacesTree.spaces.find((s) => s?.id === res[0]?.space.id);
+      if (!space) {
+        continue;
+      }
+      if (i % 2 === 0) {
+        // folders
+        space.folders = res;
+      } else {
+        // folderless lists
+        space.lists = res;
+      }
+    }
+    return spacesTree;
   }
 }

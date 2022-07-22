@@ -21,7 +21,7 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
     webviewView.webview.onDidReceiveMessage((e) =>
-      new MessageService().onVsMessage(webviewView.webview, e)
+      new MessageService(webviewView.webview).onVsMessage(e)
     );
   }
 

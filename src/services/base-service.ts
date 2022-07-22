@@ -67,7 +67,7 @@ export default class BaseService {
     });
   }
 
-  protected toQueryString(query: string): string {
+  protected toQueryString(query: any): string {
     if (!query) {
       return '';
     }
@@ -85,7 +85,7 @@ export default class BaseService {
             .join('&');
         }
         return `${encodeURIComponent(key)}=${encodeURIComponent(
-          value.toString()
+          (value as any).toString()
         )}`;
       })
       .join('&');

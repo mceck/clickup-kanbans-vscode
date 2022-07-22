@@ -18,9 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand('clickup-kanban.openKanban', () => {
-      new ClickupService().getUser().then((u) => {
-        console.log('USER', u);
-      });
+      new ClickupService().getUser().then((u) => {});
       MainPanel.createOrShow(context.extensionUri);
     })
   );

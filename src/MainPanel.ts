@@ -96,7 +96,7 @@ export class MainPanel {
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
     webview.onDidReceiveMessage((e) =>
-      new MessageService().onVsMessage(webview, e)
+      new MessageService(webview).onVsMessage(e)
     );
   }
 

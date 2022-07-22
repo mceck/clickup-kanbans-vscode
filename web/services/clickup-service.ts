@@ -10,8 +10,14 @@ export function getNonce() {
   return text;
 }
 
+export interface ClickupServiceResponse {
+  ok: boolean;
+  data?: any;
+  error?: string;
+}
+
 export default class ClickupService {
-  private sendMessage(obj: any): Promise<any> {
+  private sendMessage(obj: any): Promise<ClickupServiceResponse> {
     return new Promise((res, err) => {
       const nonce = getNonce();
       const fn = ({ data }) => {
@@ -57,6 +63,14 @@ export default class ClickupService {
 
   getList(listId: string) {
     return this.sendMessage({ type: 'getList', listId });
+  }
+
+  getAllUsers() {
+    return this.sendMessage({ type: 'getAllUsers' });
+  }
+
+  getTimeTracked(taskId: string, params?: any) {
+    return this.sendMessage({ type: 'getTimeTracked', taskId, ...params });
   }
 
   async getAllLists() {

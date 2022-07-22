@@ -39,4 +39,17 @@ export default class ClickupService extends BaseService {
     const list = await this.doGet(`/v2/list/${listId}`);
     return list;
   }
+
+  async getAllUsers() {
+    const { teams } = await this.doGet(`/v2/team`);
+    const team = teams.find((t: any) => t.id === this.teamId);
+    return team.members.map((m: any) => m.user);
+  }
+
+  async getTimeTracked(taskId: string, params?: any) {
+    const { data } = await this.doGet(
+      `/v2/task/${taskId}/time?${this.toQueryString(params)}`
+    );
+    return data;
+  }
 }

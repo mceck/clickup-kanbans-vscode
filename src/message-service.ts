@@ -81,6 +81,19 @@ export default class MessageService {
         this.sendResponse(() => this.clickupService.getList(listId), nonce);
         break;
       }
+      case 'getAllUsers': {
+        const { nonce } = query;
+        this.sendResponse(() => this.clickupService.getAllUsers(), nonce);
+        break;
+      }
+      case 'getTimeTracked': {
+        const { nonce, taskId, ...params } = query;
+        this.sendResponse(
+          () => this.clickupService.getTimeTracked(taskId, params),
+          nonce
+        );
+        break;
+      }
     }
   }
 }

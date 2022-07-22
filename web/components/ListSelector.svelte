@@ -1,10 +1,22 @@
 <script lang="ts">
-  import { space } from 'svelte/internal';
-  import { FoldingRange } from 'vscode';
+  import { onMount } from 'svelte';
+  import type { List } from '../interfaces/clickup';
+  import ClickupService from '../services/clickup-service';
   import { spacesTree } from '../store/spaces-tree';
+
+  export let selectedLists: List[];
 
   let showSpaces = {};
   let showFolder = {};
+
+  onMount(() => {
+    if ($spacesTree.spaces.length > 0) {
+      return;
+    }
+    new ClickupService()
+      .getAllLists()
+      .then((fullTree) => spacesTree.set(fullTree));
+  });
 
   function toggleSpace(spaceId: string) {
     showSpaces = { ...showSpaces, [spaceId]: !showSpaces[spaceId] };
@@ -12,6 +24,15 @@
 
   function toggleFolder(folderId) {
     showFolder = { ...showFolder, [folderId]: !showFolder[folderId] };
+  }
+
+  function toggleList(list) {
+    const idx = selectedLists.findIndex((l) => l.id === list.id);
+    if (idx >= 0) {
+      selectedLists = selectedLists.filter((l) => l.id !== list.id);
+    } else {
+      selectedLists = [...selectedLists, list];
+    }
   }
 </script>
 
@@ -29,13 +50,19 @@
           <div on:click|stopPropagation>
             {#each space.folders ?? [] as folder (folder.id)}
               <div
-                class="text-yellow-300"
+                class="text-yellow-300 ml-4"
                 on:click={() => toggleFolder(folder.id)}
               >
                 {folder.name}
                 {#if showFolder[folder.id]}
                   {#each folder.lists || [] as list}
-                    <div on:click|stopPropagation class="text-gray-100">
+                    <div
+                      class="text-gray-100 ml-4"
+                      class:text-blue-300={selectedLists.find(
+                        (l) => l.id === list.id
+                      )}
+                      on:click|stopPropagation={() => toggleList(list)}
+                    >
                       {list.name}
                     </div>
                   {/each}
@@ -43,7 +70,15 @@
               </div>
             {/each}
             {#each space.lists ?? [] as list (list.id)}
-              <div class="text-gray-400">{list.name}</div>
+              <div
+                class="text-gray-100 ml-4"
+                class:text-blue-300={selectedLists.find(
+                  (l) => l.id === list.id
+                )}
+                on:click|stopPropagation={() => toggleList(list)}
+              >
+                {list.name}
+              </div>
             {/each}
           </div>
         {/if}

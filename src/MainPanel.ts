@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
-import { getNonce } from './getNonce';
-import MessageService from './message-service';
+import * as vscode from "vscode";
+import { getNonce } from "./getNonce";
+import MessageService from "./message-service";
 
 export class MainPanel {
   /**
@@ -8,7 +8,7 @@ export class MainPanel {
    */
   public static currentPanel: MainPanel | undefined;
 
-  public static readonly viewType = 'swiper';
+  public static readonly viewType = "swiper";
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
@@ -29,14 +29,18 @@ export class MainPanel {
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
       MainPanel.viewType,
-      'ClickupKanban',
+      "ClickupKanban",
       column || vscode.ViewColumn.One,
       {
         // Enable javascript in the webview
         enableScripts: true,
 
         // And restrict the webview to only loading content from our extension's `media` directory.
-        localResourceRoots: [extensionUri],
+        localResourceRoots: [
+          extensionUri,
+          vscode.Uri.joinPath(extensionUri, "media"),
+          vscode.Uri.joinPath(extensionUri, "out", "compiled"),
+        ],
       }
     );
 
@@ -102,21 +106,21 @@ export class MainPanel {
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
+      vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
     );
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'sidebar.js')
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.js")
     );
     const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'sidebar.css')
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.css")
     );
     const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
+      vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
     );
 
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
-    const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
+    const config = vscode.workspace.getConfiguration("clickup-kanban.config");
 
     return `<!DOCTYPE html>
 			<html lang="en">
@@ -135,7 +139,9 @@ export class MainPanel {
         <link href="${styleMainUri}" rel="stylesheet">
         <script nonce="${nonce}">
             const webVscode = acquireVsCodeApi();
-            webVscode.setState({ token: '${config.get('token')}'});
+            webVscode.setState({ wsConfig: '${JSON.stringify(
+              config.get("ws-config")
+            )}' });
         </script>
 			</head>
       <body>

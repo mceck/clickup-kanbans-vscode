@@ -1,5 +1,5 @@
-import * as vscode from 'vscode';
-import ClickupService from './services/clickup-service';
+import * as vscode from "vscode";
+import ClickupService from "./services/clickup-service";
 
 export default class MessageService {
   clickupService = new ClickupService();
@@ -17,7 +17,7 @@ export default class MessageService {
     } catch (e: any) {
       this.webview.postMessage({
         ok: false,
-        error: e?.message || 'generic_error',
+        error: e?.message || "generic_error",
         nonce,
       });
     }
@@ -26,26 +26,26 @@ export default class MessageService {
   onVsMessage(data: any) {
     const { type, ...query } = data;
     switch (type) {
-      case 'onInfo': {
+      case "onInfo": {
         if (!query.value) {
           return;
         }
         vscode.window.showInformationMessage(query.value);
         break;
       }
-      case 'onError': {
+      case "onError": {
         if (!query.value) {
           return;
         }
         vscode.window.showErrorMessage(query.value);
         break;
       }
-      case 'getUser': {
+      case "getUser": {
         const { nonce } = query;
         this.sendResponse(() => this.clickupService.getUser(), nonce);
         break;
       }
-      case 'getTasks': {
+      case "getTasks": {
         const { listId, nonce, ...params } = query;
         this.sendResponse(
           () => this.clickupService.getTasks(listId, params),
@@ -53,22 +53,22 @@ export default class MessageService {
         );
         break;
       }
-      case 'findTasks': {
+      case "findTasks": {
         const { nonce, ...params } = query;
         this.sendResponse(() => this.clickupService.findTasks(params), nonce);
         break;
       }
-      case 'getSpaces': {
+      case "getSpaces": {
         const { nonce } = query;
         this.sendResponse(() => this.clickupService.getSpaces(), nonce);
         break;
       }
-      case 'getFolders': {
+      case "getFolders": {
         const { nonce, spaceId } = query;
         this.sendResponse(() => this.clickupService.getFolders(spaceId), nonce);
         break;
       }
-      case 'getFolderlessLists': {
+      case "getFolderlessLists": {
         const { nonce, spaceId } = query;
         this.sendResponse(
           () => this.clickupService.getFolderlessLists(spaceId),
@@ -76,23 +76,33 @@ export default class MessageService {
         );
         break;
       }
-      case 'getList': {
+      case "getList": {
         const { listId, nonce } = query;
         this.sendResponse(() => this.clickupService.getList(listId), nonce);
         break;
       }
-      case 'getAllUsers': {
+      case "getAllUsers": {
         const { nonce } = query;
         this.sendResponse(() => this.clickupService.getAllUsers(), nonce);
         break;
       }
-      case 'getTimeTracked': {
+      case "getTimeTracked": {
         const { nonce, taskId, ...params } = query;
         this.sendResponse(
           () => this.clickupService.getTimeTracked(taskId, params),
           nonce
         );
         break;
+      }
+      case "saveConfig": {
+        const { nonce, ...configuration } = query;
+        this.sendResponse(async () => {
+          const config = vscode.workspace.getConfiguration(
+            "clickup-kanban.config"
+          );
+          await config.update("ws-config", configuration, false);
+          return configuration;
+        }, nonce);
       }
     }
   }

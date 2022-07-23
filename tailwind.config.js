@@ -6,14 +6,20 @@ module.exports = {
     removeDeprecatedGapUtilities: true,
   },
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "#3794ff",
+        highlight: "#1177bb",
+        screen: "#1e1e1e",
+      },
+    },
   },
   variants: {
     extend: {},
   },
   plugins: [],
   purge: {
-    content: ['./web/**/*.svelte'],
+    content: ["./web/**/*.svelte"],
     enabled: production, // disable purge in dev
   },
 };

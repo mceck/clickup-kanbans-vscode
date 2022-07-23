@@ -1,25 +1,26 @@
-import svelte from 'rollup-plugin-svelte';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import { terser } from 'rollup-plugin-terser';
-import sveltePreprocess from 'svelte-preprocess';
-import typescript from '@rollup/plugin-typescript';
-import path from 'path';
-import fs from 'fs';
+import svelte from "rollup-plugin-svelte";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import { terser } from "rollup-plugin-terser";
+import sveltePreprocess from "svelte-preprocess";
+import typescript from "@rollup/plugin-typescript";
+import { svelteSVG } from "rollup-plugin-svelte-svg";
+import path from "path";
+import fs from "fs";
 
 const production = !process.env.ROLLUP_WATCH;
 
 export default fs
-  .readdirSync(path.join(__dirname, 'web', 'pages'))
+  .readdirSync(path.join(__dirname, "web", "pages"))
   .map((input) => {
-    const name = input.split('.')[0];
+    const name = input.split(".")[0];
     return {
-      input: 'web/pages/' + input,
+      input: "web/pages/" + input,
       output: {
         sourcemap: true,
-        format: 'iife',
-        name: 'app',
-        file: 'out/compiled/' + name + '.js',
+        format: "iife",
+        name: "app",
+        file: "out/compiled/" + name + ".js",
       },
       plugins: [
         svelte({
@@ -28,12 +29,12 @@ export default fs
           // we'll extract any component CSS out into
           // a separate file - better for performance
           css: (css) => {
-            css.write(name + '.css');
+            css.write(name + ".css");
           },
           preprocess: sveltePreprocess({
             sourceMap: !production,
             postcss: {
-              plugins: [require('tailwindcss'), require('autoprefixer')],
+              plugins: [require("tailwindcss"), require("autoprefixer")],
             },
           }),
           emitCss: false,
@@ -46,11 +47,11 @@ export default fs
         // https://github.com/rollup/plugins/tree/master/packages/commonjs
         resolve({
           browser: true,
-          dedupe: ['svelte'],
+          dedupe: ["svelte"],
         }),
         commonjs(),
         typescript({
-          tsconfig: 'web/tsconfig.json',
+          tsconfig: "web/tsconfig.json",
           sourceMap: !production,
           inlineSources: !production,
         }),
@@ -66,6 +67,12 @@ export default fs
         // If we're building for production (npm run build
         // instead of npm run dev), minify
         production && terser(),
+
+        svelteSVG({
+          // optional SVGO options
+          // pass empty object to enable defaults
+          svgo: {},
+        }),
       ],
       watch: {
         clearScreen: false,

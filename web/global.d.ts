@@ -1,4 +1,4 @@
-import * as _vscode from 'vscode';
+import * as _vscode from "vscode";
 
 interface VsCodePostMessage {
   type: string;

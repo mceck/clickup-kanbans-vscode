@@ -32,6 +32,7 @@ export interface List {
 export interface Space {
   id: string;
   name: string;
+  color?: string;
   folders?: Folder[];
   lists?: List[];
 }
@@ -104,4 +105,9 @@ export interface TimeTrack {
       date_added: number;
     }
   ];
+}
+
+export interface WorkspaceFilters {
+  assignees: User[];
+  lists: List[];
 }

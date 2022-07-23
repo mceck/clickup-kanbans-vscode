@@ -1,0 +1,341 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+  import type { Folder, List, Space } from "../../interfaces/clickup";
+  import ClickupService from "../../services/clickup-service";
+  import { spacesTree } from "../../store/spaces-tree";
+  import SpaceBadge from "./SpaceBadge.svelte";
+  // @ts-ignore
+  import FolderIcon from "../../assets/folder.svg";
+  // @ts-ignore
+  import OpenFolderIcon from "../../assets/folder-open.svg";
+  // @ts-ignore
+  import Spinner from "../../assets/cog.svg";
+
+  export let selectedLists: List[];
+  export let right: boolean = false;
+
+  let showSpaces = {};
+  let showFolder = {};
+
+  let scroller: HTMLElement;
+  let searchInput: HTMLInputElement;
+  let searchText = "";
+  let showSelector = false;
+  let selected = -1;
+
+  onMount(() => {
+    if ($spacesTree.spaces.length > 0) {
+      return;
+    }
+    new ClickupService()
+      .getAllLists()
+      .then((fullTree) => spacesTree.set(fullTree));
+  });
+
+  $: filteredSpaces = $spacesTree.spaces
+    .map((s) => {
+      if (!searchText) {
+        return s;
+      }
+      const ret = { ...s };
+      ret.folders =
+        ret.folders
+          ?.map((f) => {
+            const fret = { ...f };
+            fret.lists =
+              fret.lists?.filter((l) =>
+                l.name.toLowerCase().includes(searchText.toLowerCase())
+              ) ?? [];
+            return fret;
+          })
+          ?.filter(
+            (f) =>
+              f.lists?.length ||
+              f.name.toLowerCase().includes(searchText.toLowerCase())
+          ) ?? [];
+      ret.lists =
+        ret.lists?.filter((l) =>
+          l.name.toLowerCase().includes(searchText.toLowerCase())
+        ) ?? [];
+      return ret;
+    })
+    .filter((s) => s.lists?.length || s.folders?.length);
+
+  function handleSearching() {
+    if (searchText) {
+      showSpaces = filteredSpaces.reduce(
+        (prev, current) => ({ ...prev, [current.id]: true }),
+        {}
+      );
+      showFolder = filteredSpaces.reduce(
+        (prev, current) => ({
+          ...prev,
+          ...current.folders.reduce((o, f) => ({ ...o, [f.id]: true }), {}),
+        }),
+        {}
+      );
+    }
+  }
+
+  function handleKeyboard(event: KeyboardEvent) {
+    const recNumber =
+      filteredSpaces.length +
+      filteredSpaces.reduce(
+        (p, s) =>
+          p +
+          (s.folders?.length ?? 0) +
+          (s.folders?.reduce((a, b) => a + (b.lists?.length ?? 0), 0) ?? 0) +
+          (s.lists?.length ?? 0),
+        0
+      );
+    switch (event.key) {
+      case "Enter":
+        const [type, rec] = getRecord(selected);
+        if (rec) {
+          switch (type) {
+            case "space":
+              toggleSpace(rec.id);
+              break;
+            case "folder":
+              toggleFolder(rec.id);
+              break;
+            case "list":
+              toggleList(rec);
+              break;
+          }
+        }
+        break;
+      case "Escape":
+        toggleSelector();
+        break;
+      case "ArrowDown":
+        selected = (selected + 1) % recNumber;
+        scroller.scrollTop = selected * 20 - 40;
+        break;
+      case "ArrowUp":
+        selected--;
+        if (selected < 0) {
+          selected = recNumber - 1;
+        }
+        scroller.scrollTop = selected * 20 - 40;
+        break;
+    }
+  }
+
+  function getIdx(
+    type: "space" | "folder" | "list",
+    obj: List | Folder | Space
+  ) {
+    let i = 0;
+    for (let s of filteredSpaces) {
+      if (type === "space" && obj.id === s.id) {
+        return i;
+      }
+      i++;
+      if (!showSpaces[s.id]) {
+        continue;
+      }
+      for (let f of s.folders ?? []) {
+        if (type === "folder" && obj.id === f.id) {
+          return i;
+        }
+        i++;
+        if (!showFolder[f.id]) {
+          continue;
+        }
+        for (let l of f.lists ?? []) {
+          if (type === "list" && obj.id === l.id) {
+            return i;
+          }
+          i++;
+        }
+      }
+      for (let l of s.lists ?? []) {
+        if (type === "list" && obj.id === l.id) {
+          return i;
+        }
+        i++;
+      }
+    }
+    return -2;
+  }
+
+  function getRecord(idx: number): ["space" | "folder" | "list", any] {
+    let i = 0;
+    for (let s of filteredSpaces) {
+      if (i === idx) {
+        return ["space", s];
+      }
+      i++;
+      if (!showSpaces[s.id]) {
+        continue;
+      }
+      for (let f of s.folders ?? []) {
+        if (i === idx) {
+          return ["folder", f];
+        }
+        i++;
+        if (!showFolder[f.id]) {
+          continue;
+        }
+        for (let l of f.lists ?? []) {
+          if (i === idx) {
+            return ["list", l];
+          }
+          i++;
+        }
+      }
+      for (let l of s.lists ?? []) {
+        if (i === idx) {
+          return ["list", l];
+        }
+        i++;
+      }
+    }
+    return undefined;
+  }
+
+  function toggleSpace(spaceId: string) {
+    showSpaces = { ...showSpaces, [spaceId]: !showSpaces[spaceId] };
+    searchText = "";
+  }
+
+  function toggleFolder(folderId: string) {
+    showFolder = { ...showFolder, [folderId]: !showFolder[folderId] };
+    searchText = "";
+  }
+
+  function toggleList(list: List) {
+    const idx = selectedLists.findIndex((l) => l.id === list.id);
+    if (idx >= 0) {
+      selectedLists = selectedLists.filter((l) => l.id !== list.id);
+    } else {
+      selectedLists = [...selectedLists, list];
+    }
+    searchText = "";
+  }
+
+  function toggleSelector() {
+    showSelector = !showSelector;
+    if (showSelector) {
+      setTimeout(() => searchInput.focus(), 0);
+      searchText = "";
+      selected = -1;
+    }
+  }
+</script>
+
+<svelte:window on:click={() => (showSelector = false)} />
+
+<div>
+  {#if $spacesTree.spaces.length === 0}
+    <Spinner class="w-8 animate-spin" />
+  {:else}
+    <div class="relative select-none" on:click|stopPropagation>
+      <input
+        class="rounded-2xl p-input cursor-pointer"
+        bind:this={searchInput}
+        bind:value={searchText}
+        on:input={handleSearching}
+        on:keydown={handleKeyboard}
+        on:click={toggleSelector}
+        placeholder={selectedLists.length
+          ? `(${selectedLists.length} list${
+              selectedLists.length > 1 ? "s" : ""
+            } selected)`
+          : "Select lists..."}
+      />
+      {#if showSelector}
+        <div
+          class="absolute top-12 overflow-hidden rounded-lg shadow border border-gray-400 bg-screen z-10"
+          class:right-1={right}
+        >
+          <div class="overflow-auto w-80 h-80" bind:this={scroller}>
+            {#each filteredSpaces as space (space.id)}
+              <div
+                class="cursor-pointer px-2 py-1"
+                on:click={() => toggleSpace(space.id)}
+              >
+                <div
+                  class="flex items-center"
+                  class:bg-gray-700={getIdx("space", space) === selected}
+                >
+                  <span class="w-6 h-6 mr-2"><SpaceBadge {space} /></span>
+                  <span>
+                    {space.name}
+                  </span>
+                </div>
+                {#if showSpaces[space.id]}
+                  <div on:click|stopPropagation>
+                    {#each space.folders ?? [] as folder (folder.id)}
+                      <div
+                        class="ml-4"
+                        on:click={() => toggleFolder(folder.id)}
+                      >
+                        <div
+                          class="flex items-center"
+                          class:bg-gray-700={getIdx("folder", folder) ===
+                            selected}
+                        >
+                          {#if showFolder[folder.id]}
+                            <OpenFolderIcon class="w-4 h-4 flex-none" />
+                          {:else}
+                            <FolderIcon class="w-4 h-4 flex-none" />
+                          {/if}
+                          <span class="ml-2">{folder.name}</span>
+                        </div>
+
+                        {#if showFolder[folder.id]}
+                          {#each folder.lists || [] as list}
+                            <div
+                              class="ml-4 flex items-center"
+                              class:bg-gray-700={getIdx("list", list) ===
+                                selected}
+                              class:text-blue-300={selectedLists.find(
+                                (l) => l.id === list.id
+                              )}
+                              on:click|stopPropagation={() => toggleList(list)}
+                            >
+                              <span class="list-icon" />
+                              <span>
+                                {list.name}
+                              </span>
+                            </div>
+                          {/each}
+                        {/if}
+                      </div>
+                    {/each}
+                    {#each space.lists ?? [] as list (list.id)}
+                      <div
+                        class="text-gray-100 ml-4 flex items-center"
+                        class:bg-gray-700={getIdx("list", list) === selected}
+                        class:text-blue-300={selectedLists.find(
+                          (l) => l.id === list.id
+                        )}
+                        on:click|stopPropagation={() => toggleList(list)}
+                      >
+                        <span class="list-icon" />
+                        <span>{list.name}</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/if}
+    </div>
+  {/if}
+</div>
+
+<style>
+  .list-icon {
+    @apply w-2 h-2 mr-2 rounded-full border border-dashed border-gray-400;
+  }
+
+  .p-input {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+</style>

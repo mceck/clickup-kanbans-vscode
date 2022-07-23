@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
-import { getNonce } from './getNonce';
-import MessageService from './message-service';
+import * as vscode from "vscode";
+import { getNonce } from "./getNonce";
+import MessageService from "./message-service";
 
 export class SidebarPanel implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -15,7 +15,11 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
       // Allow scripts in the webview
       enableScripts: true,
 
-      localResourceRoots: [this._extensionUri],
+      localResourceRoots: [
+        this._extensionUri,
+        vscode.Uri.joinPath(this._extensionUri, "media"),
+        vscode.Uri.joinPath(this._extensionUri, "out", "compiled"),
+      ],
     };
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
@@ -31,21 +35,21 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
+      vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
     );
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'sidebar.js')
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.js")
     );
     const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'sidebar.css')
+      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.css")
     );
     const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
+      vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
     );
 
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
-    const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
+    const config = vscode.workspace.getConfiguration("clickup-kanban.config");
 
     return `<!DOCTYPE html>
 			<html lang="en">
@@ -64,7 +68,9 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
         <link href="${styleMainUri}" rel="stylesheet">
         <script nonce="${nonce}">
             const webVscode = acquireVsCodeApi();
-            webVscode.setState({ token: '${config.get('token')}'});
+            webVscode.setState({ wsConfig: ${JSON.stringify(
+              config.get("ws-config")
+            )} });
         </script>
 			</head>
       <body>

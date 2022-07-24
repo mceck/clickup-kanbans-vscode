@@ -7,11 +7,13 @@
   import ClickupService from "../services/clickup-service";
   import ActionBar from "./ActionBar.svelte";
   import AssigneesSelector from "./AssigneesSelector/AssigneesSelector.svelte";
+  import TimeTrackInput from "./TimeTrackInput.svelte";
   // @ts-ignore
   import TrashIcon from "../assets/trash.svg";
   // @ts-ignore
   import EditIcon from "../assets/edit.svg";
-  import TimeTrackInput from "./TimeTrackInput.svelte";
+  // @ts-ignore
+  import CopyIcon from "../assets/copy.svg";
 
   export let task: Task;
   export let statusKeys: string[];
@@ -87,11 +89,13 @@
       };
       dispatch("refresh", newTask);
       showTracking = false;
-      service.showToast("info", "Time tracked");
+      service.showStatusMessage("Time tracked");
     }
   }
   function copyCustomId() {
-    navigator.clipboard.writeText(task.custom_id);
+    navigator.clipboard
+      .writeText(task.custom_id)
+      .then(() => service.showStatusMessage("Copied"));
   }
 </script>
 
@@ -131,12 +135,19 @@
       </small>
     {/if}
     {#if task.custom_id}
-      <small
-        class="text-sm absolute text-yellow-600 left-40 top-1 cursor-pointer"
-        on:click|stopPropagation={copyCustomId}
+      <div
+        class="left-40 -ml-1 top-1 cursor-pointer absolute flex items-center copy-hover"
       >
-        {task.custom_id}
-      </small>
+        <span class="opacity-0 transition-opacity">
+          <CopyIcon class="w-3" />
+        </span>
+        <small
+          class="text-sm  text-yellow-600 "
+          on:click|stopPropagation={copyCustomId}
+        >
+          {task.custom_id}
+        </small>
+      </div>
     {/if}
     {#if task.description}
       <small
@@ -192,3 +203,9 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .copy-hover:hover span {
+    opacity: 1;
+  }
+</style>

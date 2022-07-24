@@ -32,7 +32,7 @@
       status: nextStatus,
     });
     if (result.ok) {
-      service.showToast("info", "Task updated");
+      service.showStatusMessage("Task updated");
       dispatch("refresh", result.data);
     }
   }
@@ -47,7 +47,7 @@
       status: nextStatus,
     });
     if (result.ok) {
-      service.showToast("info", "Task updated");
+      service.showStatusMessage("Task updated");
       dispatch("refresh", result.data);
     }
   }
@@ -74,7 +74,7 @@
         time: updatedTime,
       });
       if (resp.ok) {
-        service.showToast("info", "Time tracked");
+        service.showStatusMessage("Time tracked");
       } else {
         return;
       }
@@ -84,7 +84,7 @@
         time,
       });
       if (resp.ok) {
-        service.showToast("info", "Time tracked");
+        service.showStatusMessage("Time tracked");
       } else {
         return;
       }

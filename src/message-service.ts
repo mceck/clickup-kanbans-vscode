@@ -169,6 +169,21 @@ export default class MessageService {
         }
         break;
       }
+      case "showStatusMessage": {
+        const { nonce, message, delay = 8000 } = query;
+        this.sendResponse(
+          () =>
+            new Promise((r) => {
+              const d = vscode.window.setStatusBarMessage(message);
+              setTimeout(() => {
+                d.dispose();
+                r(0);
+              }, delay);
+            }),
+          nonce
+        );
+        break;
+      }
     }
   }
 }

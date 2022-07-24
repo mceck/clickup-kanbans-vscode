@@ -127,6 +127,13 @@ export default class ClickupService {
     return this.sendMessage({ type: "showToast", scope, message }, 90000);
   }
 
+  showStatusMessage(message: string, delay?: number) {
+    return this.sendMessage(
+      { type: "showStatusMessage", message, delay },
+      90000
+    );
+  }
+
   async getAllLists() {
     const spacesTree: SpacesTree = { spaces: [] };
     const { data: spaces } = await this.getSpaces();

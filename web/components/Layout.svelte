@@ -40,8 +40,8 @@
     viewMode && selectedAssignees.length
       ? tasks?.filter((t) =>
           selectedAssignees.reduce(
-            (r, t2) => r && t.assignees.map((u) => u.id).includes(t2.id),
-            true
+            (r, t2) => r || t.assignees.map((u) => u.id).includes(t2.id),
+            false
           )
         )
       : tasks;

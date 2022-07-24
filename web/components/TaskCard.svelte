@@ -82,6 +82,9 @@
     dispatch("refresh", newTask);
     showTracking = false;
   }
+  function copyCustomId() {
+    navigator.clipboard.writeText(task.custom_id);
+  }
 </script>
 
 <svelte:window
@@ -113,10 +116,18 @@
     {/if}
     {#if task.time_spent}
       <small
-        class="text-sm absolute text-green-500 left-20 top-1 cursor-pointer"
+        class="text-sm absolute text-green-500 left-20 -ml-2 top-1 cursor-pointer"
         on:click|stopPropagation={toggleTracks}
       >
-        tracked: {(task.time_spent / 3600000).toFixed(1)}h
+        track: {(task.time_spent / 3600000).toFixed(1)}h
+      </small>
+    {/if}
+    {#if task.custom_id}
+      <small
+        class="text-sm absolute text-yellow-600 left-40 top-1 cursor-pointer"
+        on:click|stopPropagation={copyCustomId}
+      >
+        {task.custom_id}
       </small>
     {/if}
     {#if task.description}

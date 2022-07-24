@@ -107,8 +107,12 @@ export default class ClickupService {
     return this.sendMessage({ type: "updateTask", taskId, ...task });
   }
 
-  async saveConfig(config: WorkspaceConfig) {
-    const ret = await this.sendMessage({ type: "saveConfig", ...config });
+  async saveConfig(config: WorkspaceConfig, global: boolean = false) {
+    const ret = await this.sendMessage({
+      type: "saveConfig",
+      global,
+      ...config,
+    });
     webVscode.setState({ vsConfig: config });
     return ret;
   }

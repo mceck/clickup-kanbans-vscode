@@ -18,7 +18,13 @@
   // @ts-ignore
   import SaveIcon from "../assets/save.svg";
   // @ts-ignore
+  import SaveAltIcon from "../assets/save-alt.svg";
+  // @ts-ignore
   import Spinner from "../assets/cog.svg";
+  // @ts-ignore
+  import BoardIcon from "../assets/board.svg";
+  // @ts-ignore
+  import FilterIcon from "../assets/filter.svg";
 
   const service = new ClickupService();
 
@@ -93,7 +99,7 @@
     loading = false;
   }
 
-  async function saveFilters() {
+  async function saveFilters(global: boolean = false) {
     const config: WorkspaceConfig = {
       assignees: selectedAssignees,
       lists: selectedLists,
@@ -105,7 +111,7 @@
     filterResp = "";
     let res;
     try {
-      res = await service.saveConfig(config);
+      res = await service.saveConfig(config, global);
     } catch (error) {
       res = {
         ok: false,
@@ -158,22 +164,42 @@
       </div>
       <div class="flex justify-end w-full mb-2">
         <button
-          class="w-20 flex-none ml-4 flex items-center"
-          on:click={toggleView}>{viewMode ? "ViewMode" : "FilterMode"}</button
+          class="w-9 px-2 text-xs flex-none ml-4 flex items-center"
+          title={viewMode ? "Switch to filter mode" : "Switch to view mode"}
+          on:click={toggleView}
         >
+          {#if viewMode}
+            <BoardIcon class="w-full" />
+          {:else}
+            <FilterIcon class="w-full" />
+          {/if}
+        </button>
         {#if filterResp}
-          <span>{filterResp}</span>
+          <span
+            class="text-xs w-16 text-red-500 flex-none whitespace-nowrap overflow-ellipsis overflow-hidden"
+            title={filterResp}
+            class:text-green-400={filterResp === "Saved!"}>{filterResp}</span
+          >
         {/if}
         <button
           class="w-20 flex-none ml-4 flex items-center"
-          on:click={saveFilters}
+          on:click={() => saveFilters(true)}
         >
-          <SaveIcon class="w-5 mr-2" />
-          <span>Save</span>
+          <SaveAltIcon class="w-5 mr-2" />
+          <span class="text-xs">Global</span>
         </button>
-        <button class="w-20 flex-none ml-4 flex items-center" on:click={search}>
-          <RefreshIcon class="w-5 mr-2" />
-          <span>Refresh</span>
+        <button
+          class="w-20 flex-none ml-4 flex items-center"
+          on:click={() => saveFilters(false)}
+        >
+          <SaveIcon class="w-5 flex-none mr-2" />
+          <span class="text-xs">Workspace</span>
+        </button>
+        <button
+          class="w-9 px-2 flex-none ml-4 flex items-center"
+          on:click={search}
+        >
+          <RefreshIcon class="w-full" />
         </button>
       </div>
     </div>

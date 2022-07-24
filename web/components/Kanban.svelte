@@ -45,9 +45,3 @@
     </div>
   {/each}
 </div>
-
-<style>
-  small {
-    @apply text-xs;
-  }
-</style>

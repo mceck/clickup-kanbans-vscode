@@ -120,12 +120,12 @@ export default class MessageService {
         break;
       }
       case "saveConfig": {
-        const { nonce, ...configuration } = query;
+        const { nonce, global, ...configuration } = query;
         this.sendResponse(async () => {
           const config = vscode.workspace.getConfiguration(
             "clickup-kanban.config"
           );
-          await config.update("vs-config", configuration, false);
+          await config.update("vs-config", configuration, global);
           return configuration;
         }, nonce);
         break;

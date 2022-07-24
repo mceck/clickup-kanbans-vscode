@@ -93,7 +93,7 @@
 <div
   class="px-2 pt-6 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
 >
-  <div class="h-20 flex flex-col">
+  <div class="h-16 flex flex-col overflow-auto">
     <div class="absolute top-1 right-1">
       <AssigneesSelector
         bind:selectedAssignees={task.assignees}
@@ -107,13 +107,13 @@
       {task.name}
     </p>
     {#if task.time_estimate}
-      <small class="absolute left-2 top-1 text-gray-400">
+      <small class="text-sm absolute left-2 top-1 text-gray-400">
         est: {(task.time_estimate / 3600000).toFixed(0)}h
       </small>
     {/if}
     {#if task.time_spent}
       <small
-        class="absolute text-green-600 left-16 top-1 cursor-pointer"
+        class="text-sm absolute text-green-500 left-20 top-1 cursor-pointer"
         on:click|stopPropagation={toggleTracks}
       >
         tracked: {(task.time_spent / 3600000).toFixed(1)}h
@@ -121,7 +121,7 @@
     {/if}
     {#if task.description}
       <small
-        class="whitespace-nowrap text-gray-400 overflow-hidden overflow-ellipsis"
+        class="text-sm whitespace-nowrap text-gray-400 overflow-hidden overflow-ellipsis"
         title={task.description}
       >
         {task.description}

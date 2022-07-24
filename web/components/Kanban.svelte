@@ -2,8 +2,7 @@
   import { createEventDispatcher } from "svelte";
 
   import type { Status, Task } from "../interfaces/clickup";
-  import ActionBar from "./ActionBar.svelte";
-  import AssigneesSelector from "./AssigneesSelector/AssigneesSelector.svelte";
+  import TaskCard from "./TaskCard.svelte";
 
   export let tasks: Task[];
   const dispatch = createEventDispatcher();
@@ -37,49 +36,11 @@
         {val.status}
       </div>
       {#each getTasksByStatus(val.status) as task (task.id)}
-        <div
-          class="px-2 pt-6 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
-        >
-          <div class="h-20 flex flex-col">
-            <div class="absolute top-1 right-1">
-              <AssigneesSelector
-                bind:selectedAssignees={task.assignees}
-                editable={false}
-                maxShown={4}
-                small
-              />
-            </div>
-
-            <p>
-              {task.name}
-            </p>
-            {#if task.time_estimate}
-              <small class="absolute left-2 top-1 text-gray-400">
-                est: {(task.time_estimate / 3600000).toFixed(0)}h
-              </small>
-            {/if}
-            {#if task.time_spent}
-              <small class="absolute text-green-600 left-16 top-1">
-                tracked: {(task.time_spent / 3600000).toFixed(1)}h
-              </small>
-            {/if}
-            {#if task.description}
-              <small
-                class="whitespace-nowrap text-gray-400 overflow-hidden overflow-ellipsis"
-                title={task.description}
-              >
-                {task.description}
-              </small>
-            {/if}
-          </div>
-          <div class="w-full px-2 pb-2 rounded shadow">
-            <ActionBar
-              {task}
-              statuses={statusKeys}
-              on:refresh={(e) => dispatch("refresh", e.detail)}
-            />
-          </div>
-        </div>
+        <TaskCard
+          bind:task
+          {statusKeys}
+          on:refresh={(e) => dispatch("refresh", e.detail)}
+        />
       {/each}
     </div>
   {/each}

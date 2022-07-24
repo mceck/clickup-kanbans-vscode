@@ -97,16 +97,16 @@ export interface User {
 export interface TimeTrack {
   user: User;
   time: number;
-  intervals: [
-    {
-      id: string;
-      start?: number;
-      end?: number;
-      time: number;
-      source: string;
-      date_added: number;
-    }
-  ];
+  intervals: [];
+}
+
+export interface Interval {
+  id: string;
+  start: number;
+  end?: number;
+  time: number;
+  source?: string;
+  date_added?: number;
 }
 
 export interface WorkspaceConfig {

@@ -8,13 +8,17 @@
   import LeftIcon from "../assets/left.svg";
   // @ts-ignore
   import DocSearchIcon from "../assets/doc-search.svg";
+  import TimeTrackInput from "./TimeTrackInput.svelte";
+
+  import moment from "moment";
 
   export let task: Task;
   export let statuses: string[];
 
   let timeTrackInput: HTMLInputElement;
   let showTimeTrack = false;
-  let timeTrackText = "";
+
+  const service = new ClickupService();
 
   const dispatch = createEventDispatcher();
 
@@ -24,7 +28,7 @@
       return;
     }
     const nextStatus = statuses[idx];
-    const result = await new ClickupService().updateTask(task.id, {
+    const result = await service.updateTask(task.id, {
       status: nextStatus,
     });
     dispatch("refresh", result.data);
@@ -36,7 +40,7 @@
       return;
     }
     const nextStatus = statuses[idx];
-    const result = await new ClickupService().updateTask(task.id, {
+    const result = await service.updateTask(task.id, {
       status: nextStatus,
     });
     dispatch("refresh", result.data);
@@ -44,8 +48,35 @@
 
   function actionTimeTrack() {
     showTimeTrack = true;
-    timeTrackText = "";
     setTimeout(() => timeTrackInput.focus(), 0);
+  }
+
+  async function track(time: number) {
+    showTimeTrack = false;
+    const res = await service.getTimeTracked(task.id);
+    const interval =
+      res.ok &&
+      res.data[0]?.intervals?.find(
+        (i) => parseInt(i.start) >= moment().startOf("day").valueOf()
+      );
+    if (interval) {
+      const updatedTime = parseInt(interval.time) + time;
+      const resp = await service.updateTimeTracked(task.id, interval.id, {
+        start: interval.start,
+        end: parseInt(interval.start) + updatedTime,
+        time: updatedTime,
+      });
+    } else {
+      await service.createTimeTrack(task.id, {
+        start: moment().valueOf(),
+        time,
+      });
+    }
+    task = {
+      ...task,
+      time_spent: (task.time_spent || 0) + time,
+    };
+    dispatch("refresh", task);
   }
 </script>
 
@@ -75,7 +106,10 @@
       class="absolute bottom-full z-10 bg-screen rounded-lg border border-gray-600 w-36 opacity-100"
       on:click|stopPropagation
     >
-      <input bind:value={timeTrackText} bind:this={timeTrackInput} />
+      <TimeTrackInput
+        bind:timeTrackInput
+        on:submit={({ detail }) => track(detail)}
+      />
     </div>
   {/if}
 </div>

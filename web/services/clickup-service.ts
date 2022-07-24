@@ -82,8 +82,17 @@ export default class ClickupService {
       ...track,
     });
   }
+
   createTimeTrack(taskId: string, track: any) {
     return this.sendMessage({ type: "createTimeTrack", taskId, ...track });
+  }
+
+  deleteTimeTracked(taskId: string, intervalId: string) {
+    return this.sendMessage({
+      type: "deleteTimeTracked",
+      taskId,
+      intervalId,
+    });
   }
 
   getViewTasks(viewId: string) {

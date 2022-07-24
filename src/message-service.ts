@@ -111,6 +111,14 @@ export default class MessageService {
         );
         break;
       }
+      case "deleteTimeTracked": {
+        const { nonce, taskId, intervalId } = query;
+        this.sendResponse(
+          () => this.clickupService.deleteTimeTracked(taskId, intervalId),
+          nonce
+        );
+        break;
+      }
       case "saveConfig": {
         const { nonce, ...configuration } = query;
         this.sendResponse(async () => {

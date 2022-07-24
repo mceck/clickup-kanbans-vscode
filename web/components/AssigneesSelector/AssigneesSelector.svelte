@@ -135,7 +135,7 @@
           on:keydown={handleKeyboard}
           on:input={() => (selected = filteredUsers.length ? 0 : -1)}
         />
-        <div class="w-80 h-80 overflow-auto" bind:this={scroller}>
+        <div class="w-72 h-80 overflow-auto" bind:this={scroller}>
           {#each filteredUsers as user, idx (user.id)}
             <div
               class="flex items-center cursor-pointer px-4 py-2"

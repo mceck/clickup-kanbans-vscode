@@ -259,7 +259,7 @@
         class="absolute top-12 overflow-hidden rounded-lg shadow border border-gray-400 bg-screen z-10"
         class:right-1={right}
       >
-        <div class="overflow-auto w-80 h-80" bind:this={scroller}>
+        <div class="overflow-auto w-72 h-80" bind:this={scroller}>
           {#each filteredSpaces as space (space.id)}
             <div
               class="cursor-pointer px-2 py-1"

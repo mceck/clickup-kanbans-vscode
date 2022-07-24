@@ -1,0 +1,42 @@
+<script lang="ts">
+  import { createEventDispatcher } from "svelte";
+
+  export let timeTrackText: string = "";
+  export let timeTrackInput: HTMLInputElement = null;
+
+  const dispatch = createEventDispatcher();
+  const regex = /((\d?\d)\s?(h))|((\d?\d)\s?(m))/gi;
+
+  function handleInputs(e) {
+    const match = timeTrackText.match(regex)?.filter((m) => m.trim());
+    if (!match) {
+      return;
+    }
+    let hours = 0;
+    let mins = 0;
+    for (let a of match) {
+      for (let m of a.split(" ")) {
+        if (m.match(/h$/i)) {
+          hours += parseInt(m);
+        }
+        if (m.match(/m$/i)) {
+          mins += parseInt(m);
+        }
+      }
+    }
+    if (hours >= 24 || mins >= 60) {
+      return;
+    }
+    const millis = mins * 60000 + hours * 3600000;
+    dispatch("input", millis);
+    if (e.key === "Enter") {
+      dispatch("submit", millis);
+    }
+  }
+</script>
+
+<input
+  bind:value={timeTrackText}
+  bind:this={timeTrackInput}
+  on:keyup={handleInputs}
+/>

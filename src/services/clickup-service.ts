@@ -66,6 +66,11 @@ export default class ClickupService extends BaseService {
     return resp;
   }
 
+  async deleteTimeTracked(taskId: string, intervalId: string) {
+    const resp = await this.doDelete(`/v2/task/${taskId}/time/${intervalId}`);
+    return resp;
+  }
+
   async getViewTasks(viewId: string) {
     const { tasks } = await this.doGet(`/v2/view/${viewId}/task`);
     return tasks;

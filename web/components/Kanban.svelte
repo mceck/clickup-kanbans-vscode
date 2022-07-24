@@ -1,12 +1,14 @@
 <script lang="ts">
-  import type { Status, Task, TimeTrack } from "../interfaces/clickup";
-  import ClickupService from "../services/clickup-service";
+  import { createEventDispatcher } from "svelte";
+
+  import type { Status, Task } from "../interfaces/clickup";
+  import ActionBar from "./ActionBar.svelte";
+  import AssigneesSelector from "./AssigneesSelector/AssigneesSelector.svelte";
 
   export let tasks: Task[];
+  const dispatch = createEventDispatcher();
 
-  let timetrackers: { [s: string]: TimeTrack[] } = {};
-
-  $: status = (
+  $: statuses = (
     Object.entries(
       tasks.reduce(
         (prev, val) => ({ ...prev, [val.status.status]: val.status }),
@@ -18,65 +20,60 @@
     return a.orderindex < b.orderindex ? -1 : 1;
   });
 
+  $: statusKeys = statuses.map(([k, _]) => k);
+
   function getTasksByStatus(status: string) {
     return tasks.filter((t) => t.status.status === status);
-  }
-
-  async function showTimetrack(taskId) {
-    if (!timetrackers[taskId]) {
-      const { data } = await new ClickupService().getTimeTracked(taskId);
-      timetrackers = {
-        ...timetrackers,
-        [taskId]: data,
-      };
-    }
   }
 </script>
 
 <div class="lg:flex w-full">
-  {#each status as [id, val] (id)}
-    <div class="w-72 mx-2 my-4 flex-none">
+  {#each statuses as [id, val] (id)}
+    <div class="w-80 mx-2 my-4 flex-none">
       <div
-        class="rounded-lg border uppercase text-lg px-2 py-1"
+        class="rounded-t-lg border uppercase text-lg px-2 py-1"
         style={`color: ${val.color}; border-color: ${val.color};`}
       >
         {val.status}
       </div>
       {#each getTasksByStatus(val.status) as task (task.id)}
         <div
-          class="p-4 border border-gray-600 rounded-lg h-36 relative flex flex-col justify-around"
+          class="px-2 pt-4 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
         >
-          <h3>
-            {task.name}
-          </h3>
-          <small
-            class="cursor-pointer absolute left-1 top-1"
-            on:click={() => showTimetrack(task.id)}
-          >
-            est: {(task.time_estimate / 3600000).toFixed(0)}h
-          </small>
-          <a
-            class="absolute right-1 top-1 text-xs"
-            href={task.url}
-            target="_blank"
-          >
-            Link
-          </a>
-          {#if timetrackers[task.id]}
-            <small class="absolute left-16 top-1"
-              >tracked {(timetrackers[task.id][0].time / 3600000).toFixed(
-                1
-              )}h</small
-            >
-          {/if}
-          {#if task.description}
-            <small
-              class="whitespace-nowrap overflow-hidden overflow-ellipsis"
-              title={task.description}
-            >
-              {task.description}
+          <div class="h-32 flex flex-col">
+            <div class="absolute top-1 right-1">
+              <AssigneesSelector
+                bind:selectedAssignees={task.assignees}
+                editable={false}
+                maxShown={4}
+              />
+            </div>
+
+            <h3>
+              {task.name}
+            </h3>
+            <small class="cursor-pointer absolute left-1 top-1">
+              est: {(task.time_estimate / 3600000).toFixed(0)}h
             </small>
-          {/if}
+            <small class="absolute left-16 top-1">
+              tracked: {(task.time_spent / 3600000).toFixed(1)}h
+            </small>
+            {#if task.description}
+              <small
+                class="whitespace-nowrap overflow-hidden overflow-ellipsis"
+                title={task.description}
+              >
+                {task.description}
+              </small>
+            {/if}
+          </div>
+          <div class="w-full px-2 pb-2 bg-black bg-opacity-20 rounded shadow">
+            <ActionBar
+              {task}
+              statuses={statusKeys}
+              on:refresh={(e) => dispatch("refresh", e.detail)}
+            />
+          </div>
         </div>
       {/each}
     </div>

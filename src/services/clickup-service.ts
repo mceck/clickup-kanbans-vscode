@@ -1,8 +1,8 @@
-import BaseService from './base-service';
+import BaseService from "./base-service";
 
 export default class ClickupService extends BaseService {
   async getUser() {
-    const { user } = await this.doGet('/v2/user');
+    const { user } = await this.doGet("/v2/user");
     return user;
   }
 
@@ -51,5 +51,20 @@ export default class ClickupService extends BaseService {
       `/v2/task/${taskId}/time?${this.toQueryString(params)}`
     );
     return data;
+  }
+
+  async getViewTasks(viewId: string) {
+    const { tasks } = await this.doGet(`/v2/view/${viewId}/task`);
+    return tasks;
+  }
+
+  async getListViews(listId: string) {
+    const { views } = await this.doGet(`/v2/list/${listId}/view`);
+    return views;
+  }
+
+  async updateTask(taskId: string, task: any) {
+    const result = await this.doPut(`/v2/task/${taskId}`, task);
+    return result;
   }
 }

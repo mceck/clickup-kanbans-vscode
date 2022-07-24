@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import type { Folder, List, Space } from "../../interfaces/clickup";
-  import ClickupService from "../../services/clickup-service";
+  import type { Folder, List, Space, View } from "../../interfaces/clickup";
   import { spacesTree } from "../../store/spaces-tree";
   import SpaceBadge from "./SpaceBadge.svelte";
   // @ts-ignore
@@ -10,27 +8,25 @@
   import OpenFolderIcon from "../../assets/folder-open.svg";
   // @ts-ignore
   import Spinner from "../../assets/cog.svg";
+  import ClickupService from "../../services/clickup-service";
+  import { createEventDispatcher } from "svelte";
 
-  export let selectedLists: List[];
+  export let selectedLists: List[] = [];
   export let right: boolean = false;
+  export let selectedView: View = null;
+  export let viewMode: boolean = false;
+
+  const dispatch = createEventDispatcher();
 
   let showSpaces = {};
   let showFolder = {};
+  let views: { [listId: string]: View[] } = {};
 
   let scroller: HTMLElement;
   let searchInput: HTMLInputElement;
   let searchText = "";
   let showSelector = false;
   let selected = -1;
-
-  onMount(() => {
-    if ($spacesTree.spaces.length > 0) {
-      return;
-    }
-    new ClickupService()
-      .getAllLists()
-      .then((fullTree) => spacesTree.set(fullTree));
-  });
 
   $: filteredSpaces = $spacesTree.spaces
     .map((s) => {
@@ -209,10 +205,24 @@
     const idx = selectedLists.findIndex((l) => l.id === list.id);
     if (idx >= 0) {
       selectedLists = selectedLists.filter((l) => l.id !== list.id);
+      dispatch("removeList", list);
     } else {
       selectedLists = [...selectedLists, list];
+      if (viewMode && !views[list.id]) {
+        new ClickupService().getListViews(list.id).then(({ data }) => {
+          const view = data.map((v) => ({ ...v, list }));
+          views = { ...views, [list.id]: view };
+        });
+      }
+      dispatch("selectList", list);
     }
     searchText = "";
+  }
+
+  function selectView(view: View) {
+    selectedView = view;
+    toggleSelector();
+    dispatch("selectView", view);
   }
 
   function toggleSelector() {
@@ -239,7 +249,11 @@
         on:input={handleSearching}
         on:keydown={handleKeyboard}
         on:click={toggleSelector}
-        placeholder={selectedLists.length
+        placeholder={viewMode
+          ? selectedView
+            ? `${selectedView.list?.name}: ${selectedView.name}`
+            : "Select view..."
+          : selectedLists.length
           ? `(${selectedLists.length} list${
               selectedLists.length > 1 ? "s" : ""
             } selected)`
@@ -291,9 +305,8 @@
                               class="ml-4 flex items-center"
                               class:bg-gray-700={getIdx("list", list) ===
                                 selected}
-                              class:text-blue-300={selectedLists.find(
-                                (l) => l.id === list.id
-                              )}
+                              class:text-blue-300={!viewMode &&
+                                selectedLists.find((l) => l.id === list.id)}
                               on:click|stopPropagation={() => toggleList(list)}
                             >
                               <span class="list-icon" />
@@ -301,22 +314,53 @@
                                 {list.name}
                               </span>
                             </div>
+                            {#if viewMode}
+                              {#each views[list.id] ?? [] as view (view.id)}
+                                <div
+                                  class="ml-8 flex items-center"
+                                  on:click|stopPropagation={() =>
+                                    selectView(view)}
+                                >
+                                  <span class="view-icon" />
+                                  <span
+                                    class:text-blue-300={view.id ===
+                                      selectedView?.id}
+                                  >
+                                    {view.name}
+                                  </span>
+                                </div>
+                              {/each}
+                            {/if}
                           {/each}
                         {/if}
                       </div>
                     {/each}
                     {#each space.lists ?? [] as list (list.id)}
                       <div
-                        class="text-gray-100 ml-4 flex items-center"
+                        class="ml-4 flex items-center"
                         class:bg-gray-700={getIdx("list", list) === selected}
-                        class:text-blue-300={selectedLists.find(
-                          (l) => l.id === list.id
-                        )}
+                        class:text-blue-300={!viewMode &&
+                          selectedLists.find((l) => l.id === list.id)}
                         on:click|stopPropagation={() => toggleList(list)}
                       >
                         <span class="list-icon" />
                         <span>{list.name}</span>
                       </div>
+                      {#if viewMode}
+                        {#each views[list.id] ?? [] as view (view.id)}
+                          <div
+                            class="ml-8 flex items-center"
+                            on:click|stopPropagation={() => selectView(view)}
+                          >
+                            <span class="view-icon" />
+                            <span
+                              class:text-blue-300={view.id === selectedView?.id}
+                            >
+                              {view.name}
+                            </span>
+                          </div>
+                        {/each}
+                      {/if}
                     {/each}
                   </div>
                 {/if}
@@ -332,6 +376,9 @@
 <style>
   .list-icon {
     @apply w-2 h-2 mr-2 rounded-full border border-dashed border-gray-400;
+  }
+  .view-icon {
+    @apply w-2 h-2 mr-2 rounded-full border border-dotted border-gray-400;
   }
 
   .p-input {

@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-
   import type { User } from "../../interfaces/clickup";
-  import ClickupService from "../../services/clickup-service";
   import { userList } from "../../store/users";
   import AddAssigneeButton from "./AddAssigneeButton.svelte";
   import AssigneeBadge from "./AssigneeBadge.svelte";
@@ -10,6 +7,8 @@
   import Spinner from "../../assets/cog.svg";
 
   export let selectedAssignees: User[];
+  export let editable = true;
+  export let maxShown = 99;
 
   let showSelector = false;
   let searchText = "";
@@ -18,12 +17,10 @@
 
   let selected = -1;
 
-  onMount(async () => {
-    if ($userList.users.length === 0) {
-      const { data } = await new ClickupService().getAllUsers();
-      userList.set({ users: data });
-    }
-  });
+  $: showedAssignees = selectedAssignees.slice(
+    0,
+    maxShown === selectedAssignees.length ? maxShown : maxShown - 1
+  );
 
   $: filteredUsers = $userList.users.filter((u) => {
     if (u.role >= 4) {
@@ -42,6 +39,9 @@
   });
 
   function toggleAssignee(user) {
+    if (!editable) {
+      return;
+    }
     if (selectedAssignees.find((u) => u.id === user.id)) {
       selectedAssignees = selectedAssignees.filter((u) => u.id !== user.id);
     } else {
@@ -50,6 +50,9 @@
   }
 
   function toggleSelector() {
+    if (!editable) {
+      return;
+    }
     showSelector = !showSelector;
     if (showSelector) {
       setTimeout(() => searchInput.focus(), 0);
@@ -95,13 +98,26 @@
   {:else}
     <div class="relative select-none">
       <div class="flex flex-row-reverse justify-end pl-3">
-        <div
-          class="-ml-2 w-8 h-8 cursor-pointer"
-          on:click|stopPropagation={toggleSelector}
-        >
-          <AddAssigneeButton />
-        </div>
-        {#each selectedAssignees as user (user.id)}
+        {#if editable}
+          <div
+            class="-ml-2 w-8 h-8 cursor-pointer"
+            on:click|stopPropagation={toggleSelector}
+          >
+            <AddAssigneeButton />
+          </div>
+        {/if}
+        {#if selectedAssignees.length > maxShown}
+          <div class="-ml-3 w-8 h-8 cursor-pointer">
+            <span on:click|stopPropagation={toggleSelector}>
+              <div
+                class="flex justify-center items-center w-8 h-8 text-white bg-gray-500 rounded-full"
+              >
+                <span>+{selectedAssignees.length - maxShown + 1}</span>
+              </div>
+            </span>
+          </div>
+        {/if}
+        {#each showedAssignees as user (user.id)}
           <div class="-ml-3 w-8 h-8 cursor-pointer">
             <span on:click|stopPropagation={() => toggleAssignee(user)}>
               <AssigneeBadge {user} />

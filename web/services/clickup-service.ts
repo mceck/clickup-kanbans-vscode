@@ -1,4 +1,4 @@
-import type { WorkspaceFilters } from "../interfaces/clickup";
+import type { WorkspaceConfig } from "../interfaces/clickup";
 import type { SpacesTree } from "../store/spaces-tree";
 
 export function getNonce() {
@@ -74,8 +74,22 @@ export default class ClickupService {
     return this.sendMessage({ type: "getTimeTracked", taskId, ...params });
   }
 
-  saveConfig(config: WorkspaceFilters) {
-    return this.sendMessage({ type: "saveConfig", ...config });
+  getViewTasks(viewId: string) {
+    return this.sendMessage({ type: "getViewTasks", viewId });
+  }
+
+  getListViews(listId: string) {
+    return this.sendMessage({ type: "getListViews", listId });
+  }
+
+  updateTask(taskId: string, task: any) {
+    return this.sendMessage({ type: "updateTask", taskId, ...task });
+  }
+
+  async saveConfig(config: WorkspaceConfig) {
+    const ret = await this.sendMessage({ type: "saveConfig", ...config });
+    webVscode.setState({ vsConfig: config });
+    return ret;
   }
 
   async getAllLists() {

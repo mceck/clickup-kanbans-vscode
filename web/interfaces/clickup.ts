@@ -4,6 +4,7 @@ export interface Folder {
   orderindex: number;
   hidden: boolean;
   space: Space;
+  statuses?: Status[];
   task_count: string;
   lists?: List[];
 }
@@ -20,7 +21,7 @@ export interface List {
   name: string;
   orderindex: number;
   content: string;
-  status: Status;
+  statuses?: Status[];
   task_count?: number;
   due_date?: number;
   start_date?: number;
@@ -72,6 +73,7 @@ export interface Task {
   start_date: number;
   points: number;
   time_estimate: number;
+  time_spent: number;
   custom_fields: CustomField[];
   dependencies: Task[];
   linked_tasks: Task[];
@@ -107,7 +109,15 @@ export interface TimeTrack {
   ];
 }
 
-export interface WorkspaceFilters {
-  assignees: User[];
-  lists: List[];
+export interface WorkspaceConfig {
+  assignees?: User[];
+  lists?: List[];
+  view?: View;
+}
+
+export interface View {
+  id: string;
+  name: string;
+  type: string;
+  list?: List;
 }

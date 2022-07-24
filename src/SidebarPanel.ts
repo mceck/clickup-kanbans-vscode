@@ -40,9 +40,6 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.js")
     );
-    const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.css")
-    );
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
     );
@@ -50,7 +47,6 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
     const config = vscode.workspace.getConfiguration("clickup-kanban.config");
-
     return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -65,12 +61,19 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
-        <link href="${styleMainUri}" rel="stylesheet">
         <script nonce="${nonce}">
-            const webVscode = acquireVsCodeApi();
-            webVscode.setState({ wsConfig: ${JSON.stringify(
-              config.get("ws-config")
-            )} });
+            function initVsCode() {
+              const vscode = acquireVsCodeApi();
+              let config = vscode.getState();
+              if(!config || !config.vsConfig) {
+                config = {
+                  vsConfig: ${JSON.stringify(config.get("vs-config"))}
+                }
+              }
+              vscode.setState(config);
+              return vscode;
+            }
+            const webVscode = initVsCode();
         </script>
 			</head>
       <body>

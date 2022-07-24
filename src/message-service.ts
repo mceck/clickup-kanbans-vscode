@@ -100,9 +100,34 @@ export default class MessageService {
           const config = vscode.workspace.getConfiguration(
             "clickup-kanban.config"
           );
-          await config.update("ws-config", configuration, false);
+          await config.update("vs-config", configuration, false);
           return configuration;
         }, nonce);
+        break;
+      }
+      case "getViewTasks": {
+        const { nonce, viewId } = query;
+        this.sendResponse(
+          () => this.clickupService.getViewTasks(viewId),
+          nonce
+        );
+        break;
+      }
+      case "getListViews": {
+        const { nonce, listId } = query;
+        this.sendResponse(
+          () => this.clickupService.getListViews(listId),
+          nonce
+        );
+        break;
+      }
+      case "updateTask": {
+        const { nonce, taskId, ...task } = query;
+        this.sendResponse(
+          () => this.clickupService.updateTask(taskId, task),
+          nonce
+        );
+        break;
       }
     }
   }

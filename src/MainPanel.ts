@@ -34,6 +34,7 @@ export class MainPanel {
       {
         // Enable javascript in the webview
         enableScripts: true,
+        retainContextWhenHidden: true,
 
         // And restrict the webview to only loading content from our extension's `media` directory.
         localResourceRoots: [
@@ -109,10 +110,12 @@ export class MainPanel {
       vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
     );
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.js")
-    );
-    const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.css")
+      vscode.Uri.joinPath(
+        this._extensionUri,
+        "out",
+        "compiled",
+        "fullscreen-home.js"
+      )
     );
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
@@ -136,12 +139,19 @@ export class MainPanel {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
-        <link href="${styleMainUri}" rel="stylesheet">
         <script nonce="${nonce}">
-            const webVscode = acquireVsCodeApi();
-            webVscode.setState({ wsConfig: '${JSON.stringify(
-              config.get("ws-config")
-            )}' });
+        function initVsCode() {
+          const vscode = acquireVsCodeApi();
+          let config = vscode.getState();
+          if(!config || !config.vsConfig) {
+            config = {
+              vsConfig: ${JSON.stringify(config.get("vs-config"))}
+            }
+          }
+          vscode.setState(config);
+          return vscode;
+        }
+        const webVscode = initVsCode();
         </script>
 			</head>
       <body>

@@ -55,7 +55,7 @@
           "type": "string",
           "markdownDescription": "Clickup teamId"
         },
-        "clickup-kanban.config.ws-config": {
+        "clickup-kanban.config.vs-config": {
           "type": "object",
           "markdownDescription": "Default filters configuration"
         }

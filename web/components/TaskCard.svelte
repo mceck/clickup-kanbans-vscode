@@ -29,7 +29,9 @@
     showTracking = !showTracking;
     if (showTracking && !intervals.length) {
       const res = await service.getTimeTracked(task.id);
-      intervals = (res.ok && res.data[0]?.intervals) || [];
+      if (res.ok) {
+        intervals = (res.ok && res.data[0]?.intervals) || [];
+      }
     }
   }
 
@@ -48,16 +50,19 @@
   }
 
   async function deleteTrack(track) {
-    await service.deleteTimeTracked(task.id, track.id);
-    intervals = intervals.filter((i) => i.id !== track.id);
-    const newTask = {
-      ...task,
-      time_spent: parseInt(task.time_spent as any) - parseInt(track.time),
-    };
-    if (intervals.length === 0) {
-      showTracking = false;
+    const result = await service.deleteTimeTracked(task.id, track.id);
+    if (result.ok) {
+      intervals = intervals.filter((i) => i.id !== track.id);
+      const newTask = {
+        ...task,
+        time_spent: parseInt(task.time_spent as any) - parseInt(track.time),
+      };
+      if (intervals.length === 0) {
+        showTracking = false;
+      }
+      dispatch("refresh", newTask);
+      service.showToast("info", "Tracking deleted");
     }
-    dispatch("refresh", newTask);
   }
 
   function toDate(time) {
@@ -70,17 +75,20 @@
 
   async function updateTrack(interval, time: number) {
     editTrack = undefined;
-    await service.updateTimeTracked(task.id, interval.id, {
+    const result = await service.updateTimeTracked(task.id, interval.id, {
       start: interval.start,
       end: parseInt(interval.start) + time,
       time,
     });
-    const newTask = {
-      ...task,
-      time_spent: (task.time_spent || 0) + time - parseInt(interval.time),
-    };
-    dispatch("refresh", newTask);
-    showTracking = false;
+    if (result.ok) {
+      const newTask = {
+        ...task,
+        time_spent: (task.time_spent || 0) + time - parseInt(interval.time),
+      };
+      dispatch("refresh", newTask);
+      showTracking = false;
+      service.showToast("info", "Time tracked");
+    }
   }
   function copyCustomId() {
     navigator.clipboard.writeText(task.custom_id);

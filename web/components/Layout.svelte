@@ -32,7 +32,6 @@
   let selectedAssignees: User[] = [];
   let selectedView: any = {};
   let tasks: Task[] = [];
-  let filterResp: string;
   let loading = false;
   let viewMode = false;
 
@@ -108,7 +107,6 @@
     if (!viewMode) {
       config.view = undefined;
     }
-    filterResp = "";
     let res;
     try {
       res = await service.saveConfig(config, global);
@@ -118,12 +116,9 @@
         error: error.message || "generic_error",
       };
     }
-    if (!res.ok) {
-      filterResp = res.error;
-    } else {
-      filterResp = "Saved!";
+    if (res.ok) {
+      service.showToast("info", "Configuration saved");
     }
-    setTimeout(() => (filterResp = ""), 3000);
   }
 
   function toggleView() {
@@ -174,13 +169,6 @@
             <FilterIcon class="w-full" />
           {/if}
         </button>
-        {#if filterResp}
-          <span
-            class="text-xs w-16 text-red-500 flex-none whitespace-nowrap overflow-ellipsis overflow-hidden"
-            title={filterResp}
-            class:text-green-400={filterResp === "Saved!"}>{filterResp}</span
-          >
-        {/if}
         <button
           class="w-20 flex-none ml-4 flex items-center"
           on:click={() => saveFilters(true)}

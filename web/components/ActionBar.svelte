@@ -31,7 +31,10 @@
     const result = await service.updateTask(task.id, {
       status: nextStatus,
     });
-    dispatch("refresh", result.data);
+    if (result.ok) {
+      service.showToast("info", "Task updated");
+      dispatch("refresh", result.data);
+    }
   }
 
   async function actionPrev() {
@@ -43,7 +46,10 @@
     const result = await service.updateTask(task.id, {
       status: nextStatus,
     });
-    dispatch("refresh", result.data);
+    if (result.ok) {
+      service.showToast("info", "Task updated");
+      dispatch("refresh", result.data);
+    }
   }
 
   function actionTimeTrack() {
@@ -59,6 +65,7 @@
       res.data[0]?.intervals?.find(
         (i) => parseInt(i.start) >= moment().startOf("day").valueOf()
       );
+
     if (interval) {
       const updatedTime = parseInt(interval.time) + time;
       const resp = await service.updateTimeTracked(task.id, interval.id, {
@@ -66,11 +73,21 @@
         end: parseInt(interval.start) + updatedTime,
         time: updatedTime,
       });
+      if (resp.ok) {
+        service.showToast("info", "Time tracked");
+      } else {
+        return;
+      }
     } else {
-      await service.createTimeTrack(task.id, {
+      const resp = await service.createTimeTrack(task.id, {
         start: moment().valueOf(),
         time,
       });
+      if (resp.ok) {
+        service.showToast("info", "Time tracked");
+      } else {
+        return;
+      }
     }
     task = {
       ...task,

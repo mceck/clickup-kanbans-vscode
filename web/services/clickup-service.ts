@@ -18,20 +18,26 @@ export interface ClickupServiceResponse {
 }
 
 export default class ClickupService {
-  private sendMessage(obj: any): Promise<ClickupServiceResponse> {
+  private sendMessage(
+    obj: any,
+    timeout = 10000
+  ): Promise<ClickupServiceResponse> {
     return new Promise((res, err) => {
       const nonce = getNonce();
       const fn = ({ data }) => {
         if (data.nonce === nonce) {
           clearTimeout(stop);
           window.removeEventListener("message", fn);
+          if (!data.ok) {
+            this.showToast("error", data.error);
+          }
           res(data);
         }
       };
       const stop = setTimeout(() => {
         window.removeEventListener("message", fn);
         err("timeout");
-      }, 10000);
+      }, timeout);
       const message = { ...obj, nonce };
       window.addEventListener("message", fn);
       webVscode.postMessage(message);
@@ -115,6 +121,10 @@ export default class ClickupService {
     });
     webVscode.setState({ vsConfig: config });
     return ret;
+  }
+
+  showToast(scope: "info" | "error", message: string) {
+    return this.sendMessage({ type: "showToast", scope, message }, 90000);
   }
 
   async getAllLists() {

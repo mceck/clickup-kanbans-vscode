@@ -154,6 +154,21 @@ export default class MessageService {
         );
         break;
       }
+      case "showToast": {
+        const { nonce, message, scope } = query;
+        if (scope === "error") {
+          this.sendResponse(
+            () => vscode.window.showErrorMessage(message),
+            nonce
+          );
+        } else {
+          this.sendResponse(
+            () => vscode.window.showInformationMessage(message),
+            nonce
+          );
+        }
+        break;
+      }
     }
   }
 }

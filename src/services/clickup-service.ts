@@ -53,6 +53,19 @@ export default class ClickupService extends BaseService {
     return data;
   }
 
+  async updateTimeTracked(taskId: string, intervalId: string, track: any) {
+    const resp = await this.doPut(
+      `/v2/task/${taskId}/time/${intervalId}`,
+      track
+    );
+    return resp;
+  }
+
+  async createTimeTrack(taskId: string, track: any) {
+    const resp = await this.doPost(`/v2/task/${taskId}/time`, track);
+    return resp;
+  }
+
   async getViewTasks(viewId: string) {
     const { tasks } = await this.doGet(`/v2/view/${viewId}/task`);
     return tasks;

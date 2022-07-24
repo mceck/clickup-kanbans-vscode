@@ -94,6 +94,23 @@ export default class MessageService {
         );
         break;
       }
+      case "updateTimeTracked": {
+        const { nonce, taskId, intervalId, ...params } = query;
+        this.sendResponse(
+          () =>
+            this.clickupService.updateTimeTracked(taskId, intervalId, params),
+          nonce
+        );
+        break;
+      }
+      case "createTimeTrack": {
+        const { nonce, taskId, ...params } = query;
+        this.sendResponse(
+          () => this.clickupService.createTimeTrack(taskId, params),
+          nonce
+        );
+        break;
+      }
       case "saveConfig": {
         const { nonce, ...configuration } = query;
         this.sendResponse(async () => {

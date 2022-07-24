@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type { Folder, List, Space, View } from '../../interfaces/clickup';
-  import { spacesTree } from '../../store/spaces-tree';
-  import SpaceBadge from './SpaceBadge.svelte';
+  import type { Folder, List, Space, View } from "../../interfaces/clickup";
+  import { spacesTree } from "../../store/spaces-tree";
+  import SpaceBadge from "./SpaceBadge.svelte";
   // @ts-ignore
-  import FolderIcon from '../../assets/folder.svg';
+  import FolderIcon from "../../assets/folder.svg";
   // @ts-ignore
-  import OpenFolderIcon from '../../assets/folder-open.svg';
-  import ClickupService from '../../services/clickup-service';
-  import { createEventDispatcher } from 'svelte';
+  import OpenFolderIcon from "../../assets/folder-open.svg";
+  import ClickupService from "../../services/clickup-service";
+  import { createEventDispatcher } from "svelte";
 
   export let selectedLists: List[] = [];
   export let right: boolean = false;
@@ -22,7 +22,7 @@
 
   let scroller: HTMLElement;
   let searchInput: HTMLInputElement;
-  let searchText = '';
+  let searchText = "";
   let showSelector = false;
   let selected = -1;
 
@@ -83,30 +83,30 @@
         0
       );
     switch (event.key) {
-      case 'Enter':
+      case "Enter":
         const [type, rec] = getRecord(selected);
         if (rec) {
           switch (type) {
-            case 'space':
+            case "space":
               toggleSpace(rec.id);
               break;
-            case 'folder':
+            case "folder":
               toggleFolder(rec.id);
               break;
-            case 'list':
+            case "list":
               toggleList(rec);
               break;
           }
         }
         break;
-      case 'Escape':
+      case "Escape":
         toggleSelector();
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         selected = (selected + 1) % recNumber;
         scroller.scrollTop = selected * 20 - 40;
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         selected--;
         if (selected < 0) {
           selected = recNumber - 1;
@@ -117,12 +117,12 @@
   }
 
   function getIdx(
-    type: 'space' | 'folder' | 'list',
+    type: "space" | "folder" | "list",
     obj: List | Folder | Space
   ) {
     let i = 0;
     for (let s of filteredSpaces) {
-      if (type === 'space' && obj.id === s.id) {
+      if (type === "space" && obj.id === s.id) {
         return i;
       }
       i++;
@@ -130,7 +130,7 @@
         continue;
       }
       for (let f of s.folders ?? []) {
-        if (type === 'folder' && obj.id === f.id) {
+        if (type === "folder" && obj.id === f.id) {
           return i;
         }
         i++;
@@ -138,14 +138,14 @@
           continue;
         }
         for (let l of f.lists ?? []) {
-          if (type === 'list' && obj.id === l.id) {
+          if (type === "list" && obj.id === l.id) {
             return i;
           }
           i++;
         }
       }
       for (let l of s.lists ?? []) {
-        if (type === 'list' && obj.id === l.id) {
+        if (type === "list" && obj.id === l.id) {
           return i;
         }
         i++;
@@ -154,11 +154,11 @@
     return -2;
   }
 
-  function getRecord(idx: number): ['space' | 'folder' | 'list', any] {
+  function getRecord(idx: number): ["space" | "folder" | "list", any] {
     let i = 0;
     for (let s of filteredSpaces) {
       if (i === idx) {
-        return ['space', s];
+        return ["space", s];
       }
       i++;
       if (!showSpaces[s.id]) {
@@ -166,7 +166,7 @@
       }
       for (let f of s.folders ?? []) {
         if (i === idx) {
-          return ['folder', f];
+          return ["folder", f];
         }
         i++;
         if (!showFolder[f.id]) {
@@ -174,14 +174,14 @@
         }
         for (let l of f.lists ?? []) {
           if (i === idx) {
-            return ['list', l];
+            return ["list", l];
           }
           i++;
         }
       }
       for (let l of s.lists ?? []) {
         if (i === idx) {
-          return ['list', l];
+          return ["list", l];
         }
         i++;
       }
@@ -191,19 +191,19 @@
 
   function toggleSpace(spaceId: string) {
     showSpaces = { ...showSpaces, [spaceId]: !showSpaces[spaceId] };
-    searchText = '';
+    searchText = "";
   }
 
   function toggleFolder(folderId: string) {
     showFolder = { ...showFolder, [folderId]: !showFolder[folderId] };
-    searchText = '';
+    searchText = "";
   }
 
   function toggleList(list: List) {
     const idx = selectedLists.findIndex((l) => l.id === list.id);
     if (idx >= 0) {
       selectedLists = selectedLists.filter((l) => l.id !== list.id);
-      dispatch('removeList', list);
+      dispatch("removeList", list);
     } else {
       selectedLists = [...selectedLists, list];
       if (viewMode && !views[list.id]) {
@@ -212,22 +212,22 @@
           views = { ...views, [list.id]: view };
         });
       }
-      dispatch('selectList', list);
+      dispatch("selectList", list);
     }
-    searchText = '';
+    searchText = "";
   }
 
   function selectView(view: View) {
     selectedView = view;
     toggleSelector();
-    dispatch('selectView', view);
+    dispatch("selectView", view);
   }
 
   function toggleSelector() {
     showSelector = !showSelector;
     if (showSelector) {
       setTimeout(() => searchInput.focus(), 0);
-      searchText = '';
+      searchText = "";
       selected = -1;
     }
   }
@@ -247,12 +247,12 @@
       placeholder={viewMode
         ? selectedView
           ? `${selectedView.list?.name}: ${selectedView.name}`
-          : 'Select view...'
+          : "Select view..."
         : selectedLists.length
         ? `(${selectedLists.length} list${
-            selectedLists.length > 1 ? 's' : ''
+            selectedLists.length > 1 ? "s" : ""
           } selected)`
-        : 'Select lists...'}
+        : "Select lists..."}
     />
     {#if showSelector}
       <div
@@ -267,7 +267,7 @@
             >
               <div
                 class="flex items-center"
-                class:bg-gray-700={getIdx('space', space) === selected}
+                class:bg-gray-700={getIdx("space", space) === selected}
               >
                 <span class="w-6 h-6 mr-2"><SpaceBadge {space} /></span>
                 <span>
@@ -280,7 +280,7 @@
                     <div class="ml-4" on:click={() => toggleFolder(folder.id)}>
                       <div
                         class="flex items-center"
-                        class:bg-gray-700={getIdx('folder', folder) ===
+                        class:bg-gray-700={getIdx("folder", folder) ===
                           selected}
                       >
                         {#if showFolder[folder.id]}
@@ -295,7 +295,7 @@
                         {#each folder.lists || [] as list}
                           <div
                             class="ml-4 flex items-center"
-                            class:bg-gray-700={getIdx('list', list) ===
+                            class:bg-gray-700={getIdx("list", list) ===
                               selected}
                             class:text-blue-300={!viewMode &&
                               selectedLists.find((l) => l.id === list.id)}
@@ -330,7 +330,7 @@
                   {#each space.lists ?? [] as list (list.id)}
                     <div
                       class="ml-4 flex items-center"
-                      class:bg-gray-700={getIdx('list', list) === selected}
+                      class:bg-gray-700={getIdx("list", list) === selected}
                       class:text-blue-300={!viewMode &&
                         selectedLists.find((l) => l.id === list.id)}
                       on:click|stopPropagation={() => toggleList(list)}

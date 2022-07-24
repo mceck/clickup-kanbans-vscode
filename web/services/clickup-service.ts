@@ -74,6 +74,18 @@ export default class ClickupService {
     return this.sendMessage({ type: "getTimeTracked", taskId, ...params });
   }
 
+  updateTimeTracked(taskId: string, intervalId: string, track: any) {
+    return this.sendMessage({
+      type: "updateTimeTracked",
+      taskId,
+      intervalId,
+      ...track,
+    });
+  }
+  createTimeTrack(taskId: string, track: any) {
+    return this.sendMessage({ type: "createTimeTrack", taskId, ...track });
+  }
+
   getViewTasks(viewId: string) {
     return this.sendMessage({ type: "getViewTasks", viewId });
   }

@@ -29,7 +29,7 @@
 
 <div class="lg:flex w-full">
   {#each statuses as [id, val] (id)}
-    <div class="w-80 mx-2 my-4 flex-none">
+    <div class="w-72 mx-2 my-4 flex-none">
       <div
         class="rounded-t-lg border uppercase text-lg px-2 py-1"
         style={`color: ${val.color}; border-color: ${val.color};`}
@@ -38,36 +38,41 @@
       </div>
       {#each getTasksByStatus(val.status) as task (task.id)}
         <div
-          class="px-2 pt-4 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
+          class="px-2 pt-6 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
         >
-          <div class="h-32 flex flex-col">
+          <div class="h-20 flex flex-col">
             <div class="absolute top-1 right-1">
               <AssigneesSelector
                 bind:selectedAssignees={task.assignees}
                 editable={false}
                 maxShown={4}
+                small
               />
             </div>
 
-            <h3>
+            <p>
               {task.name}
-            </h3>
-            <small class="cursor-pointer absolute left-1 top-1">
-              est: {(task.time_estimate / 3600000).toFixed(0)}h
-            </small>
-            <small class="absolute left-16 top-1">
-              tracked: {(task.time_spent / 3600000).toFixed(1)}h
-            </small>
+            </p>
+            {#if task.time_estimate}
+              <small class="absolute left-2 top-1 text-gray-400">
+                est: {(task.time_estimate / 3600000).toFixed(0)}h
+              </small>
+            {/if}
+            {#if task.time_spent}
+              <small class="absolute text-green-600 left-16 top-1">
+                tracked: {(task.time_spent / 3600000).toFixed(1)}h
+              </small>
+            {/if}
             {#if task.description}
               <small
-                class="whitespace-nowrap overflow-hidden overflow-ellipsis"
+                class="whitespace-nowrap text-gray-400 overflow-hidden overflow-ellipsis"
                 title={task.description}
               >
                 {task.description}
               </small>
             {/if}
           </div>
-          <div class="w-full px-2 pb-2 bg-black bg-opacity-20 rounded shadow">
+          <div class="w-full px-2 pb-2 rounded shadow">
             <ActionBar
               {task}
               statuses={statusKeys}
@@ -81,14 +86,7 @@
 </div>
 
 <style>
-  h3 {
-    @apply text-lg;
-  }
-
   small {
-    @apply text-xs text-gray-400;
-  }
-
-  p {
+    @apply text-xs;
   }
 </style>

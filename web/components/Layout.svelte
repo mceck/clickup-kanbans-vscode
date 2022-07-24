@@ -143,10 +143,10 @@
       class="flex flex-col-reverse lg:justify-between items-center lg:flex-row"
     >
       <div class="flex justify-start w-full">
-        <div class="w-40 lg:w-72 flex-none">
+        <div class="w-36 lg:w-72 flex-none">
           <AssigneesSelector bind:selectedAssignees />
         </div>
-        <div class="w-40 lg:w-80 flex-none">
+        <div class="w-36 lg:w-80 flex-none">
           <ListSelector
             bind:selectedLists
             bind:selectedView
@@ -189,12 +189,11 @@
 
 <style global>
   button {
-    background-color: theme("colors.primary");
     outline: none !important;
   }
 
   button:hover {
-    background-color: theme("colors.highlight");
+    background-color: #2e2e2e;
     color: white;
   }
 </style>

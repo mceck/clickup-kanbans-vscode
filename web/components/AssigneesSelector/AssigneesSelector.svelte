@@ -3,8 +3,6 @@
   import { userList } from "../../store/users";
   import AddAssigneeButton from "./AddAssigneeButton.svelte";
   import AssigneeBadge from "./AssigneeBadge.svelte";
-  // @ts-ignore
-  import Spinner from "../../assets/cog.svg";
 
   export let selectedAssignees: User[];
   export let editable = true;
@@ -92,15 +90,13 @@
 
 <svelte:window on:click={() => (showSelector = false)} />
 
-<div>
-  {#if $userList.users.length === 0}
-    <Spinner class="w-8 animate-spin" />
-  {:else}
+<div class:animate-pulse={$userList.users.length === 0}>
     <div class="relative select-none">
       <div class="flex flex-row-reverse justify-end pl-3">
         {#if editable}
           <div
             class="-ml-2 w-8 h-8 cursor-pointer"
+          
             on:click|stopPropagation={toggleSelector}
           >
             <AddAssigneeButton />
@@ -156,7 +152,6 @@
         </div>
       {/if}
     </div>
-  {/if}
 </div>
 
 <style>

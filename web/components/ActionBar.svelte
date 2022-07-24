@@ -109,6 +109,7 @@
       <TimeTrackInput
         bind:timeTrackInput
         on:submit={({ detail }) => track(detail)}
+        on:cancel={() => (showTimeTrack = false)}
       />
     </div>
   {/if}

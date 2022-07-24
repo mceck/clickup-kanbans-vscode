@@ -5,9 +5,13 @@
   export let timeTrackInput: HTMLInputElement = null;
 
   const dispatch = createEventDispatcher();
-  const regex = /((\d?\d)\s?(h))|((\d?\d)\s?(m))/gi;
+  const regex = /((\d?\d(.\d)?)\s?(h))|((\d?\d)\s?(m))/gi;
 
   function handleInputs(e) {
+    if (e.key === "Escape") {
+      dispatch("cancel");
+      return;
+    }
     const match = timeTrackText.match(regex)?.filter((m) => m.trim());
     if (!match) {
       return;
@@ -17,7 +21,7 @@
     for (let a of match) {
       for (let m of a.split(" ")) {
         if (m.match(/h$/i)) {
-          hours += parseInt(m);
+          hours += parseFloat(m);
         }
         if (m.match(/m$/i)) {
           mins += parseInt(m);

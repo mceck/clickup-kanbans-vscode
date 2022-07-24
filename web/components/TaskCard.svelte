@@ -164,6 +164,7 @@
                 bind:timeTrackInput
                 bind:timeTrackText
                 on:submit={({ detail }) => updateTrack(track, detail)}
+                on:cancel={() => (editTrack = undefined)}
               />
             </div>
           {/if}

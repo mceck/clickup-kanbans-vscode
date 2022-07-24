@@ -2,12 +2,14 @@
   import type { Folder, List, Space, View } from "../../interfaces/clickup";
   import { spacesTree } from "../../store/spaces-tree";
   import SpaceBadge from "./SpaceBadge.svelte";
+  import ClickupService from "../../services/clickup-service";
+  import { createEventDispatcher } from "svelte";
   // @ts-ignore
   import FolderIcon from "../../assets/folder.svg";
   // @ts-ignore
   import OpenFolderIcon from "../../assets/folder-open.svg";
-  import ClickupService from "../../services/clickup-service";
-  import { createEventDispatcher } from "svelte";
+  // @ts-ignore
+  import Spinner from "../../assets/cog.svg";
 
   export let selectedLists: List[] = [];
   export let right: boolean = false;
@@ -19,6 +21,7 @@
   let showSpaces = {};
   let showFolder = {};
   let views: { [listId: string]: View[] } = {};
+  let viewCache: { [listId: string]: View[] } = {};
 
   let scroller: HTMLElement;
   let searchInput: HTMLInputElement;
@@ -203,14 +206,21 @@
     const idx = selectedLists.findIndex((l) => l.id === list.id);
     if (idx >= 0) {
       selectedLists = selectedLists.filter((l) => l.id !== list.id);
+      views = { ...views, [list.id]: undefined };
       dispatch("removeList", list);
     } else {
       selectedLists = [...selectedLists, list];
       if (viewMode && !views[list.id]) {
-        new ClickupService().getListViews(list.id).then(({ data }) => {
-          const view = data.map((v) => ({ ...v, list }));
-          views = { ...views, [list.id]: view };
-        });
+        if (viewCache[list.id]) {
+          views = { ...views, [list.id]: viewCache[list.id] };
+        } else {
+          views = { ...views, [list.id]: null };
+          new ClickupService().getListViews(list.id).then(({ data }) => {
+            const view = data.map((v) => ({ ...v, list }));
+            views = { ...views, [list.id]: view };
+            viewCache[list.id] = view;
+          });
+        }
       }
       dispatch("selectList", list);
     }
@@ -307,6 +317,11 @@
                             </span>
                           </div>
                           {#if viewMode}
+                            {#if views[list.id] === null}
+                              <Spinner
+                                class="ml-8 w-4 h-4 flex-none animate-spin"
+                              />
+                            {/if}
                             {#each views[list.id] ?? [] as view (view.id)}
                               <div
                                 class="ml-8 flex items-center"

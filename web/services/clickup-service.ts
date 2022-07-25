@@ -89,6 +89,13 @@ export default class ClickupService {
     });
   }
 
+  findTimeTrack(params: any) {
+    return this.sendMessage({
+      type: "findTimeTrack",
+      ...params,
+    });
+  }
+
   createTimeTrack(taskId: string, track: any) {
     return this.sendMessage({ type: "createTimeTrack", taskId, ...track });
   }

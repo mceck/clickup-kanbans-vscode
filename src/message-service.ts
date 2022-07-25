@@ -184,6 +184,14 @@ export default class MessageService {
         );
         break;
       }
+      case "findTimeTrack": {
+        const { nonce, ...params } = query;
+        this.sendResponse(
+          () => this.clickupService.findTimeTrack(params),
+          nonce
+        );
+        break;
+      }
     }
   }
 }

@@ -139,7 +139,7 @@
         class="left-40 -ml-1 top-1 cursor-pointer absolute flex items-center copy-hover"
       >
         <span class="opacity-0 transition-opacity">
-          <CopyIcon class="w-3" />
+          <CopyIcon class="w-3 text-yellow-100 stroke-current" />
         </span>
         <small
           class="text-sm  text-yellow-600 "

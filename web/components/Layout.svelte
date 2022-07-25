@@ -25,6 +25,9 @@
   import BoardIcon from "../assets/board.svg";
   // @ts-ignore
   import FilterIcon from "../assets/filter.svg";
+  // @ts-ignore
+  import ClockIcon from "../assets/clock.svg";
+  import moment from "moment";
 
   const service = new ClickupService();
 
@@ -34,6 +37,7 @@
   let tasks: Task[] = [];
   let loading = false;
   let viewMode = false;
+  let trackedToday = "0.0h";
 
   $: filteredTasks =
     viewMode && selectedAssignees.length
@@ -95,7 +99,17 @@
       const { data } = await service.findTasks(params);
       tasks = data;
     }
+
     loading = false;
+    const res = await service.findTimeTrack({
+      assignee: $user.id,
+      start_date: moment().startOf("day").valueOf(),
+      end_date: moment().endOf("day").valueOf(),
+    });
+    if (res.ok) {
+      const millis = res.data.reduce((p, v) => p + parseInt(v.duration), 0);
+      trackedToday = `${(millis / 3600000).toFixed(1)}h`;
+    }
   }
 
   async function saveFilters(global: boolean = false) {
@@ -157,7 +171,11 @@
           />
         </div>
       </div>
-      <div class="flex justify-end w-full mb-2">
+      <div class="flex justify-end items-center w-full mb-2">
+        <div class="flex w-6 items-center text-xs text-green-400">
+          <ClockIcon class="w-3 mr-1 flex-none stroke-current" />
+          <span>{trackedToday}</span>
+        </div>
         <button
           class="w-9 px-2 text-xs flex-none ml-4 flex items-center"
           title={viewMode ? "Switch to filter mode" : "Switch to view mode"}

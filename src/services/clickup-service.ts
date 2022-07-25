@@ -85,4 +85,11 @@ export default class ClickupService extends BaseService {
     const result = await this.doPut(`/v2/task/${taskId}`, task);
     return result;
   }
+
+  async findTimeTrack(params: any) {
+    const { data } = await this.doGet(
+      `/v2/team/${this.teamId}/time_entries?${this.toQueryString(params)}`
+    );
+    return data;
+  }
 }

@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { User } from "../../interfaces/clickup";
   import { userList } from "../../store/users";
-  import AddAssigneeButton from "./AddAssigneeButton.svelte";
+  // import AddAssigneeButton from "./AddAssigneeButton.svelte";
   import AssigneeBadge from "./AssigneeBadge.svelte";
+  // @ts-ignore
+  import AddAssigneeButton from "../../assets/add-assignee.svg";
 
   export let selectedAssignees: User[];
   export let editable = true;
@@ -96,7 +98,9 @@
     <div class="flex flex-row-reverse justify-end pl-3">
       {#if editable}
         <div
-          class={`${small ? "w-5 h-5 -ml-1" : "w-8 h-8 -ml-2"} cursor-pointer`}
+          class={`${
+            small ? "w-5 h-5 -ml-1" : "w-8 h-8 -ml-2"
+          } cursor-pointer add-assignee`}
           on:click|stopPropagation={toggleSelector}
         >
           <AddAssigneeButton />
@@ -158,5 +162,19 @@
 <style>
   .search {
     outline: none;
+  }
+
+  .add-assignee {
+    stroke: theme("colors.primary");
+    fill: theme("colors.primary");
+  }
+
+  .add-assignee:hover {
+    stroke: theme("colors.highlight");
+    fill: theme("colors.highlight");
+  }
+
+  .add-assignee :global(circle) {
+    stroke-dasharray: 3;
   }
 </style>

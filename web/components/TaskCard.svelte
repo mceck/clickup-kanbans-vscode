@@ -117,7 +117,15 @@
         small
       />
     </div>
-
+    <div class="flex">
+      {#each task.tags as tag (tag.name)}
+        <span
+          class="w-12 px-1 rounded text-xs text-white shadow overflow-ellipsis whitespace-nowrap overflow-hidden"
+          style={`background-color: ${tag.tag_bg || "#1c1c1c"};`}
+          title={tag.name}>{tag.name}</span
+        >
+      {/each}
+    </div>
     <p>
       {task.name}
     </p>
@@ -148,14 +156,6 @@
           {task.custom_id}
         </small>
       </div>
-    {/if}
-    {#if task.description}
-      <small
-        class="text-sm whitespace-nowrap text-gray-400 overflow-hidden overflow-ellipsis"
-        title={task.description}
-      >
-        {task.description}
-      </small>
     {/if}
   </div>
   <div class="w-full px-2 pb-2 rounded shadow">

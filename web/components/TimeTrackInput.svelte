@@ -40,6 +40,7 @@
 </script>
 
 <input
+  placeholder="es. 1h 30m"
   bind:value={timeTrackText}
   bind:this={timeTrackInput}
   on:keyup={handleInputs}

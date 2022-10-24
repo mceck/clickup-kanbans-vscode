@@ -2,7 +2,9 @@
   "name": "clickup-kanban",
   "displayName": "clickup-kanban",
   "publisher": "mcdev",
-  "repository": {},
+  "repository": {
+   "url": "https://github.com/mceck/clickup-kanbans-vscode" 
+  },
   "description": "Clickup Kanbans",
   "version": "0.0.1",
   "engines": {

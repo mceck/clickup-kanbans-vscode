@@ -38,5 +38,5 @@ jobs:
       - name: Publish Release
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run:
-          - yarn exec vsce publish ${{ github.ref_name }}
+        run: |
+          yarn exec vsce publish ${{ github.ref_name }}

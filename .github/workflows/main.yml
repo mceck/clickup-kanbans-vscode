@@ -39,4 +39,4 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: |
-          yarn vscode:publish ${{ GITHUB_REF#refs/tags/v }}
+          yarn vscode:publish ${{ github.ref_name#v }}

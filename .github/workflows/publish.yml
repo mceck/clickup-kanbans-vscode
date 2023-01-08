@@ -10,8 +10,9 @@ jobs:
     name: Upload Release Asset
     runs-on: ubuntu-latest
     steps:
-      - name: Publish Release
+      - name: Checkout code
         uses: actions/checkout@v2
+      - name: Publish Release
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: |

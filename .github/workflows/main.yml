@@ -14,9 +14,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Set version
         run: |
-          export PKG_VER="$(cat ./package.json | grep -m 1 version | sed 's/[^0-9.]//g')"
-          npm version $PKG_VER --git-tag-version false
-          echo "package_version=$PKG_VER" >> $GITHUB_ENV
+          npm version "$(cat ./package.json | grep -m 1 version | sed 's/[^0-9.]//g')" --git-tag-version false
+          echo "package_version=$(cat ./package.json | grep -m 1 version | sed 's/[^0-9.]//g')" >> $GITHUB_ENV
       - name: Yarn install
         run: yarn install
       - name: Build webapp

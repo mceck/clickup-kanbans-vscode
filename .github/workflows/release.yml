@@ -35,8 +35,3 @@ jobs:
           asset_path: ./clickup-kanban-1.0.0.vsix
           asset_name: clickup-kanban.vsix
           asset_content_type: application/zip
-      - name: Publish Release
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: |
-          yarn exec vsce publish ${{ github.ref_name }}

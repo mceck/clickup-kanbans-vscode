@@ -1,0 +1,18 @@
+on:
+  push:
+    branches:
+      - master
+
+name: Upload Release Asset
+
+jobs:
+  build:
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish Release
+        uses: actions/checkout@v2
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          yarn build-webapp && yarn deploy patch

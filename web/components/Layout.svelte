@@ -1,33 +1,33 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
 
   import type {
     List,
     Task,
     User,
     WorkspaceConfig,
-  } from "../interfaces/clickup";
-  import ClickupService from "../services/clickup-service";
-  import { user, userList } from "../store/users";
-  import AssigneesSelector from "./AssigneesSelector/AssigneesSelector.svelte";
-  import Kanban from "./Kanban.svelte";
-  import ListSelector from "./ListSelector/ListSelector.svelte";
-  import { spacesTree } from "../store/spaces-tree";
+  } from '../interfaces/clickup';
+  import ClickupService from '../services/clickup-service';
+  import { user, userList } from '../store/users';
+  import AssigneesSelector from './AssigneesSelector/AssigneesSelector.svelte';
+  import Kanban from './Kanban.svelte';
+  import ListSelector from './ListSelector/ListSelector.svelte';
+  import { spacesTree } from '../store/spaces-tree';
   // @ts-ignore
-  import RefreshIcon from "../assets/refresh.svg";
+  import RefreshIcon from '../assets/refresh.svg';
   // @ts-ignore
-  import SaveIcon from "../assets/save.svg";
+  import SaveIcon from '../assets/save.svg';
   // @ts-ignore
-  import SaveAltIcon from "../assets/save-alt.svg";
+  import EllipsisIcon from '../assets/ellipsis.svg';
   // @ts-ignore
-  import Spinner from "../assets/cog.svg";
+  import Spinner from '../assets/cog.svg';
   // @ts-ignore
-  import BoardIcon from "../assets/board.svg";
+  import BoardIcon from '../assets/board.svg';
   // @ts-ignore
-  import FilterIcon from "../assets/filter.svg";
+  import FilterIcon from '../assets/filter.svg';
   // @ts-ignore
-  import ClockIcon from "../assets/clock.svg";
-  import moment from "moment";
+  import ClockIcon from '../assets/clock.svg';
+  import moment from 'moment';
 
   const service = new ClickupService();
 
@@ -36,8 +36,9 @@
   let selectedView: any = {};
   let tasks: Task[] = [];
   let loading = false;
-  let viewMode = false;
-  let trackedToday = "0.0h";
+  let viewMode = true;
+  let trackedToday = '0.0h';
+  let showSaveOptions = false;
 
   $: filteredTasks =
     viewMode && selectedAssignees.length
@@ -103,8 +104,8 @@
     loading = false;
     const res = await service.findTimeTrack({
       assignee: $user.id,
-      start_date: moment().startOf("day").valueOf(),
-      end_date: moment().endOf("day").valueOf(),
+      start_date: moment().startOf('day').valueOf(),
+      end_date: moment().endOf('day').valueOf(),
     });
     if (res.ok) {
       const millis = res.data.reduce((p, v) => p + parseInt(v.duration), 0);
@@ -127,11 +128,11 @@
     } catch (error) {
       res = {
         ok: false,
-        error: error.message || "generic_error",
+        error: error.message || 'generic_error',
       };
     }
     if (res.ok) {
-      service.showToast("info", "Configuration saved");
+      service.showToast('info', 'Configuration saved');
     }
   }
 
@@ -150,8 +151,13 @@
     const task = event.detail;
     tasks = tasks.map((t) => (t.id === task.id ? task : t));
   }
+
+  function toggleSaveOptions() {
+    showSaveOptions = !showSaveOptions;
+  }
 </script>
 
+<svelte:window on:click={() => (showSaveOptions = false)} />
 <div>
   <div>
     <div
@@ -178,7 +184,7 @@
         </div>
         <button
           class="w-9 px-2 text-xs flex-none ml-4 flex items-center"
-          title={viewMode ? "Switch to filter mode" : "Switch to view mode"}
+          title={viewMode ? 'Switch to filter mode' : 'Switch to view mode'}
           on:click={toggleView}
         >
           {#if viewMode}
@@ -188,24 +194,31 @@
           {/if}
         </button>
         <button
-          class="w-20 flex-none ml-4 flex items-center"
+          class="w-5 flex-none ml-4 flex items-center"
+          title="Save filters"
           on:click={() => saveFilters(true)}
         >
-          <SaveAltIcon class="w-5 mr-2" />
-          <span class="text-xs">Global</span>
+          <SaveIcon />
         </button>
         <button
-          class="w-20 flex-none ml-4 flex items-center"
-          on:click={() => saveFilters(false)}
+          class="w-4 flex-none ml-1 flex items-center relative"
+          on:click|stopPropagation={() => toggleSaveOptions()}
         >
-          <SaveIcon class="w-5 flex-none mr-2" />
-          <span class="text-xs">Workspace</span>
+          <EllipsisIcon class="flex-none" />
+          {#if showSaveOptions}
+            <ul
+              class="absolute w-24 h-12 top-full right-full bg-black rounded shadow overflow-hidden"
+            >
+              <button on:click={() => saveFilters(true)}>Global</button>
+              <button on:click={() => saveFilters(false)}>Workspace</button>
+            </ul>
+          {/if}
         </button>
         <button
-          class="w-9 px-2 flex-none ml-4 flex items-center"
+          class="w-9 px-2 flex-none ml-2 flex items-center"
           on:click={search}
         >
-          <RefreshIcon class="w-full" />
+          <RefreshIcon class="w-full" title="Reload" />
         </button>
       </div>
     </div>
@@ -214,7 +227,7 @@
         <Spinner class="w-8 animate-spin" />
       </div>
     {:else}
-      <Kanban bind:tasks={filteredTasks} on:refresh={updateTask} />
+      <Kanban tasks={filteredTasks} on:refresh={updateTask} />
     {/if}
   </div>
 </div>

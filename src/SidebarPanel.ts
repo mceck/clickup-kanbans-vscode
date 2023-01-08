@@ -1,6 +1,6 @@
-import * as vscode from "vscode";
-import { getNonce } from "./getNonce";
-import MessageService from "./message-service";
+import * as vscode from 'vscode';
+import { getNonce } from './getNonce';
+import MessageService from './message-service';
 
 export class SidebarPanel implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -17,8 +17,8 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
 
       localResourceRoots: [
         this._extensionUri,
-        vscode.Uri.joinPath(this._extensionUri, "media"),
-        vscode.Uri.joinPath(this._extensionUri, "out", "compiled"),
+        vscode.Uri.joinPath(this._extensionUri, 'media'),
+        vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled'),
       ],
     };
 
@@ -35,18 +35,18 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     const styleResetUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
     );
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "out", "compiled", "sidebar.js")
+      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'sidebar.js')
     );
     const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
+      vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
     );
 
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
-    const config = vscode.workspace.getConfiguration("clickup-kanban.config");
+    const config = vscode.workspace.getConfiguration('clickup-kanban.config');
     return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -67,7 +67,7 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
               let config = vscode.getState();
               if(!config || !config.vsConfig) {
                 config = {
-                  vsConfig: ${JSON.stringify(config.get("vs-config"))}
+                  vsConfig: ${JSON.stringify(config.get('vs-config'))}
                 }
               }
               vscode.setState(config);
@@ -76,7 +76,7 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
             const webVscode = initVsCode();
         </script>
 			</head>
-      <body>
+      <body style="overflow: scroll">
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;

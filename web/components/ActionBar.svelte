@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import ClickupService from "../services/clickup-service";
-  import type { Task } from "../interfaces/clickup";
+  import { createEventDispatcher } from 'svelte';
+  import ClickupService from '../services/clickup-service';
+  import type { Task } from '../interfaces/clickup';
   // @ts-ignore
-  import ClockIcon from "../assets/clock.svg";
+  import ClockIcon from '../assets/clock.svg';
   // @ts-ignore
-  import LeftIcon from "../assets/left.svg";
+  import LeftIcon from '../assets/left.svg';
   // @ts-ignore
-  import DocSearchIcon from "../assets/doc-search.svg";
-  import TimeTrackInput from "./TimeTrackInput.svelte";
+  import DocSearchIcon from '../assets/doc-search.svg';
+  import TimeTrackInput from './TimeTrackInput.svelte';
 
-  import moment from "moment";
+  import moment from 'moment';
 
   export let task: Task;
   export let statuses: string[];
@@ -32,8 +32,8 @@
       status: nextStatus,
     });
     if (result.ok) {
-      service.showStatusMessage("Task updated");
-      dispatch("refresh", result.data);
+      service.showStatusMessage('Task updated');
+      dispatch('refresh', result.data);
     }
   }
 
@@ -47,8 +47,8 @@
       status: nextStatus,
     });
     if (result.ok) {
-      service.showStatusMessage("Task updated");
-      dispatch("refresh", result.data);
+      service.showStatusMessage('Task updated');
+      dispatch('refresh', result.data);
     }
   }
 
@@ -63,7 +63,7 @@
     const interval =
       res.ok &&
       res.data[0]?.intervals?.find(
-        (i) => parseInt(i.start) >= moment().startOf("day").valueOf()
+        (i) => parseInt(i.start) >= moment().startOf('day').valueOf()
       );
 
     if (interval) {
@@ -74,7 +74,7 @@
         time: updatedTime,
       });
       if (resp.ok) {
-        service.showStatusMessage("Time tracked");
+        service.showStatusMessage('Time tracked');
       } else {
         return;
       }
@@ -84,7 +84,7 @@
         time,
       });
       if (resp.ok) {
-        service.showStatusMessage("Time tracked");
+        service.showStatusMessage('Time tracked');
       } else {
         return;
       }
@@ -93,7 +93,7 @@
       ...task,
       time_spent: (task.time_spent || 0) + time,
     };
-    dispatch("refresh", task);
+    dispatch('refresh', task);
   }
 </script>
 

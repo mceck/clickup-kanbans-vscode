@@ -1,25 +1,25 @@
 <script lang="ts">
-  import moment from "moment";
+  import moment from 'moment';
 
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from 'svelte';
 
-  import type { Interval, Task } from "../interfaces/clickup";
-  import ClickupService from "../services/clickup-service";
-  import ActionBar from "./ActionBar.svelte";
-  import AssigneesSelector from "./AssigneesSelector/AssigneesSelector.svelte";
-  import TimeTrackInput from "./TimeTrackInput.svelte";
+  import type { Interval, Task } from '../interfaces/clickup';
+  import ClickupService from '../services/clickup-service';
+  import ActionBar from './ActionBar.svelte';
+  import AssigneesSelector from './AssigneesSelector/AssigneesSelector.svelte';
+  import TimeTrackInput from './TimeTrackInput.svelte';
   // @ts-ignore
-  import TrashIcon from "../assets/trash.svg";
+  import TrashIcon from '../assets/trash.svg';
   // @ts-ignore
-  import EditIcon from "../assets/edit.svg";
+  import EditIcon from '../assets/edit.svg';
   // @ts-ignore
-  import CopyIcon from "../assets/copy.svg";
+  import CopyIcon from '../assets/copy.svg';
 
   export let task: Task;
   export let statusKeys: string[];
 
   let timeTrackInput: HTMLInputElement;
-  let timeTrackText: string = "";
+  let timeTrackText: string = '';
   let showTracking = false;
   let editTrack: Interval;
   let intervals: Interval[] = [];
@@ -47,8 +47,8 @@
       timeTrackInput.focus();
       timeTrackInput.select();
     }, 0);
-    const t = moment(parseInt(track.time as any))?.add(-1, "hour");
-    timeTrackText = t.format("HH") + "h " + t.format("mm") + "m";
+    const t = moment(parseInt(track.time as any))?.add(-1, 'hour');
+    timeTrackText = t.format('HH') + 'h ' + t.format('mm') + 'm';
   }
 
   async function deleteTrack(track) {
@@ -62,17 +62,17 @@
       if (intervals.length === 0) {
         showTracking = false;
       }
-      dispatch("refresh", newTask);
-      service.showToast("info", "Tracking deleted");
+      dispatch('refresh', newTask);
+      service.showToast('info', 'Tracking deleted');
     }
   }
 
   function toDate(time) {
-    return moment(parseInt(time)).format("DD/MM/YYYY");
+    return moment(parseInt(time)).format('DD/MM/YYYY');
   }
 
   function toTime(time) {
-    return moment(parseInt(time)).add(-1, "hour").format("HH:mm");
+    return moment(parseInt(time)).add(-1, 'hour').format('HH:mm');
   }
 
   async function updateTrack(interval, time: number) {
@@ -87,15 +87,15 @@
         ...task,
         time_spent: (task.time_spent || 0) + time - parseInt(interval.time),
       };
-      dispatch("refresh", newTask);
+      dispatch('refresh', newTask);
       showTracking = false;
-      service.showStatusMessage("Time tracked");
+      service.showStatusMessage('Time tracked');
     }
   }
   function copyCustomId() {
     navigator.clipboard
       .writeText(task.custom_id)
-      .then(() => service.showStatusMessage("Copied"));
+      .then(() => service.showStatusMessage('Copied'));
   }
 </script>
 
@@ -121,7 +121,7 @@
       {#each task.tags as tag (tag.name)}
         <span
           class="w-12 px-1 rounded text-xs text-white shadow overflow-ellipsis whitespace-nowrap overflow-hidden"
-          style={`background-color: ${tag.tag_bg || "#1c1c1c"};`}
+          style={`background-color: ${tag.tag_bg || '#1c1c1c'};`}
           title={tag.name}>{tag.name}</span
         >
       {/each}
@@ -162,7 +162,7 @@
     <ActionBar
       {task}
       statuses={statusKeys}
-      on:refresh={(e) => dispatch("refresh", e.detail)}
+      on:refresh={(e) => dispatch('refresh', e.detail)}
     />
   </div>
   {#if showTracking}

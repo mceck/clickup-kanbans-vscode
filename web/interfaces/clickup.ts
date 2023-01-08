@@ -36,6 +36,7 @@ export interface Space {
   color?: string;
   folders?: Folder[];
   lists?: List[];
+  statuses: Status[];
 }
 
 export interface Tag {
@@ -82,6 +83,8 @@ export interface Task {
   list?: List;
   folder?: Folder;
   space?: Space;
+  override_statuses?: boolean;
+  statuses: Status[];
 }
 
 export interface User {

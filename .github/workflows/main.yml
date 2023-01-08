@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - v*
+      - '*'
 
 name: Upload Release Asset
 
@@ -39,4 +39,4 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: |
-          yarn vscode:publish ${{ github.ref_name#v }}
+          yarn vscode:publish ${{ github.ref_name }}

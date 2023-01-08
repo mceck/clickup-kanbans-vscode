@@ -35,3 +35,6 @@ jobs:
           asset_path: ./clickup-kanban-1.0.0.vsix
           asset_name: clickup-kanban.vsix
           asset_content_type: application/zip
+      - name: Publish Release
+        run: |
+          yarn vscode:publish ${{ github.ref }}

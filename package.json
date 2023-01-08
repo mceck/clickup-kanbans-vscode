@@ -6,7 +6,7 @@
    "url": "https://github.com/mceck/clickup-kanbans-vscode" 
   },
   "description": "Clickup Kanbans",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.51.0"
   },
@@ -14,8 +14,9 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:clickup-kanban.helloWorld",
     "onCommand:clickup-kanban.openKanban",
+    "onCommand:clickup-kanban.setToken",
+    "onCommand:clickup-kanban.setTeamId",
     "onView:clickup-kanban-sidebar"
   ],
   "main": "./dist/extension.js",
@@ -43,7 +44,13 @@
     "commands": [
       {
         "command": "clickup-kanban.openKanban",
-        "title": "Open kanban"
+        "title": "Clickup>Open kanban"
+      },{
+        "command": "clickup-kanban.setToken",
+        "title": "Clickup>Set token"
+      },{
+        "command": "clickup-kanban.setTeamId",
+        "title": "Clickup>Set teamId"
       }
     ],
     "configuration": {

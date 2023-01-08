@@ -18,52 +18,47 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand('clickup-kanban.openKanban', () => {
-      new ClickupService().getUser().then((u) => {});
       MainPanel.createOrShow(context.extensionUri);
     })
   );
 
-  // context.subscriptions.push(
-  //   vscode.commands.registerCommand('clickup-kanban.saveSnippet', async () => {
-  //     const { activeTextEditor } = vscode.window;
-  //     if (!activeTextEditor) {
-  //       vscode.window.showErrorMessage('No active text editor');
-  //       return;
-  //     }
+  context.subscriptions.push(
+    vscode.commands.registerCommand('clickup-kanban.setToken', async () => {
+      const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
+      const teamId = config.get('teamId');
+      const currentToken = config.get('token') as string | undefined;
+      const token = await vscode.window.showInputBox({
+        placeHolder: 'access token...',
+        prompt: 'Set Clickup token',
+        value: currentToken,
+      });
 
-  //     let text = activeTextEditor.document.getText(activeTextEditor.selection);
+      if (token) {
+        await config.update('token', token, true);
+      }
 
-  //     if (!text) {
-  //       text = activeTextEditor.document.getText();
-  //     }
+      if ((token || currentToken) && !teamId) {
+        const teams = await new ClickupService().getTeams();
+        await config.update('teamId', teams[0].id, true);
+      }
+    })
+  );
 
-  //     if (!text) {
-  //       vscode.window.showErrorMessage('No text selected');
-  //       return;
-  //     }
+  context.subscriptions.push(
+    vscode.commands.registerCommand('clickup-kanban.setTeamId', async () => {
+      const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
+      const currentTeamId = config.get('teamId');
+      const teamId = await vscode.window.showInputBox({
+        placeHolder: 'access token...',
+        prompt: 'Set Clickup token',
+        value: currentTeamId as string,
+      });
 
-  //     await vscode.commands.executeCommand(
-  //       'workbench.view.extension.clickup-kanban-sidebar-view'
-  //     );
-
-  //     const createNewSnippet = () => {
-  //       if (sidebarPanel._view?.visible) {
-  //         setTimeout(
-  //           () =>
-  //             sidebarPanel._view?.webview.postMessage({
-  //               type: 'new-snippet',
-  //               value: text,
-  //             }),
-  //           1000
-  //         );
-  //       } else {
-  //         setTimeout(createNewSnippet, 1500);
-  //       }
-  //     };
-
-  //     createNewSnippet();
-  //   })
-  // );
+      if (teamId) {
+        await config.update('teamId', teamId, true);
+      }
+    })
+  );
 }
 
 export function deactivate() {}

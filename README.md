@@ -7,7 +7,9 @@ Build .vsix file extension
 
 Install the extension from vscode extension tab, click the 3 dots and Install from VSIX...
 
-Fill vscode extension settings with personal api token and team id
+use command Clickup>Set token to add the clickup authoriation token
+
+or fill manually vscode extension settings with personal api token and team id
 
 ![settings](settings.jpg)
 

@@ -12,10 +12,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build project # This would actually build your project, using zip for an example artifact
+      - name: Set version
         run: |
-          yarn install && yarn build
-          echo "package_version=$(cat ./package.json | grep -m 1 version | sed 's/[^0-9.]//g')" >> $GITHUB_ENV
+          export PKG_VER="$(cat ./package.json | grep -m 1 version | sed 's/[^0-9.]//g')"
+          npm version $PKG_VER --git-tag-version false
+          echo "package_version=$PKG_VER" >> $GITHUB_ENV
+      - name: Yarn install
+        run: yarn install
+      - name: Build webapp
+        run: yarn build-webapp
+      - name: Publish to Visual Studio Marketplace
+        id: packageExtension
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: ${{ secrets.VSCE_PAT }}
+          registryUrl: https://marketplace.visualstudio.com
+          yarn: true
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -33,6 +45,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./clickup-kanban-{{ env.package_version }}.vsix
+          asset_path: ${{ steps.packageExtension.outputs.vsixPath }}
           asset_name: clickup-kanban.vsix
           asset_content_type: application/zip

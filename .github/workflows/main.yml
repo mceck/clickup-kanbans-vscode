@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - '*'
+      - v*
 
 name: Upload Release Asset
 
@@ -36,5 +36,7 @@ jobs:
           asset_name: clickup-kanban.vsix
           asset_content_type: application/zip
       - name: Publish Release
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: |
-          yarn vscode:publish ${{ github.ref }}
+          yarn vscode:publish ${{ GITHUB_REF#refs/tags/v }}

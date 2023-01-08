@@ -3,7 +3,7 @@
 
   import { createEventDispatcher } from 'svelte';
 
-  import type { Interval, Task } from '../interfaces/clickup';
+  import type { Interval, Task, User } from '../interfaces/clickup';
   import ClickupService from '../services/clickup-service';
   import ActionBar from './ActionBar.svelte';
   import AssigneesSelector from './AssigneesSelector/AssigneesSelector.svelte';
@@ -97,6 +97,38 @@
       .writeText(task.custom_id)
       .then(() => service.showStatusMessage('Copied'));
   }
+
+  async function addAssignee(assignee: User) {
+    const oldAssignees = [...task.assignees];
+    task.assignees = [...task.assignees, assignee];
+    try {
+      const res = await service.updateTask(task.id, {
+        assignees: { add: [assignee.id] },
+      });
+      if (!res.data?.assignees) {
+        throw new Error();
+      }
+      task.assignees = res.data.assignees;
+    } catch (e) {
+      task.assignees = oldAssignees;
+    }
+  }
+
+  async function removeAssignee(assignee: User) {
+    const oldAssignees = [...task.assignees];
+    task.assignees = task.assignees.filter((e) => e.id !== assignee.id);
+    try {
+      const res = await service.updateTask(task.id, {
+        assignees: { rem: [assignee.id] },
+      });
+      if (!res.data?.assignees) {
+        throw new Error();
+      }
+      task.assignees = res.data.assignees;
+    } catch (e) {
+      task.assignees = oldAssignees;
+    }
+  }
 </script>
 
 <svelte:window
@@ -111,10 +143,13 @@
   <div class="h-16 flex flex-col overflow-auto">
     <div class="absolute top-1 right-1">
       <AssigneesSelector
-        bind:selectedAssignees={task.assignees}
-        editable={false}
+        anchor="right"
+        selectedAssignees={task.assignees}
+        on:add={(e) => addAssignee(e.detail)}
+        on:remove={(e) => removeAssignee(e.detail)}
         maxShown={4}
         small
+        manual
       />
     </div>
     <div class="flex">
@@ -130,21 +165,25 @@
       {task.name}
     </p>
     {#if task.time_estimate}
-      <small class="text-sm absolute left-2 top-1 text-gray-400">
-        est: {(task.time_estimate / 3600000).toFixed(0)}h
+      <small
+        class="text-sm absolute left-2 top-1 text-gray-400"
+        title="Time estimated"
+      >
+        {(task.time_estimate / 3600000).toFixed(0)}h
       </small>
     {/if}
     {#if task.time_spent}
       <small
-        class="text-sm absolute text-green-500 left-20 -ml-2 top-1 cursor-pointer"
+        class="text-sm absolute text-green-500 left-12 -ml-2 top-1 cursor-pointer"
+        title="Time tracked"
         on:click|stopPropagation={toggleTracks}
       >
-        track: {(task.time_spent / 3600000).toFixed(1)}h
+        {(task.time_spent / 3600000).toFixed(1)}h
       </small>
     {/if}
     {#if task.custom_id}
       <div
-        class="left-40 -ml-1 top-1 cursor-pointer absolute flex items-center copy-hover"
+        class="left-20 -ml-1 top-1 cursor-pointer absolute flex items-center copy-hover"
       >
         <span class="opacity-0 transition-opacity">
           <CopyIcon class="w-3 text-yellow-100 stroke-current" />

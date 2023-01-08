@@ -88,7 +88,7 @@ export interface Task {
 }
 
 export interface User {
-  id: 813;
+  id: number;
   username: string;
   email: string;
   color?: string;

@@ -8,9 +8,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#0e639c",
-        highlight: "#1177bb",
-        screen: "#1e1e1e",
+        primary: '#0e639c',
+        highlight: '#3794ff',
+        screen: '#1e1e1e',
       },
     },
   },
@@ -19,7 +19,7 @@ module.exports = {
   },
   plugins: [],
   purge: {
-    content: ["./web/**/*.svelte"],
+    content: ['./web/**/*.svelte'],
     enabled: production, // disable purge in dev
   },
 };

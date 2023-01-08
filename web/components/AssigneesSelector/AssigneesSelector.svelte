@@ -1,18 +1,23 @@
 <script lang="ts">
-  import type { User } from "../../interfaces/clickup";
-  import { userList } from "../../store/users";
+  import type { User } from '../../interfaces/clickup';
+  import { userList } from '../../store/users';
   // import AddAssigneeButton from "./AddAssigneeButton.svelte";
-  import AssigneeBadge from "./AssigneeBadge.svelte";
+  import AssigneeBadge from './AssigneeBadge.svelte';
   // @ts-ignore
-  import AddAssigneeButton from "../../assets/add-assignee.svg";
+  import AddAssigneeButton from '../../assets/add-assignee.svg';
+  import { createEventDispatcher } from 'svelte';
 
   export let selectedAssignees: User[];
   export let editable = true;
   export let maxShown = 99;
   export let small = false;
+  export let manual = false;
+  export let anchor: 'left' | 'right' = 'left';
+
+  const dispatcher = createEventDispatcher();
 
   let showSelector = false;
-  let searchText = "";
+  let searchText = '';
   let searchInput: HTMLInputElement;
   let scroller: HTMLElement;
 
@@ -44,9 +49,15 @@
       return;
     }
     if (selectedAssignees.find((u) => u.id === user.id)) {
-      selectedAssignees = selectedAssignees.filter((u) => u.id !== user.id);
+      if (!manual) {
+        selectedAssignees = selectedAssignees.filter((u) => u.id !== user.id);
+      }
+      dispatcher('remove', user);
     } else {
-      selectedAssignees = [...selectedAssignees, user];
+      if (!manual) {
+        selectedAssignees = [...selectedAssignees, user];
+      }
+      dispatcher('add', user);
     }
   }
 
@@ -57,29 +68,29 @@
     showSelector = !showSelector;
     if (showSelector) {
       setTimeout(() => searchInput.focus(), 0);
-      searchText = "";
+      searchText = '';
       selected = -1;
     }
   }
 
   function handleKeyboard(event: KeyboardEvent) {
     switch (event.key) {
-      case "Enter":
+      case 'Enter':
         if (selected >= 0) {
           toggleAssignee(filteredUsers[selected]);
-          searchText = "";
+          searchText = '';
           selected = filteredUsers.length > 0 ? 0 : -1;
         }
         break;
-      case "Escape":
+      case 'Escape':
         toggleSelector();
         break;
-      case "ArrowDown":
+      case 'ArrowDown':
         selected = (selected + 1) % filteredUsers.length;
         scroller.scrollTop = selected * 40 - 80;
         event.preventDefault();
         break;
-      case "ArrowUp":
+      case 'ArrowUp':
         selected--;
         if (selected < 0) {
           selected = filteredUsers.length - 1;
@@ -99,7 +110,7 @@
       {#if editable}
         <div
           class={`${
-            small ? "w-5 h-5 -ml-1" : "w-8 h-8 -ml-2"
+            small ? 'w-5 h-5 -ml-2' : 'w-8 h-8 -ml-2'
           } cursor-pointer add-assignee`}
           on:click|stopPropagation={toggleSelector}
         >
@@ -109,7 +120,7 @@
       {#if selectedAssignees.length > maxShown}
         <div
           class={`cursor-pointer flex justify-center items-center ${
-            small ? "w-5 h-5 -ml-2 text-xs" : "w-8 h-8 -ml-3"
+            small ? 'w-5 h-5 -ml-2 text-xs' : 'w-8 h-8 -ml-3'
           } text-white bg-gray-500 rounded-full`}
           on:click|stopPropagation={toggleSelector}
         >
@@ -118,7 +129,7 @@
       {/if}
       {#each showedAssignees as user (user.id)}
         <div
-          class={`${small ? "w-5 h-5 -ml-2" : "w-8 h-8 -ml-3"} cursor-pointer`}
+          class={`${small ? 'w-5 h-5 -ml-2' : 'w-8 h-8 -ml-3'} cursor-pointer`}
         >
           <span on:click|stopPropagation={() => toggleAssignee(user)}>
             <AssigneeBadge {user} {small} />
@@ -128,7 +139,8 @@
     </div>
     {#if showSelector}
       <div
-        class="absolute top-12 rounded-lg shadow border border-gray-500 overflow-hidden bg-screen z-10"
+        class="absolute top-125 rounded-lg shadow border border-gray-500 overflow-hidden bg-screen z-10 {anchor ===
+          'right' && 'right-1'}"
         on:click|stopPropagation
       >
         <input
@@ -165,16 +177,20 @@
   }
 
   .add-assignee {
-    stroke: theme("colors.primary");
-    fill: theme("colors.primary");
+    stroke: theme('colors.highlight');
+    fill: theme('colors.highlight');
   }
 
   .add-assignee:hover {
-    stroke: theme("colors.highlight");
-    fill: theme("colors.highlight");
+    stroke: theme('colors.blue.300');
+    fill: theme('colors.blue.300');
   }
 
   .add-assignee :global(circle) {
     stroke-dasharray: 3;
+  }
+
+  .top-125 {
+    top: 125%;
   }
 </style>

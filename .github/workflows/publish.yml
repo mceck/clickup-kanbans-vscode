@@ -20,4 +20,6 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: |
+          git config --global user.name mcdev
+          git config --global user.email "username@users.noreply.github.com"
           yarn deploy:patch

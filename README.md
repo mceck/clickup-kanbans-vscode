@@ -2,18 +2,15 @@
 
 Unofficial extension
 
-## build&install
-
-Build .vsix file extension
-`yarn build`
-
-Install the extension from vscode extension tab, click the 3 dots and Install from VSIX...
+## configuration
 
 use command Clickup>Set token to add the clickup authoriation token
 
-or fill manually vscode extension settings with personal api token and team id
+follow the [official guide](https://clickup.com/api/developer-portal/authentication/) to obtain a Personal token
 
-![settings](settings.jpg)
+use button on sidebar or command Clickup>Open kanban to open full screen view
+
+![preview](preview.png)
 
 ## dev
 

@@ -1,5 +1,7 @@
 # Clickup Kanbans
 
+Unofficial extension
+
 ## build&install
 
 Build .vsix file extension

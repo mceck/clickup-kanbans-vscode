@@ -6,7 +6,7 @@
    "url": "https://github.com/mceck/clickup-kanbans-vscode" 
   },
   "description": "Clickup Kanbans",
-  "version": "0.0.3",
+  "version": "latest",
   "engines": {
     "vscode": "^1.51.0"
   },

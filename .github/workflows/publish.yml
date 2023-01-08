@@ -16,12 +16,9 @@ jobs:
         run: yarn install
       - name: Build webapp
         run: yarn build-webapp
-      - name: Publish Release
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: |
-          git config --global user.name mcdev
-          git config --global user.email "username@users.noreply.github.com"
-          yarn deploy:patch
-          git push
-          git push --tags
+      - name: Publish to Visual Studio Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: asd
+          registryUrl: https://marketplace.visualstudio.com
+          dryRun: true

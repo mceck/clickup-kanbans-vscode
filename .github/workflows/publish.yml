@@ -23,3 +23,5 @@ jobs:
           git config --global user.name mcdev
           git config --global user.email "username@users.noreply.github.com"
           yarn deploy:patch
+          git push
+          git push --tags

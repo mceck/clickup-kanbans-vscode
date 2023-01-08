@@ -3,11 +3,11 @@
   "displayName": "clickup-kanban",
   "publisher": "mcdev",
   "repository": {
-   "url": "https://github.com/mceck/clickup-kanbans-vscode" 
+    "url": "https://github.com/mceck/clickup-kanbans-vscode"
   },
   "icon": "media/ico.png",
   "description": "Clickup Kanbans",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "engines": {
     "vscode": "^1.51.0"
   },
@@ -46,10 +46,12 @@
       {
         "command": "clickup-kanban.openKanban",
         "title": "Clickup>Open kanban"
-      },{
+      },
+      {
         "command": "clickup-kanban.setToken",
         "title": "Clickup>Set token"
-      },{
+      },
+      {
         "command": "clickup-kanban.setTeamId",
         "title": "Clickup>Set teamId"
       }

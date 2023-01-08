@@ -5,6 +5,7 @@
   "repository": {
    "url": "https://github.com/mceck/clickup-kanbans-vscode" 
   },
+  "icon": "media/ico_color.png",
   "description": "Clickup Kanbans",
   "version": "1.0.0",
   "engines": {

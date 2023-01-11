@@ -6,4 +6,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- TODO save more than one configurations
+
+## [1.0.1]
+
+### Added
+
+- change task assignees
+
+## [1.0.0]
+
 - Initial release

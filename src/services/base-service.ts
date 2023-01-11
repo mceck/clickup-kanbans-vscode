@@ -3,13 +3,15 @@ import * as vscode from 'vscode';
 import fetch from 'node-fetch';
 
 export default class BaseService {
-  private readonly token: string;
-  protected readonly teamId: string;
+  private get config() {
+    return vscode.workspace.getConfiguration('clickup-kanban.auth');
+  }
+  protected get teamId(): string {
+    return this.config.get('teamId')!;
+  }
 
-  constructor() {
-    const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
-    this.token = config.get('token')!;
-    this.teamId = config.get('teamId')!;
+  protected get token(): string {
+    return this.config.get('token')!;
   }
 
   private async doFetch(relativeUrl: string, options?: any): Promise<any> {

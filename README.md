@@ -4,7 +4,7 @@ Unofficial extension
 
 ## configuration
 
-use command Clickup>Set token to add the clickup authoriation token
+use command Clickup>Set token to add the clickup authoriation token or open the extension and insert the token from the inside form
 
 follow the [official guide](https://clickup.com/api/developer-portal/authentication/) to obtain a Personal token
 

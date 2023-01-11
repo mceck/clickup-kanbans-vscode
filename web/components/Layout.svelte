@@ -28,6 +28,7 @@
   // @ts-ignore
   import ClockIcon from '../assets/clock.svg';
   import moment from 'moment';
+  import Login from './Login.svelte';
 
   const service = new ClickupService();
 
@@ -39,6 +40,8 @@
   let viewMode = true;
   let trackedToday = '0.0h';
   let showSaveOptions = false;
+  let loggedIn = true;
+  let initErrors = false;
 
   $: filteredTasks =
     viewMode && selectedAssignees.length
@@ -50,32 +53,48 @@
         )
       : tasks;
 
-  onMount(async () => {
-    const { data } = await service.getUser();
-    user.set(data);
+  onMount(() => {
+    loadPage();
+  });
+
+  async function loadPage() {
+    initErrors = false;
+    const { data, ok } = await service.getUser();
+    loggedIn = ok;
+    user.set(data || {});
     const {
-      vsConfig: { assignees, lists, view },
-    } = webVscode.getState();
+      data: { assignees, lists, view },
+    } = await service.getConfig();
     selectedAssignees = assignees ?? [];
     selectedLists = lists ?? [];
     selectedView = view;
     if (view) {
       viewMode = true;
     }
+    if (!loggedIn) {
+      return;
+    }
     if (selectedAssignees.length || selectedLists.length || view) {
       search();
     }
-
     if ($spacesTree.spaces.length > 0) {
       return;
     }
-    service.getAllLists().then((fullTree) => spacesTree.set(fullTree));
 
-    if ($userList.users.length === 0) {
-      const { data } = await service.getAllUsers();
-      userList.set({ users: data });
+    service
+      .getAllLists()
+      .then((fullTree) => spacesTree.set(fullTree))
+      .catch(() => (initErrors = true));
+
+    if ($userList.users?.length === 0) {
+      const { data, ok } = await service.getAllUsers();
+      if (ok) {
+        userList.set({ users: data });
+      } else {
+        initErrors = true;
+      }
     }
-  });
+  }
 
   async function search() {
     loading = true;
@@ -84,7 +103,7 @@
         return;
       }
       const { data } = await service.getViewTasks(selectedView.id);
-      tasks = data;
+      tasks = data || [];
     } else {
       const params: any = {
         subtasks: true,
@@ -98,7 +117,8 @@
         params.assignees = selectedAssignees.map((u) => u.id);
       }
       const { data } = await service.findTasks(params);
-      tasks = data;
+
+      tasks = data || [];
     }
 
     loading = false;
@@ -107,6 +127,7 @@
       start_date: moment().startOf('day').valueOf(),
       end_date: moment().endOf('day').valueOf(),
     });
+
     if (res.ok) {
       const millis = res.data.reduce((p, v) => p + parseInt(v.duration), 0);
       trackedToday = `${(millis / 3600000).toFixed(1)}h`;
@@ -155,6 +176,10 @@
   function toggleSaveOptions() {
     showSaveOptions = !showSaveOptions;
   }
+
+  function onLogin(event) {
+    loadPage();
+  }
 </script>
 
 <svelte:window on:click={() => (showSaveOptions = false)} />
@@ -177,6 +202,7 @@
           />
         </div>
       </div>
+
       <div class="flex justify-end items-center w-full mb-2">
         <div class="flex w-6 items-center text-xs text-green-400">
           <ClockIcon class="w-3 mr-1 flex-none stroke-current" />
@@ -222,12 +248,20 @@
         </button>
       </div>
     </div>
+    {#if initErrors}
+      <h1 class="text-red-600 text-lg">
+        Connection error, try to reload the extension
+      </h1>
+    {/if}
     {#if loading}
       <div class="flex w-full justify-center">
         <Spinner class="w-8 animate-spin" />
       </div>
     {:else}
       <Kanban tasks={filteredTasks} on:refresh={updateTask} />
+    {/if}
+    {#if !loggedIn}
+      <Login on:loggedIn={onLogin} />
     {/if}
   </div>
 </div>

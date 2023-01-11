@@ -1,10 +1,10 @@
-import type { WorkspaceConfig } from "../interfaces/clickup";
-import type { SpacesTree } from "../store/spaces-tree";
+import type { WorkspaceConfig } from '../interfaces/clickup';
+import type { SpacesTree } from '../store/spaces-tree';
 
 export function getNonce() {
-  let text = "";
+  let text = '';
   const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < 32; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
@@ -27,62 +27,62 @@ export default class ClickupService {
       const fn = ({ data }) => {
         if (data.nonce === nonce) {
           clearTimeout(stop);
-          window.removeEventListener("message", fn);
+          window.removeEventListener('message', fn);
           if (!data.ok) {
-            this.showToast("error", data.error);
+            this.showToast('error', data.error);
           }
           res(data);
         }
       };
       const stop = setTimeout(() => {
-        window.removeEventListener("message", fn);
-        err("timeout");
+        window.removeEventListener('message', fn);
+        err('timeout');
       }, timeout);
       const message = { ...obj, nonce };
-      window.addEventListener("message", fn);
+      window.addEventListener('message', fn);
       webVscode.postMessage(message);
     });
   }
 
   getUser() {
-    return this.sendMessage({ type: "getUser" });
+    return this.sendMessage({ type: 'getUser' });
   }
 
   getTasks(listId: string, params?: any) {
-    return this.sendMessage({ type: "getTasks", listId, ...params });
+    return this.sendMessage({ type: 'getTasks', listId, ...params });
   }
 
   findTasks(params?: any) {
-    return this.sendMessage({ type: "findTasks", ...params });
+    return this.sendMessage({ type: 'findTasks', ...params });
   }
 
   getSpaces() {
-    return this.sendMessage({ type: "getSpaces" });
+    return this.sendMessage({ type: 'getSpaces' });
   }
 
   getFolders(spaceId: string) {
-    return this.sendMessage({ type: "getFolders", spaceId });
+    return this.sendMessage({ type: 'getFolders', spaceId });
   }
 
   getFolderlessLists(spaceId: string) {
-    return this.sendMessage({ type: "getFolderlessLists", spaceId });
+    return this.sendMessage({ type: 'getFolderlessLists', spaceId });
   }
 
   getList(listId: string) {
-    return this.sendMessage({ type: "getList", listId });
+    return this.sendMessage({ type: 'getList', listId });
   }
 
   getAllUsers() {
-    return this.sendMessage({ type: "getAllUsers" });
+    return this.sendMessage({ type: 'getAllUsers' });
   }
 
   getTimeTracked(taskId: string, params?: any) {
-    return this.sendMessage({ type: "getTimeTracked", taskId, ...params });
+    return this.sendMessage({ type: 'getTimeTracked', taskId, ...params });
   }
 
   updateTimeTracked(taskId: string, intervalId: string, track: any) {
     return this.sendMessage({
-      type: "updateTimeTracked",
+      type: 'updateTimeTracked',
       taskId,
       intervalId,
       ...track,
@@ -91,52 +91,57 @@ export default class ClickupService {
 
   findTimeTrack(params: any) {
     return this.sendMessage({
-      type: "findTimeTrack",
+      type: 'findTimeTrack',
       ...params,
     });
   }
 
   createTimeTrack(taskId: string, track: any) {
-    return this.sendMessage({ type: "createTimeTrack", taskId, ...track });
+    return this.sendMessage({ type: 'createTimeTrack', taskId, ...track });
   }
 
   deleteTimeTracked(taskId: string, intervalId: string) {
     return this.sendMessage({
-      type: "deleteTimeTracked",
+      type: 'deleteTimeTracked',
       taskId,
       intervalId,
     });
   }
 
   getViewTasks(viewId: string) {
-    return this.sendMessage({ type: "getViewTasks", viewId });
+    return this.sendMessage({ type: 'getViewTasks', viewId });
   }
 
   getListViews(listId: string) {
-    return this.sendMessage({ type: "getListViews", listId });
+    return this.sendMessage({ type: 'getListViews', listId });
   }
 
   updateTask(taskId: string, task: any) {
-    return this.sendMessage({ type: "updateTask", taskId, ...task });
+    return this.sendMessage({ type: 'updateTask', taskId, ...task });
   }
 
   async saveConfig(config: WorkspaceConfig, global: boolean = false) {
     const ret = await this.sendMessage({
-      type: "saveConfig",
+      type: 'saveConfig',
       global,
       ...config,
     });
-    webVscode.setState({ vsConfig: config });
     return ret;
   }
 
-  showToast(scope: "info" | "error", message: string) {
-    return this.sendMessage({ type: "showToast", scope, message }, 90000);
+  getConfig() {
+    return this.sendMessage({
+      type: 'getConfig',
+    });
+  }
+
+  showToast(scope: 'info' | 'error', message: string) {
+    return this.sendMessage({ type: 'showToast', scope, message }, 90000);
   }
 
   showStatusMessage(message: string, delay?: number) {
     return this.sendMessage(
-      { type: "showStatusMessage", message, delay },
+      { type: 'showStatusMessage', message, delay },
       90000
     );
   }
@@ -166,5 +171,9 @@ export default class ClickupService {
       }
     }
     return spacesTree;
+  }
+
+  login(token: string) {
+    return this.sendMessage({ type: 'login', token });
   }
 }

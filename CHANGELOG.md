@@ -18,6 +18,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - [ ] task attachments list and download/preview
 - [ ] monade timesheets (maybe save more conf and filter by tag are enaught)
 
+## [1.0.3]
+
+### Added
+
+- wizard login
+
 ## [1.0.2]
 
 ### Fixed

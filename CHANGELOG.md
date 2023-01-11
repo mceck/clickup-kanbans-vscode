@@ -9,6 +9,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### TODO
 
 - [ ] save more than one configurations
+- [ ] tag editing
+
+### TODO maybe
+
+- [ ] task content and comments
+- [ ] task attachments list and download/preview
+- [ ] monade timesheets
 
 ## [1.0.2]
 

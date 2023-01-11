@@ -20,6 +20,5 @@ module.exports = {
   plugins: [],
   purge: {
     content: ['./web/**/*.svelte'],
-    enabled: production, // disable purge in dev
   },
 };

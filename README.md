@@ -18,8 +18,9 @@ use button on sidebar or command Clickup>Open kanban to open full screen view
 
 ![preview](media/docs/view-mode.png)
 
-Select a clickup view from the picker
-With this view mode you can filter tasks by assignees
+With this view mode you can open a clickup view
+
+Select the view from the picker than you can filter tasks by assignees
 
 #### filter mode
 

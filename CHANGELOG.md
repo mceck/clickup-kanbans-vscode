@@ -6,7 +6,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- TODO save more than one configurations
+### TODO
+
+- [ ] save more than one configurations
+
+## [1.0.2]
+
+### Fixed
+
+- tailwind CSS build
 
 ## [1.0.1]
 

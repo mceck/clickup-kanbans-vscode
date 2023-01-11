@@ -10,12 +10,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - [ ] save more than one configurations
 - [ ] tag editing
+- [ ] more filters (filter for tags in filter mode)
 
 ### TODO maybe
 
 - [ ] task content and comments
 - [ ] task attachments list and download/preview
-- [ ] monade timesheets
+- [ ] monade timesheets (maybe save more conf and filter by tag are enaught)
 
 ## [1.0.2]
 

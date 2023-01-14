@@ -22,7 +22,7 @@
   let selectedView: any = {};
   let tasks: Task[] = [];
   let loading = false;
-  let viewMode = true;
+  let viewMode = false;
   let trackedToday = '0.0h';
   let showSaveOptions = false;
   let loggedIn = true;

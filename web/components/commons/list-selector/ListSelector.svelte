@@ -289,7 +289,7 @@
                           selected}
                       >
                         {#if showFolder[folder.id]}
-                          <Icon class="w-4 h-4 flex-none" name="open-folder" />
+                          <Icon class="w-4 h-4 flex-none" name="folder-open" />
                         {:else}
                           <Icon class="w-4 h-4 flex-none" name="folder" />
                         {/if}

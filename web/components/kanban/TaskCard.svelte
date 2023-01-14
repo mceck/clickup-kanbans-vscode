@@ -9,6 +9,7 @@
   import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
   import TimeTrackInput from '../commons/TimeTrackInput.svelte';
   import Icon from '../commons/Icon.svelte';
+  import TaskDetail from './TaskDetail.svelte';
 
   export let task: Task;
   export let statusKeys: string[];
@@ -18,6 +19,7 @@
   let showTracking = false;
   let editTrack: Interval;
   let intervals: Interval[] = [];
+  let expanded = false;
 
   const dispatch = createEventDispatcher();
 
@@ -191,7 +193,9 @@
 <div
   class="px-2 pt-6 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
 >
-  <div class="h-16 flex flex-col overflow-auto">
+  <div
+    class="flex flex-col overflow-auto w-auto {expanded ? 'min-h-16' : 'h-16'}"
+  >
     <div class="absolute top-1 right-1">
       <AssigneesSelector
         anchor="right"
@@ -215,6 +219,9 @@
     <p>
       {task.name}
     </p>
+    {#if expanded}
+      <TaskDetail {task} />
+    {/if}
     {#if task.time_estimate}
       <small
         class="text-sm absolute left-2 top-1 text-gray-400"
@@ -252,10 +259,11 @@
     <ActionBar
       {task}
       statuses={statusKeys}
+      {expanded}
       on:next={(e) => setTaskState(task, e.detail)}
       on:prev={(e) => setTaskState(task, e.detail)}
       on:track={(e) => trackTaskTime(task, e.detail)}
-      on:refresh={(e) => dispatch('refresh', e.detail)}
+      on:expand={(e) => (expanded = !!e.detail)}
     />
   </div>
   {#if showTracking}
@@ -300,5 +308,9 @@
 <style>
   .copy-hover:hover span {
     opacity: 1;
+  }
+
+  .min-h-16 {
+    min-height: theme('spacing.16');
   }
 </style>

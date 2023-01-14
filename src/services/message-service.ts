@@ -42,6 +42,11 @@ export default class MessageService {
     this.sendResponse(() => clickupService.getUser(), nonce);
   }
 
+  getTask(query: any) {
+    const { taskId, nonce, ...params } = query;
+    this.sendResponse(() => clickupService.getTask(taskId, params), nonce);
+  }
+
   getTasks(query: any) {
     const { listId, nonce, ...params } = query;
     this.sendResponse(() => clickupService.getTasks(listId, params), nonce);
@@ -175,6 +180,14 @@ export default class MessageService {
   login(query: any) {
     const { nonce, token } = query;
     this.sendResponse(() => loginService.login(token), nonce);
+  }
+
+  getTaskComments(query: any) {
+    const { nonce, taskId, ...params } = query;
+    this.sendResponse(
+      () => clickupService.getTaskComments(taskId, params),
+      nonce
+    );
   }
 
   onVsMessage(data: any) {

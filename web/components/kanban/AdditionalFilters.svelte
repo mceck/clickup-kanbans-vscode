@@ -28,9 +28,7 @@
     />
   </div>
   <div
-    class="overflow-hidden w-full transition-all"
-    class:h-0={collapsed}
-    class:h-44={!collapsed}
+    class="overflow-hidden w-full transition-all {collapsed ? 'h-0' : 'h-44'}"
   >
     {#if !viewMode}
       <div class="flex justify-end items-center mt-1">

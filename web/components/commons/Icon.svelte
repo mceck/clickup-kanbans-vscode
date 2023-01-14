@@ -6,7 +6,7 @@
   import clock from '../../assets/clock.svg';
   import cog from '../../assets/cog.svg';
   import copy from '../../assets/copy.svg';
-  import docSearch from '../../assets/doc-search.svg';
+  import clickup from '../../assets/clickup.svg';
   import edit from '../../assets/edit.svg';
   import ellipsis from '../../assets/ellipsis.svg';
   import filter from '../../assets/filter.svg';
@@ -17,13 +17,15 @@
   import save from '../../assets/save.svg';
   import search from '../../assets/search.svg';
   import trash from '../../assets/trash.svg';
+  import expand from '../../assets/expand.svg';
+  import collapse from '../../assets/collapse.svg';
 
   export let name: string;
 
   const icons = {
     'add-assignee': addAssignee,
-    'doc-search': docSearch,
     'folder-open': folderOpen,
+    clickup,
     board,
     left,
     board,
@@ -40,6 +42,8 @@
     save,
     search,
     trash,
+    expand,
+    collapse,
   };
 </script>
 

@@ -10,7 +10,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - support for space views and folder views (actually only list views can be selected from the picker)
 - save more than one configuration
-- task content and comments
+- gitflow checkout branch by custom ids
+- task content and comments edit/add
 - tag editing
 
 ### TODO maybe
@@ -20,7 +21,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - more cli commands
 - task creation
 - drag and drop
-- gitflow checkout branch by custom ids
+
+## [1.1.2]
+
+- task content and comments view
+
+### Added
 
 ## [1.1.1]
 

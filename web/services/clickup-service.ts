@@ -48,6 +48,10 @@ class ClickupService {
     return this.sendMessage({ type: 'getUser' });
   }
 
+  getTask(taskId: string, params?: any) {
+    return this.sendMessage({ type: 'getTask', taskId, ...params });
+  }
+
   getTasks(listId: string, params?: any) {
     return this.sendMessage({ type: 'getTasks', listId, ...params });
   }
@@ -175,6 +179,10 @@ class ClickupService {
 
   login(token: string) {
     return this.sendMessage({ type: 'login', token });
+  }
+
+  getTaskComments(taskId: string, params?: any) {
+    return this.sendMessage({ type: 'getTaskComments', taskId, ...params });
   }
 }
 

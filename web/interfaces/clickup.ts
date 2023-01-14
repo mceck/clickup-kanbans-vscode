@@ -87,6 +87,32 @@ export interface Task {
   statuses: Status[];
 }
 
+export interface Comment {
+  id: string;
+  comment: CommentDetail[];
+  comment_text: string;
+  user: User;
+  resolved: boolean;
+  assignee: User;
+  assigned_by: User;
+  reactions: any[];
+  date: number;
+}
+
+export interface CommentDetail {
+  text: string;
+  type?: 'tag' | 'frame';
+  frame?: {
+    id: string;
+    url: string;
+    src: string;
+    service: string;
+  };
+  attributes?: {
+    link?: string;
+  };
+}
+
 export interface User {
   id: number;
   username: string;

@@ -6,7 +6,7 @@
 </script>
 
 <div
-  class="rounded-full overflow-hidden flex-none w-full h-full"
+  class="rounded-full overflow-hidden flex-none w-full h-full {$$props.class}"
   title={user.username}
 >
   {#if user.profilePicture}

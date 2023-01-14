@@ -6,6 +6,13 @@ class ClickupService extends BaseService {
     return user;
   }
 
+  async getTask(taskId: string, params?: any) {
+    const task = await this.doGet(
+      `/v2/task/${taskId}?${this.toQueryString(params)}`
+    );
+    return task;
+  }
+
   async getTasks(listId: string, params?: any) {
     const { tasks } = await this.doGet(
       `/v2/list/${listId}/task?${this.toQueryString(params)}`
@@ -96,6 +103,13 @@ class ClickupService extends BaseService {
       `/v2/team/${this.teamId}/time_entries?${this.toQueryString(params)}`
     );
     return data;
+  }
+
+  async getTaskComments(taskId: string, params?: any) {
+    const { comments } = await this.doGet(
+      `/v2/task/${taskId}/comment?${this.toQueryString(params)}`
+    );
+    return comments;
   }
 }
 

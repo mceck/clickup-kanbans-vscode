@@ -7,6 +7,7 @@
 
   export let task: Task;
   export let statuses: string[];
+  export let expanded: boolean;
 
   let timeTrackInput: HTMLInputElement;
   let showTimeTrack = false;
@@ -37,12 +38,16 @@
     showTimeTrack = false;
     dispatch('track', time);
   }
+
+  function actionExpand() {
+    dispatch('expand', !expanded);
+  }
 </script>
 
 <svelte:window on:click={() => (showTimeTrack = false)} />
 
 <div class="relative">
-  <div class="grid grid-cols-4 rounded overflow-hidden">
+  <div class="grid grid-cols-5 rounded overflow-hidden">
     <button class="flex justify-center items-center" on:click={actionPrev}
       ><Icon class="h-6" name="left" /></button
     >
@@ -51,9 +56,12 @@
       on:click|stopPropagation={actionTimeTrack}
       ><Icon class="h-6" name="clock" /></button
     >
+    <button class="flex justify-center items-center" on:click={actionExpand}
+      ><Icon class="h-6" name={expanded ? 'collapse' : 'expand'} /></button
+    >
     <a href={task.url}
       ><button class="flex justify-center items-center"
-        ><Icon class="h-6" name="doc-search" /></button
+        ><Icon class="h-6" name="clickup" /></button
       ></a
     >
     <button class="flex justify-center items-center" on:click={actionNext}

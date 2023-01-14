@@ -116,6 +116,11 @@ export interface WorkspaceConfig {
   assignees?: User[];
   lists?: List[];
   view?: View;
+  otherFilters: {
+    tags: string[];
+    due_date_gt?: Date;
+    due_date_lt?: Date;
+  };
 }
 
 export interface View {

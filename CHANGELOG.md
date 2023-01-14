@@ -10,17 +10,23 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - save more than one configuration
 - task content and comments
-- more filters (filter for tags, ...)
 - tag editing
 
 ### TODO maybe
 
 - task attachments list and download/preview
-- monade timesheets (maybe save more conf and filter by tag are enaught)
+- statuses filter
+- monade timesheets
 - more cli commands
 - task creation
 - drag and drop
 - gitflow checkout branch by custom ids
+
+## [1.1.0]
+
+### Added
+
+- more filters
 
 ## [1.0.4]
 

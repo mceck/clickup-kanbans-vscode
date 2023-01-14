@@ -57,16 +57,16 @@
 
   function getStatusKeys(task: Task) {
     if (task.override_statuses) {
-      return task.statuses.map((s) => s.status);
+      return task.statuses?.map((s) => s.status);
     }
     const list = findList(task.list?.id);
     if (list?.override_statuses) {
-      return list.statuses.map((s) => s.status);
+      return list.statuses?.map((s) => s.status);
     }
 
     const folder = findFolder(task.folder?.id);
     if (folder?.override_statuses) {
-      return folder.statuses.map((s) => s.status);
+      return folder.statuses?.map((s) => s.status);
     }
     return $spacesTree.spaces
       .find((s) => s.id === task.space?.id)

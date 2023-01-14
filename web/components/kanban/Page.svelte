@@ -16,6 +16,7 @@
   import moment from 'moment';
   import Login from './Login.svelte';
   import Icon from '../commons/Icon.svelte';
+  import AdditionalFilters from './AdditionalFilters.svelte';
 
   let selectedLists: List[] = [];
   let selectedAssignees: User[] = [];
@@ -27,16 +28,38 @@
   let showSaveOptions = false;
   let loggedIn = true;
   let initErrors = false;
+  let filters = {
+    tags: [],
+    due_date_gt: undefined,
+    due_date_lt: undefined,
+  };
 
-  $: filteredTasks =
-    viewMode && selectedAssignees.length
-      ? tasks?.filter((t) =>
-          selectedAssignees.reduce(
-            (r, t2) => r || t.assignees.map((u) => u.id).includes(t2.id),
-            false
-          )
-        )
-      : tasks;
+  $: filteredTasks = viewMode
+    ? tasks?.filter((t) => {
+        let valid = true;
+        if (selectedAssignees.length) {
+          valid = !!selectedAssignees.find((t2) =>
+            t.assignees.map((u) => u.id).includes(t2.id)
+          );
+        }
+
+        if (valid && filters.tags.length) {
+          valid = filters.tags.every((tag) =>
+            t.tags.map((e) => e.name).includes(tag)
+          );
+        }
+
+        if (valid && filters.due_date_gt) {
+          valid = new Date(t.due_date) >= new Date(filters.due_date_gt);
+        }
+
+        if (valid && filters.due_date_lt) {
+          valid = new Date(t.due_date) < new Date(filters.due_date_lt);
+        }
+
+        return valid;
+      })
+    : tasks;
 
   onMount(() => {
     loadPage();
@@ -48,11 +71,12 @@
     loggedIn = ok;
     user.set(data || {});
     const {
-      data: { assignees, lists, view },
+      data: { assignees, lists, view, otherFilters },
     } = await clickupService.getConfig();
     selectedAssignees = assignees ?? [];
     selectedLists = lists ?? [];
     selectedView = view;
+    filters = otherFilters ?? filters;
     if (view) {
       viewMode = true;
     }
@@ -101,6 +125,19 @@
       if (selectedAssignees.length > 0) {
         params.assignees = selectedAssignees.map((u) => u.id);
       }
+
+      if (filters.tags.length > 0) {
+        params.tags = filters.tags;
+      }
+
+      if (filters.due_date_gt) {
+        params.due_date_gt = new Date(filters.due_date_gt).getTime();
+      }
+
+      if (filters.due_date_lt) {
+        params.due_date_lt = new Date(filters.due_date_lt).getTime();
+      }
+
       const { data } = await clickupService.findTasks(params);
 
       tasks = data || [];
@@ -124,6 +161,7 @@
       assignees: selectedAssignees,
       lists: selectedLists,
       view: selectedView,
+      otherFilters: filters,
     };
     if (!viewMode) {
       config.view = undefined;
@@ -233,6 +271,7 @@
         </button>
       </div>
     </div>
+    <AdditionalFilters bind:filters on:change={() => viewMode || search()} />
     {#if initErrors}
       <h1 class="text-red-600 text-lg">
         Connection error, try to reload the extension

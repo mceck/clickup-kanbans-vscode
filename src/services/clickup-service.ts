@@ -1,6 +1,6 @@
 import BaseService from './base-service';
 
-export default class ClickupService extends BaseService {
+class ClickupService extends BaseService {
   async getUser() {
     const { user } = await this.doGet('/v2/user');
     return user;
@@ -98,3 +98,5 @@ export default class ClickupService extends BaseService {
     return data;
   }
 }
+
+export default new ClickupService();

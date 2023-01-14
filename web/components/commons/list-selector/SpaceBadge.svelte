@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Space } from "../../interfaces/clickup";
+  import type { Space } from '../../../interfaces/clickup';
 
   export let space: Space;
 
@@ -8,7 +8,7 @@
 
 <div
   class="flex justify-center items-center flex-none rounded-sm"
-  style={`background-color: ${space.color ?? "#3794ff"}`}
+  style={`background-color: ${space.color ?? '#3794ff'}`}
 >
   <span class="uppercase text-white">{initial}</span>
 </div>

@@ -17,7 +17,7 @@ export interface ClickupServiceResponse {
   error?: string;
 }
 
-export default class ClickupService {
+class ClickupService {
   private sendMessage(
     obj: any,
     timeout = 10000
@@ -177,3 +177,5 @@ export default class ClickupService {
     return this.sendMessage({ type: 'login', token });
   }
 }
+
+export default new ClickupService();

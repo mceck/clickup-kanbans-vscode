@@ -1,15 +1,10 @@
 <script lang="ts">
-  import type { Folder, List, Space, View } from '../../interfaces/clickup';
-  import { spacesTree } from '../../store/spaces-tree';
+  import type { Folder, List, Space, View } from '../../../interfaces/clickup';
+  import { spacesTree } from '../../../store/spaces-tree';
   import SpaceBadge from './SpaceBadge.svelte';
-  import ClickupService from '../../services/clickup-service';
+  import ClickupService from '../../../services/clickup-service';
   import { createEventDispatcher } from 'svelte';
-  // @ts-ignore
-  import FolderIcon from '../../assets/folder.svg';
-  // @ts-ignore
-  import OpenFolderIcon from '../../assets/folder-open.svg';
-  // @ts-ignore
-  import Spinner from '../../assets/cog.svg';
+  import Icon from '../Icon.svelte';
 
   export let selectedLists: List[] = [];
   export let right: boolean = false;
@@ -215,7 +210,7 @@
           views = { ...views, [list.id]: viewCache[list.id] };
         } else {
           views = { ...views, [list.id]: null };
-          new ClickupService().getListViews(list.id).then(({ data }) => {
+          ClickupService.getListViews(list.id).then(({ data }) => {
             const view = data.map((v) => ({ ...v, list }));
             views = { ...views, [list.id]: view };
             viewCache[list.id] = view;
@@ -294,9 +289,9 @@
                           selected}
                       >
                         {#if showFolder[folder.id]}
-                          <OpenFolderIcon class="w-4 h-4 flex-none" />
+                          <Icon class="w-4 h-4 flex-none" name="open-folder" />
                         {:else}
-                          <FolderIcon class="w-4 h-4 flex-none" />
+                          <Icon class="w-4 h-4 flex-none" name="folder" />
                         {/if}
                         <span class="ml-2">{folder.name}</span>
                       </div>
@@ -318,8 +313,9 @@
                           </div>
                           {#if viewMode}
                             {#if views[list.id] === null}
-                              <Spinner
+                              <Icon
                                 class="ml-8 w-4 h-4 flex-none animate-spin"
+                                name="cog"
                               />
                             {/if}
                             {#each views[list.id] ?? [] as view (view.id)}

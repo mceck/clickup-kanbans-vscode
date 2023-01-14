@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       if ((token || currentToken) && !teamId) {
-        const teams = await new ClickupService().getTeams();
+        const teams = await ClickupService.getTeams();
         await config.update('teamId', teams[0].id, true);
       }
     })

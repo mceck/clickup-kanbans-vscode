@@ -6,31 +6,16 @@
     Task,
     User,
     WorkspaceConfig,
-  } from '../interfaces/clickup';
-  import ClickupService from '../services/clickup-service';
-  import { user, userList } from '../store/users';
-  import AssigneesSelector from './AssigneesSelector/AssigneesSelector.svelte';
-  import Kanban from './Kanban.svelte';
-  import ListSelector from './ListSelector/ListSelector.svelte';
-  import { spacesTree } from '../store/spaces-tree';
-  // @ts-ignore
-  import RefreshIcon from '../assets/refresh.svg';
-  // @ts-ignore
-  import SaveIcon from '../assets/save.svg';
-  // @ts-ignore
-  import EllipsisIcon from '../assets/ellipsis.svg';
-  // @ts-ignore
-  import Spinner from '../assets/cog.svg';
-  // @ts-ignore
-  import BoardIcon from '../assets/board.svg';
-  // @ts-ignore
-  import FilterIcon from '../assets/filter.svg';
-  // @ts-ignore
-  import ClockIcon from '../assets/clock.svg';
+  } from '../../interfaces/clickup';
+  import ClickupService from '../../services/clickup-service';
+  import { user, userList } from '../../store/users';
+  import Board from './Board.svelte';
+  import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
+  import ListSelector from '../commons/list-selector/ListSelector.svelte';
+  import { spacesTree } from '../../store/spaces-tree';
   import moment from 'moment';
   import Login from './Login.svelte';
-
-  const service = new ClickupService();
+  import Icon from '../commons/Icon.svelte';
 
   let selectedLists: List[] = [];
   let selectedAssignees: User[] = [];
@@ -59,12 +44,12 @@
 
   async function loadPage() {
     initErrors = false;
-    const { data, ok } = await service.getUser();
+    const { data, ok } = await ClickupService.getUser();
     loggedIn = ok;
     user.set(data || {});
     const {
       data: { assignees, lists, view },
-    } = await service.getConfig();
+    } = await ClickupService.getConfig();
     selectedAssignees = assignees ?? [];
     selectedLists = lists ?? [];
     selectedView = view;
@@ -81,13 +66,12 @@
       return;
     }
 
-    service
-      .getAllLists()
+    ClickupService.getAllLists()
       .then((fullTree) => spacesTree.set(fullTree))
       .catch(() => (initErrors = true));
 
     if ($userList.users?.length === 0) {
-      const { data, ok } = await service.getAllUsers();
+      const { data, ok } = await ClickupService.getAllUsers();
       if (ok) {
         userList.set({ users: data });
       } else {
@@ -102,7 +86,7 @@
       if (!selectedView) {
         return;
       }
-      const { data } = await service.getViewTasks(selectedView.id);
+      const { data } = await ClickupService.getViewTasks(selectedView.id);
       tasks = data || [];
     } else {
       const params: any = {
@@ -116,13 +100,13 @@
       if (selectedAssignees.length > 0) {
         params.assignees = selectedAssignees.map((u) => u.id);
       }
-      const { data } = await service.findTasks(params);
+      const { data } = await ClickupService.findTasks(params);
 
       tasks = data || [];
     }
 
     loading = false;
-    const res = await service.findTimeTrack({
+    const res = await ClickupService.findTimeTrack({
       assignee: $user.id,
       start_date: moment().startOf('day').valueOf(),
       end_date: moment().endOf('day').valueOf(),
@@ -145,7 +129,7 @@
     }
     let res;
     try {
-      res = await service.saveConfig(config, global);
+      res = await ClickupService.saveConfig(config, global);
     } catch (error) {
       res = {
         ok: false,
@@ -153,7 +137,7 @@
       };
     }
     if (res.ok) {
-      service.showToast('info', 'Configuration saved');
+      ClickupService.showToast('info', 'Configuration saved');
     }
   }
 
@@ -205,7 +189,7 @@
 
       <div class="flex justify-end items-center w-full mb-2">
         <div class="flex w-6 items-center text-xs text-green-400">
-          <ClockIcon class="w-3 mr-1 flex-none stroke-current" />
+          <Icon name="clock" class="w-3 mr-1 flex-none stroke-current" />
           <span>{trackedToday}</span>
         </div>
         <button
@@ -214,9 +198,9 @@
           on:click={toggleView}
         >
           {#if viewMode}
-            <BoardIcon class="w-full" />
+            <Icon name="board" class="w-full" />
           {:else}
-            <FilterIcon class="w-full" />
+            <Icon name="filter" class="w-full" />
           {/if}
         </button>
         <button
@@ -224,13 +208,13 @@
           title="Save filters"
           on:click={() => saveFilters(true)}
         >
-          <SaveIcon />
+          <Icon name="save" />
         </button>
         <button
           class="w-4 flex-none ml-1 flex items-center relative"
           on:click|stopPropagation={() => toggleSaveOptions()}
         >
-          <EllipsisIcon class="flex-none" />
+          <Icon name="ellipsis" class="flex-none" />
           {#if showSaveOptions}
             <ul
               class="absolute w-24 h-12 top-full right-full bg-black rounded shadow overflow-hidden"
@@ -244,7 +228,7 @@
           class="w-9 px-2 flex-none ml-2 flex items-center"
           on:click={search}
         >
-          <RefreshIcon class="w-full" title="Reload" />
+          <Icon name="refresh" class="w-full" title="Reload" />
         </button>
       </div>
     </div>
@@ -255,24 +239,13 @@
     {/if}
     {#if loading}
       <div class="flex w-full justify-center">
-        <Spinner class="w-8 animate-spin" />
+        <Icon name="cog" class="w-8 animate-spin" />
       </div>
     {:else}
-      <Kanban tasks={filteredTasks} on:refresh={updateTask} />
+      <Board tasks={filteredTasks} on:refresh={updateTask} />
     {/if}
     {#if !loggedIn}
       <Login on:loggedIn={onLogin} />
     {/if}
   </div>
 </div>
-
-<style global>
-  button {
-    outline: none !important;
-  }
-
-  button:hover {
-    background-color: #2e2e2e;
-    color: white;
-  }
-</style>

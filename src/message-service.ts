@@ -2,8 +2,6 @@ import * as vscode from 'vscode';
 import ClickupService from './services/clickup-service';
 
 export default class MessageService {
-  clickupService = new ClickupService();
-
   constructor(private webview: vscode.Webview) {}
 
   private async sendResponse(fetchData: Function, nonce: string) {
@@ -42,54 +40,51 @@ export default class MessageService {
       }
       case 'getUser': {
         const { nonce } = query;
-        this.sendResponse(() => this.clickupService.getUser(), nonce);
+        this.sendResponse(() => ClickupService.getUser(), nonce);
         break;
       }
       case 'getTasks': {
         const { listId, nonce, ...params } = query;
-        this.sendResponse(
-          () => this.clickupService.getTasks(listId, params),
-          nonce
-        );
+        this.sendResponse(() => ClickupService.getTasks(listId, params), nonce);
         break;
       }
       case 'findTasks': {
         const { nonce, ...params } = query;
-        this.sendResponse(() => this.clickupService.findTasks(params), nonce);
+        this.sendResponse(() => ClickupService.findTasks(params), nonce);
         break;
       }
       case 'getSpaces': {
         const { nonce } = query;
-        this.sendResponse(() => this.clickupService.getSpaces(), nonce);
+        this.sendResponse(() => ClickupService.getSpaces(), nonce);
         break;
       }
       case 'getFolders': {
         const { nonce, spaceId } = query;
-        this.sendResponse(() => this.clickupService.getFolders(spaceId), nonce);
+        this.sendResponse(() => ClickupService.getFolders(spaceId), nonce);
         break;
       }
       case 'getFolderlessLists': {
         const { nonce, spaceId } = query;
         this.sendResponse(
-          () => this.clickupService.getFolderlessLists(spaceId),
+          () => ClickupService.getFolderlessLists(spaceId),
           nonce
         );
         break;
       }
       case 'getList': {
         const { listId, nonce } = query;
-        this.sendResponse(() => this.clickupService.getList(listId), nonce);
+        this.sendResponse(() => ClickupService.getList(listId), nonce);
         break;
       }
       case 'getAllUsers': {
         const { nonce } = query;
-        this.sendResponse(() => this.clickupService.getAllUsers(), nonce);
+        this.sendResponse(() => ClickupService.getAllUsers(), nonce);
         break;
       }
       case 'getTimeTracked': {
         const { nonce, taskId, ...params } = query;
         this.sendResponse(
-          () => this.clickupService.getTimeTracked(taskId, params),
+          () => ClickupService.getTimeTracked(taskId, params),
           nonce
         );
         break;
@@ -97,8 +92,7 @@ export default class MessageService {
       case 'updateTimeTracked': {
         const { nonce, taskId, intervalId, ...params } = query;
         this.sendResponse(
-          () =>
-            this.clickupService.updateTimeTracked(taskId, intervalId, params),
+          () => ClickupService.updateTimeTracked(taskId, intervalId, params),
           nonce
         );
         break;
@@ -106,7 +100,7 @@ export default class MessageService {
       case 'createTimeTrack': {
         const { nonce, taskId, ...params } = query;
         this.sendResponse(
-          () => this.clickupService.createTimeTrack(taskId, params),
+          () => ClickupService.createTimeTrack(taskId, params),
           nonce
         );
         break;
@@ -114,7 +108,7 @@ export default class MessageService {
       case 'deleteTimeTracked': {
         const { nonce, taskId, intervalId } = query;
         this.sendResponse(
-          () => this.clickupService.deleteTimeTracked(taskId, intervalId),
+          () => ClickupService.deleteTimeTracked(taskId, intervalId),
           nonce
         );
         break;
@@ -142,26 +136,17 @@ export default class MessageService {
       }
       case 'getViewTasks': {
         const { nonce, viewId } = query;
-        this.sendResponse(
-          () => this.clickupService.getViewTasks(viewId),
-          nonce
-        );
+        this.sendResponse(() => ClickupService.getViewTasks(viewId), nonce);
         break;
       }
       case 'getListViews': {
         const { nonce, listId } = query;
-        this.sendResponse(
-          () => this.clickupService.getListViews(listId),
-          nonce
-        );
+        this.sendResponse(() => ClickupService.getListViews(listId), nonce);
         break;
       }
       case 'updateTask': {
         const { nonce, taskId, ...task } = query;
-        this.sendResponse(
-          () => this.clickupService.updateTask(taskId, task),
-          nonce
-        );
+        this.sendResponse(() => ClickupService.updateTask(taskId, task), nonce);
         break;
       }
       case 'showToast': {
@@ -196,10 +181,7 @@ export default class MessageService {
       }
       case 'findTimeTrack': {
         const { nonce, ...params } = query;
-        this.sendResponse(
-          () => this.clickupService.findTimeTrack(params),
-          nonce
-        );
+        this.sendResponse(() => ClickupService.findTimeTrack(params), nonce);
         break;
       }
       case 'login': {
@@ -210,9 +192,9 @@ export default class MessageService {
             throw new Error('token missing');
           }
           await config.update('token', token, true);
-          const teams = await this.clickupService.getTeams();
+          const teams = await ClickupService.getTeams();
           await config.update('teamId', teams[0].id, true);
-          return this.clickupService.getUser();
+          return ClickupService.getUser();
         }, nonce);
         break;
       }

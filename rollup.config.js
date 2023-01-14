@@ -12,6 +12,7 @@ const production = !process.env.ROLLUP_WATCH;
 
 export default fs
   .readdirSync(path.join(__dirname, 'web', 'pages'))
+  .filter((input) => input.endsWith('.ts'))
   .map((input) => {
     const name = input.split('.')[0];
     return {

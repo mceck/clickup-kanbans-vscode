@@ -1,8 +1,8 @@
 // @ts-ignore
-import Sidebar from '../components/Sidebar.svelte';
+import App from './apps/KanbanApp.svelte';
 
-const app = new Sidebar({
+const app = new App({
   target: document.body,
 });
 
-export default Sidebar;
+export default App;

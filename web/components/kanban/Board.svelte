@@ -1,12 +1,11 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  import type { Status, Task } from '../interfaces/clickup';
+  import type { Status, Task } from '../../interfaces/clickup';
   import TaskCard from './TaskCard.svelte';
-  // @ts-ignore
-  import Chevron from '../assets/chevron.svg';
 
-  import { spacesTree } from '../store/spaces-tree';
+  import { spacesTree } from '../../store/spaces-tree';
+  import Icon from '../commons/Icon.svelte';
 
   export let tasks: Task[];
   const dispatch = createEventDispatcher();
@@ -107,7 +106,7 @@
             'rotate-180'}"
           on:click={() => toggleStatusList(id)}
         >
-          <Chevron />
+          <Icon name="chevron" />
         </button>
       </div>
       {#if !toggleStatus[id]}

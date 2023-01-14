@@ -8,15 +8,20 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### TODO
 
-- [ ] save more than one configurations
-- [ ] tag editing
-- [ ] more filters (filter for tags in filter mode)
+- select team after set token
+- save more than one configuration
+- task content and comments
+- more filters (filter for tags, ...)
+- tag editing
 
 ### TODO maybe
 
-- [ ] task content and comments
-- [ ] task attachments list and download/preview
-- [ ] monade timesheets (maybe save more conf and filter by tag are enaught)
+- task attachments list and download/preview
+- monade timesheets (maybe save more conf and filter by tag are enaught)
+- more cli commands
+- task creation
+- drag and drop
+- gitflow checkout branch by custom ids
 
 ## [1.0.3]
 

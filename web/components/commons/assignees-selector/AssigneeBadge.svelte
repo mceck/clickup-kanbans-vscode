@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { User } from '../../interfaces/clickup';
+  import type { User } from '../../../interfaces/clickup';
 
   export let user: User;
   export let small = false;

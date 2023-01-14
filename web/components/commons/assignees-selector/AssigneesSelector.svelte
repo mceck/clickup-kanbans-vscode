@@ -1,11 +1,9 @@
 <script lang="ts">
-  import type { User } from '../../interfaces/clickup';
-  import { userList } from '../../store/users';
-  // import AddAssigneeButton from "./AddAssigneeButton.svelte";
+  import type { User } from '../../../interfaces/clickup';
+  import { userList } from '../../../store/users';
   import AssigneeBadge from './AssigneeBadge.svelte';
-  // @ts-ignore
-  import AddAssigneeButton from '../../assets/add-assignee.svg';
   import { createEventDispatcher } from 'svelte';
+  import Icon from '../Icon.svelte';
 
   export let selectedAssignees: User[];
   export let editable = true;
@@ -114,7 +112,7 @@
           } cursor-pointer add-assignee`}
           on:click|stopPropagation={toggleSelector}
         >
-          <AddAssigneeButton />
+          <Icon name="add-assignee" />
         </div>
       {/if}
       {#if selectedAssignees.length > maxShown}

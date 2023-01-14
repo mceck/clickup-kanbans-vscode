@@ -3,17 +3,12 @@
 
   import { createEventDispatcher } from 'svelte';
 
-  import type { Interval, Task, User } from '../interfaces/clickup';
-  import ClickupService from '../services/clickup-service';
+  import type { Interval, Task, User } from '../../interfaces/clickup';
+  import ClickupService from '../../services/clickup-service';
   import ActionBar from './ActionBar.svelte';
-  import AssigneesSelector from './AssigneesSelector/AssigneesSelector.svelte';
-  import TimeTrackInput from './TimeTrackInput.svelte';
-  // @ts-ignore
-  import TrashIcon from '../assets/trash.svg';
-  // @ts-ignore
-  import EditIcon from '../assets/edit.svg';
-  // @ts-ignore
-  import CopyIcon from '../assets/copy.svg';
+  import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
+  import TimeTrackInput from '../commons/TimeTrackInput.svelte';
+  import Icon from '../commons/Icon.svelte';
 
   export let task: Task;
   export let statusKeys: string[];
@@ -25,12 +20,11 @@
   let intervals: Interval[] = [];
 
   const dispatch = createEventDispatcher();
-  const service = new ClickupService();
 
   async function toggleTracks() {
     showTracking = !showTracking;
     if (showTracking && !intervals.length) {
-      const res = await service.getTimeTracked(task.id);
+      const res = await ClickupService.getTimeTracked(task.id);
       if (res.ok) {
         intervals = (res.ok && res.data[0]?.intervals) || [];
       }
@@ -52,7 +46,7 @@
   }
 
   async function deleteTrack(track) {
-    const result = await service.deleteTimeTracked(task.id, track.id);
+    const result = await ClickupService.deleteTimeTracked(task.id, track.id);
     if (result.ok) {
       intervals = intervals.filter((i) => i.id !== track.id);
       const newTask = {
@@ -63,7 +57,7 @@
         showTracking = false;
       }
       dispatch('refresh', newTask);
-      service.showToast('info', 'Tracking deleted');
+      ClickupService.showToast('info', 'Tracking deleted');
     }
   }
 
@@ -77,11 +71,15 @@
 
   async function updateTrack(interval, time: number) {
     editTrack = undefined;
-    const result = await service.updateTimeTracked(task.id, interval.id, {
-      start: interval.start,
-      end: parseInt(interval.start) + time,
-      time,
-    });
+    const result = await ClickupService.updateTimeTracked(
+      task.id,
+      interval.id,
+      {
+        start: interval.start,
+        end: parseInt(interval.start) + time,
+        time,
+      }
+    );
     if (result.ok) {
       const newTask = {
         ...task,
@@ -89,20 +87,21 @@
       };
       dispatch('refresh', newTask);
       showTracking = false;
-      service.showStatusMessage('Time tracked');
+      ClickupService.showStatusMessage('Time tracked');
     }
   }
+
   function copyCustomId() {
     navigator.clipboard
       .writeText(task.custom_id)
-      .then(() => service.showStatusMessage('Copied'));
+      .then(() => ClickupService.showStatusMessage('Copied'));
   }
 
   async function addAssignee(assignee: User) {
     const oldAssignees = [...task.assignees];
     task.assignees = [...task.assignees, assignee];
     try {
-      const res = await service.updateTask(task.id, {
+      const res = await ClickupService.updateTask(task.id, {
         assignees: { add: [assignee.id] },
       });
       if (!res.data?.assignees) {
@@ -118,7 +117,7 @@
     const oldAssignees = [...task.assignees];
     task.assignees = task.assignees.filter((e) => e.id !== assignee.id);
     try {
-      const res = await service.updateTask(task.id, {
+      const res = await ClickupService.updateTask(task.id, {
         assignees: { rem: [assignee.id] },
       });
       if (!res.data?.assignees) {
@@ -128,6 +127,58 @@
     } catch (e) {
       task.assignees = oldAssignees;
     }
+  }
+
+  async function setTaskState(task: Task, state: string) {
+    const result = await ClickupService.updateTask(task.id, {
+      status: state,
+    });
+    if (result.ok) {
+      ClickupService.showStatusMessage('Task updated');
+      dispatch('refresh', result.data);
+    }
+  }
+
+  async function trackTaskTime(task: Task, time: number) {
+    const res = await ClickupService.getTimeTracked(task.id);
+    const interval =
+      res.ok &&
+      res.data[0]?.intervals?.find(
+        (i) => parseInt(i.start) >= moment().startOf('day').valueOf()
+      );
+
+    if (interval) {
+      const updatedTime = parseInt(interval.time) + time;
+      const resp = await ClickupService.updateTimeTracked(
+        task.id,
+        interval.id,
+        {
+          start: interval.start,
+          end: parseInt(interval.start) + updatedTime,
+          time: updatedTime,
+        }
+      );
+      if (resp.ok) {
+        ClickupService.showStatusMessage('Time tracked');
+      } else {
+        return;
+      }
+    } else {
+      const resp = await ClickupService.createTimeTrack(task.id, {
+        start: moment().valueOf(),
+        time,
+      });
+      if (resp.ok) {
+        ClickupService.showStatusMessage('Time tracked');
+      } else {
+        return;
+      }
+    }
+    task = {
+      ...task,
+      time_spent: (task.time_spent || 0) + time,
+    };
+    dispatch('refresh', task);
   }
 </script>
 
@@ -186,7 +237,7 @@
         class="left-20 -ml-1 top-1 cursor-pointer absolute flex items-center copy-hover"
       >
         <span class="opacity-0 transition-opacity">
-          <CopyIcon class="w-3 text-yellow-100 stroke-current" />
+          <Icon name="copy" class="w-3 text-yellow-100 stroke-current" />
         </span>
         <small
           class="text-sm  text-yellow-600 "
@@ -201,6 +252,9 @@
     <ActionBar
       {task}
       statuses={statusKeys}
+      on:next={(e) => setTaskState(task, e.detail)}
+      on:prev={(e) => setTaskState(task, e.detail)}
+      on:track={(e) => trackTaskTime(task, e.detail)}
       on:refresh={(e) => dispatch('refresh', e.detail)}
     />
   </div>
@@ -219,10 +273,10 @@
           <button
             class="flex-none w-8"
             on:click|stopPropagation={() => showEditTrack(track)}
-            ><EditIcon /></button
+            ><Icon name="edit" /></button
           >
           <button class="flex-none w-8" on:click={() => deleteTrack(track)}
-            ><TrashIcon /></button
+            ><Icon name="trash" /></button
           >
           {#if editTrack && editTrack.id === track.id}
             <div

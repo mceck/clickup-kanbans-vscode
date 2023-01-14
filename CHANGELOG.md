@@ -22,6 +22,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - drag and drop
 - gitflow checkout branch by custom ids
 
+## [1.0.4]
+
 ### Added
 
 - select team after set token

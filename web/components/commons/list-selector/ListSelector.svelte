@@ -211,9 +211,9 @@
         } else {
           views = { ...views, [list.id]: null };
           clickupService.getListViews(list.id).then(({ data }) => {
-            const view = data.map((v) => ({ ...v, list }));
-            views = { ...views, [list.id]: view };
-            viewCache[list.id] = view;
+            const viewList = data.map((v) => ({ ...v, list }));
+            views = { ...views, [list.id]: viewList };
+            viewCache[list.id] = viewList;
           });
         }
       }
@@ -318,6 +318,12 @@
                                 name="cog"
                               />
                             {/if}
+                            {#if views[list.id] !== null && views[list.id]?.length === 0}
+                              <small
+                                class="ml-8 text-gray-400"
+                                on:click|stopPropagation>Empty</small
+                              >
+                            {/if}
                             {#each views[list.id] ?? [] as view (view.id)}
                               <div
                                 class="ml-8 flex items-center"
@@ -350,6 +356,18 @@
                       <span>{list.name}</span>
                     </div>
                     {#if viewMode}
+                      {#if views[list.id] === null}
+                        <Icon
+                          class="ml-8 w-4 h-4 flex-none animate-spin"
+                          name="cog"
+                        />
+                      {/if}
+                      {#if views[list.id] !== null && views[list.id]?.length === 0}
+                        <small
+                          class="ml-8 text-gray-400"
+                          on:click|stopPropagation>Empty</small
+                        >
+                      {/if}
                       {#each views[list.id] ?? [] as view (view.id)}
                         <div
                           class="ml-8 flex items-center"

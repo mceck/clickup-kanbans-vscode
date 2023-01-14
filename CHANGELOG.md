@@ -8,6 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### TODO
 
+- support for space views and folder views (actually only list views can be selected from the picker)
 - save more than one configuration
 - task content and comments
 - tag editing
@@ -15,12 +16,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### TODO maybe
 
 - task attachments list and download/preview
-- statuses filter
 - monade timesheets
 - more cli commands
 - task creation
 - drag and drop
 - gitflow checkout branch by custom ids
+
+## [1.1.1]
+
+### Added
+
+- statuses filter
 
 ## [1.1.0]
 

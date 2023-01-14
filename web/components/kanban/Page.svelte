@@ -30,8 +30,11 @@
   let initErrors = false;
   let filters = {
     tags: [],
+    statuses: [],
     due_date_gt: undefined,
     due_date_lt: undefined,
+    subtasks: true,
+    include_closed: false,
   };
 
   $: filteredTasks = viewMode
@@ -46,6 +49,12 @@
         if (valid && filters.tags.length) {
           valid = filters.tags.every((tag) =>
             t.tags.map((e) => e.name).includes(tag)
+          );
+        }
+
+        if (valid && filters.statuses.length) {
+          valid = filters.statuses.some(
+            (status) => t.status.status.toLowerCase() === status.toLowerCase()
           );
         }
 
@@ -76,16 +85,14 @@
     selectedAssignees = assignees ?? [];
     selectedLists = lists ?? [];
     selectedView = view;
-    filters = otherFilters ?? filters;
+    filters = otherFilters ? { ...filters, ...otherFilters } : filters;
     if (view) {
       viewMode = true;
     }
     if (!loggedIn) {
       return;
     }
-    if (selectedAssignees.length || selectedLists.length || view) {
-      search();
-    }
+    search();
     if ($spacesTree.spaces.length > 0) {
       return;
     }
@@ -105,17 +112,32 @@
     }
   }
 
+  function hasFilters() {
+    return (
+      selectedAssignees.length ||
+      selectedLists.length ||
+      filters.tags.length ||
+      filters.due_date_gt ||
+      filters.due_date_lt
+    );
+  }
+
   async function search() {
-    loading = true;
     if (viewMode) {
       if (!selectedView) {
         return;
       }
+      loading = true;
       const { data } = await clickupService.getViewTasks(selectedView.id);
       tasks = data || [];
     } else {
+      if (!hasFilters()) {
+        return;
+      }
+      loading = true;
       const params: any = {
-        subtasks: true,
+        subtasks: !!filters.subtasks,
+        include_closed: !!filters.include_closed,
       };
 
       if (selectedLists.length > 0) {
@@ -128,6 +150,10 @@
 
       if (filters.tags.length > 0) {
         params.tags = filters.tags;
+      }
+
+      if (filters.statuses.length > 0) {
+        params.statuses = filters.statuses;
       }
 
       if (filters.due_date_gt) {
@@ -183,12 +209,7 @@
   function toggleView() {
     viewMode = !viewMode;
     tasks = [];
-    if (
-      (viewMode && selectedView) ||
-      (!viewMode && (selectedAssignees.length || selectedLists.length))
-    ) {
-      search();
-    }
+    search();
   }
 
   function updateTask(event: CustomEvent<Task>) {
@@ -271,7 +292,11 @@
         </button>
       </div>
     </div>
-    <AdditionalFilters bind:filters on:change={() => viewMode || search()} />
+    <AdditionalFilters
+      {viewMode}
+      bind:filters
+      on:change={() => viewMode || search()}
+    />
     {#if initErrors}
       <h1 class="text-red-600 text-lg">
         Connection error, try to reload the extension

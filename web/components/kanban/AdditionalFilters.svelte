@@ -1,8 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import Icon from '../commons/Icon.svelte';
+  import StatusPicker from '../commons/StatusPicker.svelte';
   import TagPicker from '../commons/TagPicker.svelte';
 
+  export let viewMode;
   export let filters;
 
   let collapsed = true;
@@ -14,7 +16,7 @@
   }
 </script>
 
-<div class="w-full">
+<div class="w-full text-gray-400">
   <div
     class="mt-2 flex float-left items-center cursor-pointer"
     on:click={() => (collapsed = !collapsed)}
@@ -28,11 +30,35 @@
   <div
     class="overflow-hidden w-full transition-all"
     class:h-0={collapsed}
-    class:h-24={!collapsed}
+    class:h-44={!collapsed}
   >
-    <div class="flex items-center mt-1">
+    {#if !viewMode}
+      <div class="flex justify-end items-center mt-1">
+        <input
+          type="checkbox"
+          class="mr-1"
+          id="inpt-subtasks"
+          bind:checked={filters.subtasks}
+          on:change={onChange}
+        />
+        <label for="inpt-subtasks" class="text-sm">subtasks</label>
+        <input
+          type="checkbox"
+          class="mr-1 ml-3"
+          id="inpt-closed"
+          bind:checked={filters.include_closed}
+          on:change={onChange}
+        />
+        <label for="inpt-closed" class="text-sm">closed</label>
+      </div>
+    {/if}
+    <div class="flex items-center mt-2">
       <small class="w-10 flex-none">Tags:</small>
       <TagPicker bind:selected={filters.tags} on:change={onChange} />
+    </div>
+    <div class="flex items-center mt-2">
+      <small class="w-10 flex-none">Statuses:</small>
+      <StatusPicker bind:selected={filters.statuses} on:change={onChange} />
     </div>
     <div class="flex items-center mt-2">
       <small class="w-10 flex-none">From:</small>
@@ -45,7 +71,6 @@
       <input
         type="date"
         class="ml-2"
-        placeholder="To"
         bind:value={filters.due_date_lt}
         on:change={onChange}
       />

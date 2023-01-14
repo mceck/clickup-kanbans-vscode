@@ -12,4 +12,9 @@
     background-color: #2e2e2e;
     color: white;
   }
+
+  input[type='checkbox'] {
+    accent-color: #2e2e2e !important;
+    outline: none !important;
+  }
 </style>

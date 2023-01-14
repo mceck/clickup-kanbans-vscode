@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { getNonce } from './getNonce';
-import MessageService from './message-service';
+import { getNonce } from '../utils/getNonce';
+import MessageService from '../services/message-service';
 
 export class MainPanel {
   /**

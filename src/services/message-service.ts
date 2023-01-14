@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import ClickupService from './services/clickup-service';
+import ClickupService from './clickup-service';
 
 export default class MessageService {
   constructor(private webview: vscode.Webview) {}

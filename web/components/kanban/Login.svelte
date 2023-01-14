@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import ClickupService from '../../services/clickup-service';
+  import clickupService from '../../services/clickup-service';
 
   const dispatch = createEventDispatcher();
   let personalToken = '';
@@ -9,7 +9,7 @@
     if (!personalToken) {
       return;
     }
-    const res = await ClickupService.login(personalToken);
+    const res = await clickupService.login(personalToken);
     if (res.ok) {
       dispatch('loggedIn', res.data);
     } else {

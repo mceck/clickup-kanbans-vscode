@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { MainPanel } from '../panels/MainPanel';
-import ClickupService from '../services/clickup-service';
+import clickupService from '../services/clickup-service';
+import loginService from '../services/login-service';
+import { SelectOption } from '../utils/interfaces';
 
 export default class Commands {
   constructor(private context: vscode.ExtensionContext) {}
@@ -18,40 +20,20 @@ export default class Commands {
   }
 
   private async setToken() {
-    {
-      const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
-      const teamId = config.get('teamId');
-      const currentToken = config.get('token') as string | undefined;
-      const token = await vscode.window.showInputBox({
-        placeHolder: 'access token...',
-        prompt: 'Set Clickup token',
-        value: currentToken,
-      });
-
-      if (token) {
-        await config.update('token', token, true);
-      }
-
-      if ((token || currentToken) && !teamId) {
-        const teams = await ClickupService.getTeams();
-        await config.update('teamId', teams[0].id, true);
-      }
+    const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
+    const teamId = config.get('teamId');
+    const currentToken = config.get('token') as string | undefined;
+    const token = await vscode.window.showInputBox({
+      placeHolder: 'access token...',
+      prompt: 'Set Clickup token',
+      value: currentToken,
+    });
+    if (token) {
+      loginService.login(token);
     }
   }
 
-  private async setTeamId() {
-    {
-      const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
-      const currentTeamId = config.get('teamId');
-      const teamId = await vscode.window.showInputBox({
-        placeHolder: 'access token...',
-        prompt: 'Set Clickup token',
-        value: currentTeamId as string,
-      });
-
-      if (teamId) {
-        await config.update('teamId', teamId, true);
-      }
-    }
+  private setTeamId() {
+    return loginService.setTeamId();
   }
 }

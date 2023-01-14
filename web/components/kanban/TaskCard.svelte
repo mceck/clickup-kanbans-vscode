@@ -4,7 +4,7 @@
   import { createEventDispatcher } from 'svelte';
 
   import type { Interval, Task, User } from '../../interfaces/clickup';
-  import ClickupService from '../../services/clickup-service';
+  import clickupService from '../../services/clickup-service';
   import ActionBar from './ActionBar.svelte';
   import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
   import TimeTrackInput from '../commons/TimeTrackInput.svelte';
@@ -24,7 +24,7 @@
   async function toggleTracks() {
     showTracking = !showTracking;
     if (showTracking && !intervals.length) {
-      const res = await ClickupService.getTimeTracked(task.id);
+      const res = await clickupService.getTimeTracked(task.id);
       if (res.ok) {
         intervals = (res.ok && res.data[0]?.intervals) || [];
       }
@@ -46,7 +46,7 @@
   }
 
   async function deleteTrack(track) {
-    const result = await ClickupService.deleteTimeTracked(task.id, track.id);
+    const result = await clickupService.deleteTimeTracked(task.id, track.id);
     if (result.ok) {
       intervals = intervals.filter((i) => i.id !== track.id);
       const newTask = {
@@ -57,7 +57,7 @@
         showTracking = false;
       }
       dispatch('refresh', newTask);
-      ClickupService.showToast('info', 'Tracking deleted');
+      clickupService.showToast('info', 'Tracking deleted');
     }
   }
 
@@ -71,7 +71,7 @@
 
   async function updateTrack(interval, time: number) {
     editTrack = undefined;
-    const result = await ClickupService.updateTimeTracked(
+    const result = await clickupService.updateTimeTracked(
       task.id,
       interval.id,
       {
@@ -87,21 +87,21 @@
       };
       dispatch('refresh', newTask);
       showTracking = false;
-      ClickupService.showStatusMessage('Time tracked');
+      clickupService.showStatusMessage('Time tracked');
     }
   }
 
   function copyCustomId() {
     navigator.clipboard
       .writeText(task.custom_id)
-      .then(() => ClickupService.showStatusMessage('Copied'));
+      .then(() => clickupService.showStatusMessage('Copied'));
   }
 
   async function addAssignee(assignee: User) {
     const oldAssignees = [...task.assignees];
     task.assignees = [...task.assignees, assignee];
     try {
-      const res = await ClickupService.updateTask(task.id, {
+      const res = await clickupService.updateTask(task.id, {
         assignees: { add: [assignee.id] },
       });
       if (!res.data?.assignees) {
@@ -117,7 +117,7 @@
     const oldAssignees = [...task.assignees];
     task.assignees = task.assignees.filter((e) => e.id !== assignee.id);
     try {
-      const res = await ClickupService.updateTask(task.id, {
+      const res = await clickupService.updateTask(task.id, {
         assignees: { rem: [assignee.id] },
       });
       if (!res.data?.assignees) {
@@ -130,17 +130,17 @@
   }
 
   async function setTaskState(task: Task, state: string) {
-    const result = await ClickupService.updateTask(task.id, {
+    const result = await clickupService.updateTask(task.id, {
       status: state,
     });
     if (result.ok) {
-      ClickupService.showStatusMessage('Task updated');
+      clickupService.showStatusMessage('Task updated');
       dispatch('refresh', result.data);
     }
   }
 
   async function trackTaskTime(task: Task, time: number) {
-    const res = await ClickupService.getTimeTracked(task.id);
+    const res = await clickupService.getTimeTracked(task.id);
     const interval =
       res.ok &&
       res.data[0]?.intervals?.find(
@@ -149,7 +149,7 @@
 
     if (interval) {
       const updatedTime = parseInt(interval.time) + time;
-      const resp = await ClickupService.updateTimeTracked(
+      const resp = await clickupService.updateTimeTracked(
         task.id,
         interval.id,
         {
@@ -159,17 +159,17 @@
         }
       );
       if (resp.ok) {
-        ClickupService.showStatusMessage('Time tracked');
+        clickupService.showStatusMessage('Time tracked');
       } else {
         return;
       }
     } else {
-      const resp = await ClickupService.createTimeTrack(task.id, {
+      const resp = await clickupService.createTimeTrack(task.id, {
         start: moment().valueOf(),
         time,
       });
       if (resp.ok) {
-        ClickupService.showStatusMessage('Time tracked');
+        clickupService.showStatusMessage('Time tracked');
       } else {
         return;
       }

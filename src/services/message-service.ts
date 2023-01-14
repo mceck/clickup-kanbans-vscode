@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
-import ClickupService from './clickup-service';
+import { SelectOption } from '../utils/interfaces';
+import clickupService from './clickup-service';
+import loginService from './login-service';
 
 export default class MessageService {
   constructor(private webview: vscode.Webview) {}
@@ -21,183 +23,166 @@ export default class MessageService {
     }
   }
 
+  onInfo(query: any) {
+    if (!query.value) {
+      return;
+    }
+    vscode.window.showInformationMessage(query.value);
+  }
+
+  onError(query: any) {
+    if (!query.value) {
+      return;
+    }
+    vscode.window.showErrorMessage(query.value);
+  }
+
+  getUser(query: any) {
+    const { nonce } = query;
+    this.sendResponse(() => clickupService.getUser(), nonce);
+  }
+
+  getTasks(query: any) {
+    const { listId, nonce, ...params } = query;
+    this.sendResponse(() => clickupService.getTasks(listId, params), nonce);
+  }
+
+  findTasks(query: any) {
+    const { nonce, ...params } = query;
+    this.sendResponse(() => clickupService.findTasks(params), nonce);
+  }
+
+  getSpaces(query: any) {
+    const { nonce } = query;
+    this.sendResponse(() => clickupService.getSpaces(), nonce);
+  }
+
+  getFolders(query: any) {
+    const { nonce, spaceId } = query;
+    this.sendResponse(() => clickupService.getFolders(spaceId), nonce);
+  }
+
+  getFolderlessLists(query: any) {
+    const { nonce, spaceId } = query;
+    this.sendResponse(() => clickupService.getFolderlessLists(spaceId), nonce);
+  }
+
+  getList(query: any) {
+    const { listId, nonce } = query;
+    this.sendResponse(() => clickupService.getList(listId), nonce);
+  }
+
+  getAllUsers(query: any) {
+    const { nonce } = query;
+    this.sendResponse(() => clickupService.getAllUsers(), nonce);
+  }
+
+  getTimeTracked(query: any) {
+    const { nonce, taskId, ...params } = query;
+    this.sendResponse(
+      () => clickupService.getTimeTracked(taskId, params),
+      nonce
+    );
+  }
+
+  updateTimeTracked(query: any) {
+    const { nonce, taskId, intervalId, ...params } = query;
+    this.sendResponse(
+      () => clickupService.updateTimeTracked(taskId, intervalId, params),
+      nonce
+    );
+  }
+
+  createTimeTrack(query: any) {
+    const { nonce, taskId, ...params } = query;
+    this.sendResponse(
+      () => clickupService.createTimeTrack(taskId, params),
+      nonce
+    );
+  }
+
+  deleteTimeTracked(query: any) {
+    const { nonce, taskId, intervalId } = query;
+    this.sendResponse(
+      () => clickupService.deleteTimeTracked(taskId, intervalId),
+      nonce
+    );
+  }
+
+  saveConfig(query: any) {
+    const { nonce, global, ...configuration } = query;
+    this.sendResponse(async () => {
+      const config = vscode.workspace.getConfiguration('clickup-kanban.config');
+      await config.update('vs-config', configuration, global);
+      return configuration;
+    }, nonce);
+  }
+
+  getConfig(query: any) {
+    const { nonce } = query;
+    this.sendResponse(async () => {
+      const config = vscode.workspace.getConfiguration('clickup-kanban.config');
+      return config.get('vs-config');
+    }, nonce);
+  }
+  getViewTasks(query: any) {
+    const { nonce, viewId } = query;
+    this.sendResponse(() => clickupService.getViewTasks(viewId), nonce);
+  }
+
+  getListViews(query: any) {
+    const { nonce, listId } = query;
+    this.sendResponse(() => clickupService.getListViews(listId), nonce);
+  }
+
+  updateTask(query: any) {
+    const { nonce, taskId, ...task } = query;
+    this.sendResponse(() => clickupService.updateTask(taskId, task), nonce);
+  }
+
+  showToast(query: any) {
+    const { nonce, message, scope } = query;
+    if (scope === 'error') {
+      this.sendResponse(() => vscode.window.showErrorMessage(message), nonce);
+    } else {
+      this.sendResponse(
+        () => vscode.window.showInformationMessage(message),
+        nonce
+      );
+    }
+  }
+
+  showStatusMessage(query: any) {
+    const { nonce, message, delay = 8000 } = query;
+    this.sendResponse(
+      () =>
+        new Promise((r) => {
+          const d = vscode.window.setStatusBarMessage(message);
+          setTimeout(() => {
+            d.dispose();
+            r(0);
+          }, delay);
+        }),
+      nonce
+    );
+  }
+
+  findTimeTrack(query: any) {
+    const { nonce, ...params } = query;
+    this.sendResponse(() => clickupService.findTimeTrack(params), nonce);
+  }
+
+  login(query: any) {
+    const { nonce, token } = query;
+    this.sendResponse(() => loginService.login(token), nonce);
+  }
+
   onVsMessage(data: any) {
     const { type, ...query } = data;
-    switch (type) {
-      case 'onInfo': {
-        if (!query.value) {
-          return;
-        }
-        vscode.window.showInformationMessage(query.value);
-        break;
-      }
-      case 'onError': {
-        if (!query.value) {
-          return;
-        }
-        vscode.window.showErrorMessage(query.value);
-        break;
-      }
-      case 'getUser': {
-        const { nonce } = query;
-        this.sendResponse(() => ClickupService.getUser(), nonce);
-        break;
-      }
-      case 'getTasks': {
-        const { listId, nonce, ...params } = query;
-        this.sendResponse(() => ClickupService.getTasks(listId, params), nonce);
-        break;
-      }
-      case 'findTasks': {
-        const { nonce, ...params } = query;
-        this.sendResponse(() => ClickupService.findTasks(params), nonce);
-        break;
-      }
-      case 'getSpaces': {
-        const { nonce } = query;
-        this.sendResponse(() => ClickupService.getSpaces(), nonce);
-        break;
-      }
-      case 'getFolders': {
-        const { nonce, spaceId } = query;
-        this.sendResponse(() => ClickupService.getFolders(spaceId), nonce);
-        break;
-      }
-      case 'getFolderlessLists': {
-        const { nonce, spaceId } = query;
-        this.sendResponse(
-          () => ClickupService.getFolderlessLists(spaceId),
-          nonce
-        );
-        break;
-      }
-      case 'getList': {
-        const { listId, nonce } = query;
-        this.sendResponse(() => ClickupService.getList(listId), nonce);
-        break;
-      }
-      case 'getAllUsers': {
-        const { nonce } = query;
-        this.sendResponse(() => ClickupService.getAllUsers(), nonce);
-        break;
-      }
-      case 'getTimeTracked': {
-        const { nonce, taskId, ...params } = query;
-        this.sendResponse(
-          () => ClickupService.getTimeTracked(taskId, params),
-          nonce
-        );
-        break;
-      }
-      case 'updateTimeTracked': {
-        const { nonce, taskId, intervalId, ...params } = query;
-        this.sendResponse(
-          () => ClickupService.updateTimeTracked(taskId, intervalId, params),
-          nonce
-        );
-        break;
-      }
-      case 'createTimeTrack': {
-        const { nonce, taskId, ...params } = query;
-        this.sendResponse(
-          () => ClickupService.createTimeTrack(taskId, params),
-          nonce
-        );
-        break;
-      }
-      case 'deleteTimeTracked': {
-        const { nonce, taskId, intervalId } = query;
-        this.sendResponse(
-          () => ClickupService.deleteTimeTracked(taskId, intervalId),
-          nonce
-        );
-        break;
-      }
-      case 'saveConfig': {
-        const { nonce, global, ...configuration } = query;
-        this.sendResponse(async () => {
-          const config = vscode.workspace.getConfiguration(
-            'clickup-kanban.config'
-          );
-          await config.update('vs-config', configuration, global);
-          return configuration;
-        }, nonce);
-        break;
-      }
-      case 'getConfig': {
-        const { nonce } = query;
-        this.sendResponse(async () => {
-          const config = vscode.workspace.getConfiguration(
-            'clickup-kanban.config'
-          );
-          return config.get('vs-config');
-        }, nonce);
-        break;
-      }
-      case 'getViewTasks': {
-        const { nonce, viewId } = query;
-        this.sendResponse(() => ClickupService.getViewTasks(viewId), nonce);
-        break;
-      }
-      case 'getListViews': {
-        const { nonce, listId } = query;
-        this.sendResponse(() => ClickupService.getListViews(listId), nonce);
-        break;
-      }
-      case 'updateTask': {
-        const { nonce, taskId, ...task } = query;
-        this.sendResponse(() => ClickupService.updateTask(taskId, task), nonce);
-        break;
-      }
-      case 'showToast': {
-        const { nonce, message, scope } = query;
-        if (scope === 'error') {
-          this.sendResponse(
-            () => vscode.window.showErrorMessage(message),
-            nonce
-          );
-        } else {
-          this.sendResponse(
-            () => vscode.window.showInformationMessage(message),
-            nonce
-          );
-        }
-        break;
-      }
-      case 'showStatusMessage': {
-        const { nonce, message, delay = 8000 } = query;
-        this.sendResponse(
-          () =>
-            new Promise((r) => {
-              const d = vscode.window.setStatusBarMessage(message);
-              setTimeout(() => {
-                d.dispose();
-                r(0);
-              }, delay);
-            }),
-          nonce
-        );
-        break;
-      }
-      case 'findTimeTrack': {
-        const { nonce, ...params } = query;
-        this.sendResponse(() => ClickupService.findTimeTrack(params), nonce);
-        break;
-      }
-      case 'login': {
-        const { nonce, token } = query;
-        const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
-        this.sendResponse(async () => {
-          if (!token) {
-            throw new Error('token missing');
-          }
-          await config.update('token', token, true);
-          const teams = await ClickupService.getTeams();
-          await config.update('teamId', teams[0].id, true);
-          return ClickupService.getUser();
-        }, nonce);
-        break;
-      }
+    if (type in this) {
+      (this as any)[type](query);
+    } else {
+      this.sendResponse(() => Promise.reject('method not found'), query.nonce);
     }
   }
 }

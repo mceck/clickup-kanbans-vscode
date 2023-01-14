@@ -2,7 +2,7 @@
   import type { Folder, List, Space, View } from '../../../interfaces/clickup';
   import { spacesTree } from '../../../store/spaces-tree';
   import SpaceBadge from './SpaceBadge.svelte';
-  import ClickupService from '../../../services/clickup-service';
+  import clickupService from '../../../services/clickup-service';
   import { createEventDispatcher } from 'svelte';
   import Icon from '../Icon.svelte';
 
@@ -210,7 +210,7 @@
           views = { ...views, [list.id]: viewCache[list.id] };
         } else {
           views = { ...views, [list.id]: null };
-          ClickupService.getListViews(list.id).then(({ data }) => {
+          clickupService.getListViews(list.id).then(({ data }) => {
             const view = data.map((v) => ({ ...v, list }));
             views = { ...views, [list.id]: view };
             viewCache[list.id] = view;

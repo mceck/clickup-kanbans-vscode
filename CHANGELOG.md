@@ -8,7 +8,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### TODO
 
-- select team after set token
 - save more than one configuration
 - task content and comments
 - more filters (filter for tags, ...)
@@ -22,6 +21,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 - gitflow checkout branch by custom ids
+
+## [1.1.0]
+
+### Added
+
+- select team after set token
 
 ## [1.0.3]
 

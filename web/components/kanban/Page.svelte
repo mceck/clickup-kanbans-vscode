@@ -7,7 +7,7 @@
     User,
     WorkspaceConfig,
   } from '../../interfaces/clickup';
-  import ClickupService from '../../services/clickup-service';
+  import clickupService from '../../services/clickup-service';
   import { user, userList } from '../../store/users';
   import Board from './Board.svelte';
   import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
@@ -44,12 +44,12 @@
 
   async function loadPage() {
     initErrors = false;
-    const { data, ok } = await ClickupService.getUser();
+    const { data, ok } = await clickupService.getUser();
     loggedIn = ok;
     user.set(data || {});
     const {
       data: { assignees, lists, view },
-    } = await ClickupService.getConfig();
+    } = await clickupService.getConfig();
     selectedAssignees = assignees ?? [];
     selectedLists = lists ?? [];
     selectedView = view;
@@ -66,12 +66,13 @@
       return;
     }
 
-    ClickupService.getAllLists()
+    clickupService
+      .getAllLists()
       .then((fullTree) => spacesTree.set(fullTree))
       .catch(() => (initErrors = true));
 
     if ($userList.users?.length === 0) {
-      const { data, ok } = await ClickupService.getAllUsers();
+      const { data, ok } = await clickupService.getAllUsers();
       if (ok) {
         userList.set({ users: data });
       } else {
@@ -86,7 +87,7 @@
       if (!selectedView) {
         return;
       }
-      const { data } = await ClickupService.getViewTasks(selectedView.id);
+      const { data } = await clickupService.getViewTasks(selectedView.id);
       tasks = data || [];
     } else {
       const params: any = {
@@ -100,13 +101,13 @@
       if (selectedAssignees.length > 0) {
         params.assignees = selectedAssignees.map((u) => u.id);
       }
-      const { data } = await ClickupService.findTasks(params);
+      const { data } = await clickupService.findTasks(params);
 
       tasks = data || [];
     }
 
     loading = false;
-    const res = await ClickupService.findTimeTrack({
+    const res = await clickupService.findTimeTrack({
       assignee: $user.id,
       start_date: moment().startOf('day').valueOf(),
       end_date: moment().endOf('day').valueOf(),
@@ -129,7 +130,7 @@
     }
     let res;
     try {
-      res = await ClickupService.saveConfig(config, global);
+      res = await clickupService.saveConfig(config, global);
     } catch (error) {
       res = {
         ok: false,
@@ -137,7 +138,7 @@
       };
     }
     if (res.ok) {
-      ClickupService.showToast('info', 'Configuration saved');
+      clickupService.showToast('info', 'Configuration saved');
     }
   }
 

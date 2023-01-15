@@ -22,6 +22,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.1.5]
+
+### Added
+
+- task description and comments collapsible
+- minor visual updates
+
 ## [1.1.4]
 
 ### Fixed

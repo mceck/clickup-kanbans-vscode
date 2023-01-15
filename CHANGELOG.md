@@ -22,6 +22,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.1.4]
+
+### Fixed
+
+- upgrade dependencies
+
 ## [1.1.3]
 
 ### Added

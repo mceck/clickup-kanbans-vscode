@@ -33,8 +33,8 @@
     <Icon name="cog" class="w-8 animate-spin" />
   {:else}
     <div
-      class="text-sm py-3 text-gray-400 of-over {collapsed &&
-        'max-h-60 mask-of pb-10'}"
+      class="text-sm py-3 text-gray-400 of-over pb-10 {collapsed &&
+        'max-h-60 mask-of'}"
       on:click={() => (collapsed = !collapsed)}
     >
       {fullTask?.description}

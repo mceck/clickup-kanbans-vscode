@@ -22,6 +22,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.1.6]
+
+### Added
+
+- collapsible comments
+
 ## [1.1.5]
 
 ### Added

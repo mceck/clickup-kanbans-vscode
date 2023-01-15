@@ -280,6 +280,8 @@
 
 <svelte:window
   on:click={() => (showSaveOptions = showConfigurations = false)}
+  on:keydown={(e) =>
+    e.key === 'Escape' && (showSaveOptions = showConfigurations = false)}
 />
 <div>
   <div>

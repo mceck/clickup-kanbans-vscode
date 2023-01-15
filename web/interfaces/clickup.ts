@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface Folder {
   id: string;
   name: string;
@@ -101,12 +102,24 @@ export interface Comment {
 
 export interface CommentDetail {
   text: string;
-  type?: 'tag' | 'frame';
+  type?: 'tag' | 'frame' | 'attachment';
   frame?: {
     id: string;
     url: string;
     src: string;
     service: string;
+  };
+  attachment?: {
+    id: string;
+    url: string;
+    url_w_query?: string;
+    size?: number;
+    extension?: string;
+    mimetype?: string;
+    thumbnail_small?: string;
+    thumbnail_large?: string;
+    thumbnail_medium?: string;
+    user: User;
   };
   attributes?: {
     link?: string;

@@ -17,4 +17,8 @@
     accent-color: #2e2e2e !important;
     outline: none !important;
   }
+
+  .link {
+    @apply text-sky-600;
+  }
 </style>

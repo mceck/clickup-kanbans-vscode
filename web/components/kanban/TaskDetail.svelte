@@ -9,7 +9,8 @@
   export let task: Task;
   let fullTask: Task;
   let comments: Comment[];
-  let collapsed = true;
+  let collapseDescription = true;
+  let collapseComments = true;
 
   onMount(() => {
     loadTask();
@@ -33,25 +34,38 @@
     <Icon name="cog" class="w-8 animate-spin" />
   {:else}
     <div
-      class="text-sm py-3 text-gray-400 of-over pb-10 {collapsed &&
+      class="text-sm py-3 text-gray-400 of-over pb-10 {collapseDescription &&
         'max-h-60 mask-of'}"
-      on:click={() => (collapsed = !collapsed)}
+      on:click={() => (collapseDescription = !collapseDescription)}
     >
       {fullTask?.description}
     </div>
-    <div class="border-t border-gray-500 max-h-80 of-over">
-      <small class="mt-2">Comments:</small>
-      {#each comments as comment}
+    {#if comments.length}
+      <div class="border-t border-gray-500">
         <div
-          class="flex items-start p-3 my-2 bg-gray-800 rounded-lg text-gray-400"
+          class="cursor-pointer text-sm w-full my-2 flex items-center"
+          on:click={() => (collapseComments = !collapseComments)}
         >
-          <div class="w-6 flex-none">
-            <AssigneeBadge user={comment.user} />
-          </div>
-          <CommentText class="pl-2" {comment} />
+          <span>Comments</span>
+          <Icon
+            class="w-4 ml-2 {!collapseComments && 'rotate-180'}"
+            name="chevron"
+          />
         </div>
-      {/each}
-    </div>
+        {#if !collapseComments}
+          {#each comments as comment}
+            <div
+              class="flex items-start p-3 mb-2 bg-gray-800 rounded-lg text-gray-400"
+            >
+              <div class="w-6 flex-none">
+                <AssigneeBadge user={comment.user} />
+              </div>
+              <CommentText class="pl-2" {comment} />
+            </div>
+          {/each}
+        {/if}
+      </div>
+    {/if}
   {/if}
 </div>
 

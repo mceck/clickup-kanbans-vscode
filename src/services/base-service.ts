@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { BASE_API } from '../constants';
 import * as vscode from 'vscode';
 import fetch from 'node-fetch';

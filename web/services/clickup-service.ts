@@ -1,4 +1,4 @@
-import type { WorkspaceConfig } from '../interfaces/clickup';
+import type { InputOptions, WorkspaceConfig } from '../interfaces/clickup';
 import type { SpacesTree } from '../store/spaces-tree';
 
 export function getNonce() {
@@ -124,7 +124,7 @@ class ClickupService {
     return this.sendMessage({ type: 'updateTask', taskId, ...task });
   }
 
-  async saveConfig(config: WorkspaceConfig, global: boolean = false) {
+  async saveConfig(config: WorkspaceConfig, global: boolean = true) {
     const ret = await this.sendMessage({
       type: 'saveConfig',
       global,
@@ -148,6 +148,14 @@ class ClickupService {
       { type: 'showStatusMessage', message, delay },
       90000
     );
+  }
+
+  showInput(options: InputOptions) {
+    return this.sendMessage({ type: 'showInput', options }, 90000);
+  }
+
+  showSelect(options: InputOptions) {
+    return this.sendMessage({ type: 'showSelect', options }, 90000);
   }
 
   async getAllLists() {

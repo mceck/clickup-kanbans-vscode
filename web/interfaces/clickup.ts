@@ -139,14 +139,21 @@ export interface Interval {
 }
 
 export interface WorkspaceConfig {
-  assignees?: User[];
-  lists?: List[];
-  view?: View;
-  otherFilters: {
-    tags: string[];
-    due_date_gt?: Date;
-    due_date_lt?: Date;
-  };
+  filters: PageFilters[];
+}
+
+export interface PageFilters {
+  name: string;
+  default: boolean;
+  selectedLists: List[];
+  selectedAssignees: User[];
+  selectedView: View;
+  tags: string[];
+  statuses: string[];
+  due_date_gt: undefined;
+  due_date_lt: undefined;
+  subtasks: true;
+  include_closed: false;
 }
 
 export interface View {
@@ -154,4 +161,10 @@ export interface View {
   name: string;
   type: string;
   list?: List;
+}
+
+export interface InputOptions {
+  placeHolder: string;
+  prompt: string;
+  value: string;
 }

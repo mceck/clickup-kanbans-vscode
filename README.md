@@ -32,7 +32,9 @@ With this view mode you can filter tasks by assignees and lists
 
 ![preview](media/docs/save.png)
 
-You can save current configuration globally or for the current workspace clicking on the 3 dots
+You can save current configuration clicking on the icon or saving with a new name clicking on the 3 dots
+
+select saved configurations from the selector that can be opened by clicking on the configuration name on the top left of the screen
 
 ## dev
 

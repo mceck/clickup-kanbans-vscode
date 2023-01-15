@@ -21,7 +21,6 @@ export default class Commands {
 
   private async setToken() {
     const config = vscode.workspace.getConfiguration('clickup-kanban.auth');
-    const teamId = config.get('teamId');
     const currentToken = config.get('token') as string | undefined;
     const token = await vscode.window.showInputBox({
       placeHolder: 'access token...',

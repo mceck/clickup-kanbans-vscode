@@ -2,9 +2,8 @@
   import { onMount } from 'svelte';
 
   import type {
-    List,
+    PageFilters,
     Task,
-    User,
     WorkspaceConfig,
   } from '../../interfaces/clickup';
   import clickupService from '../../services/clickup-service';
@@ -18,9 +17,6 @@
   import Icon from '../commons/Icon.svelte';
   import AdditionalFilters from './AdditionalFilters.svelte';
 
-  let selectedLists: List[] = [];
-  let selectedAssignees: User[] = [];
-  let selectedView: any = {};
   let tasks: Task[] = [];
   let loading = false;
   let viewMode = false;
@@ -28,7 +24,15 @@
   let showSaveOptions = false;
   let loggedIn = true;
   let initErrors = false;
-  let filters = {
+  let configFilters: PageFilters[] = [];
+  let showConfigurations = false;
+
+  let filters: PageFilters = {
+    name: '',
+    default: true,
+    selectedLists: [],
+    selectedAssignees: [],
+    selectedView: null,
     tags: [],
     statuses: [],
     due_date_gt: undefined,
@@ -40,8 +44,8 @@
   $: filteredTasks = viewMode
     ? tasks?.filter((t) => {
         let valid = true;
-        if (selectedAssignees.length) {
-          valid = !!selectedAssignees.find((t2) =>
+        if (filters.selectedAssignees.length) {
+          valid = !!filters.selectedAssignees.find((t2) =>
             t.assignees.map((u) => u.id).includes(t2.id)
           );
         }
@@ -80,13 +84,12 @@
     loggedIn = ok;
     user.set(data || {});
     const {
-      data: { assignees, lists, view, otherFilters },
+      data: { filters: _filters },
     } = await clickupService.getConfig();
-    selectedAssignees = assignees ?? [];
-    selectedLists = lists ?? [];
-    selectedView = view;
-    filters = otherFilters ? { ...filters, ...otherFilters } : filters;
-    if (view) {
+    configFilters = _filters ?? [];
+    const defFilters = configFilters.find((e) => e.default);
+    filters = defFilters ? { ...filters, ...defFilters } : filters;
+    if (defFilters?.selectedView) {
       viewMode = true;
     }
     if (!loggedIn) {
@@ -114,8 +117,8 @@
 
   function hasFilters() {
     return (
-      selectedAssignees.length ||
-      selectedLists.length ||
+      filters.selectedAssignees.length ||
+      filters.selectedLists.length ||
       filters.tags.length ||
       filters.due_date_gt ||
       filters.due_date_lt
@@ -124,11 +127,13 @@
 
   async function search() {
     if (viewMode) {
-      if (!selectedView) {
+      if (!filters.selectedView) {
         return;
       }
       loading = true;
-      const { data } = await clickupService.getViewTasks(selectedView.id);
+      const { data } = await clickupService.getViewTasks(
+        filters.selectedView.id
+      );
       tasks = data || [];
     } else {
       if (!hasFilters()) {
@@ -140,12 +145,12 @@
         include_closed: !!filters.include_closed,
       };
 
-      if (selectedLists.length > 0) {
-        params.list_ids = selectedLists.map((l) => l.id);
+      if (filters.selectedLists.length > 0) {
+        params.list_ids = filters.selectedLists.map((l) => l.id);
       }
 
-      if (selectedAssignees.length > 0) {
-        params.assignees = selectedAssignees.map((u) => u.id);
+      if (filters.selectedAssignees.length > 0) {
+        params.assignees = filters.selectedAssignees.map((u) => u.id);
       }
 
       if (filters.tags.length > 0) {
@@ -182,27 +187,74 @@
     }
   }
 
-  async function saveFilters(global: boolean = false) {
-    const config: WorkspaceConfig = {
-      assignees: selectedAssignees,
-      lists: selectedLists,
-      view: selectedView,
-      otherFilters: filters,
-    };
-    if (!viewMode) {
-      config.view = undefined;
+  function selectFilter(f: PageFilters) {
+    filters = f ?? filters;
+    viewMode = !!filters.selectedView;
+    search();
+    showConfigurations = false;
+  }
+
+  async function defaultFilter(f: PageFilters) {
+    configFilters = configFilters.map((e) => ({ ...e, default: e === f }));
+    await clickupService.saveConfig({ filters: configFilters });
+    showConfigurations = false;
+  }
+
+  function deleteFilter(f: PageFilters) {
+    configFilters = configFilters.filter((e) => e !== f);
+    filters = configFilters.find((e) => e.default);
+    if (!filters) {
+      filters = configFilters[0] ?? { ...f, name: '' };
+      filters.default = true;
     }
-    let res;
-    try {
-      res = await clickupService.saveConfig(config, global);
-    } catch (error) {
-      res = {
-        ok: false,
-        error: error.message || 'generic_error',
+    clickupService.saveConfig({ filters: configFilters });
+    showConfigurations = false;
+    viewMode = !!filters.selectedView;
+    search();
+  }
+
+  async function saveFilters(isNew: boolean = false) {
+    if (!filters.name) {
+      isNew = true;
+    }
+    if (isNew) {
+      const filterToSave = { ...filters, default: true };
+      const { data } = await clickupService.showInput({
+        placeHolder: 'Configuration name',
+        prompt: 'Choose a name',
+        value: '',
+      });
+      filterToSave.name = data;
+      if (!filterToSave.name || configFilters.find((f) => f.name === data)) {
+        clickupService.showToast('error', 'Invalid name');
+        return;
+      }
+      if (!viewMode) {
+        filterToSave.selectedView = undefined;
+      } else {
+        filterToSave.selectedLists = [];
+      }
+      const config: WorkspaceConfig = {
+        filters: [
+          ...configFilters.map((f) => ({ ...f, default: false })),
+          filterToSave,
+        ],
       };
-    }
-    if (res.ok) {
-      clickupService.showToast('info', 'Configuration saved');
+      const res = await clickupService.saveConfig(config);
+      if (res.ok) {
+        filters = filterToSave;
+        configFilters = config.filters;
+        clickupService.showToast('info', 'Configuration saved');
+      }
+    } else {
+      const idx = configFilters.findIndex((e) => e.name === filters.name);
+      if (idx >= 0) {
+        configFilters[idx] = { ...filters };
+        const res = await clickupService.saveConfig({ filters: configFilters });
+        if (res.ok) {
+          clickupService.showToast('info', 'Configuration saved');
+        }
+      }
     }
   }
 
@@ -221,12 +273,14 @@
     showSaveOptions = !showSaveOptions;
   }
 
-  function onLogin(event) {
+  function onLogin() {
     loadPage();
   }
 </script>
 
-<svelte:window on:click={() => (showSaveOptions = false)} />
+<svelte:window
+  on:click={() => (showSaveOptions = showConfigurations = false)}
+/>
 <div>
   <div>
     <div
@@ -234,62 +288,99 @@
     >
       <div class="flex justify-start w-full">
         <div class="w-36 lg:w-72 flex-none">
-          <AssigneesSelector bind:selectedAssignees />
+          <AssigneesSelector
+            bind:selectedAssignees={filters.selectedAssignees}
+            on:add={() => viewMode || search()}
+            on:remove={() => viewMode || search()}
+          />
         </div>
         <div class="w-36 lg:w-80 flex-none">
           <ListSelector
-            bind:selectedLists
-            bind:selectedView
+            bind:selectedLists={filters.selectedLists}
+            bind:selectedView={filters.selectedView}
             right
             {viewMode}
             on:selectView={search}
+            on:selectList={search}
+            on:removeList={search}
           />
         </div>
       </div>
-
-      <div class="flex justify-end items-center w-full mb-2">
-        <div class="flex w-6 items-center text-xs text-green-400">
-          <Icon name="clock" class="w-3 mr-1 flex-none stroke-current" />
-          <span>{trackedToday}</span>
-        </div>
-        <button
-          class="w-9 px-2 text-xs flex-none ml-4 flex items-center"
-          title={viewMode ? 'Switch to filter mode' : 'Switch to view mode'}
-          on:click={toggleView}
-        >
-          {#if viewMode}
-            <Icon name="board" class="w-full" />
-          {:else}
-            <Icon name="filter" class="w-full" />
-          {/if}
-        </button>
-        <button
-          class="w-5 flex-none ml-4 flex items-center"
-          title="Save filters"
-          on:click={() => saveFilters(true)}
-        >
-          <Icon name="save" />
-        </button>
-        <button
-          class="w-4 flex-none ml-1 flex items-center relative"
-          on:click|stopPropagation={() => toggleSaveOptions()}
-        >
-          <Icon name="ellipsis" class="flex-none" />
-          {#if showSaveOptions}
-            <ul
-              class="absolute w-24 h-12 top-full right-full bg-black rounded shadow overflow-hidden"
+      <div class="flex justify-between w-full">
+        <div>
+          <small
+            class="cursor-pointer"
+            on:click|stopPropagation={() =>
+              (showConfigurations = !showConfigurations)}>{filters.name}</small
+          >
+          {#if showConfigurations}
+            <div
+              class="absolute p-2 bg-screen border rounded border-gray-600 z-10"
+              on:click|stopPropagation
             >
-              <button on:click={() => saveFilters(true)}>Global</button>
-              <button on:click={() => saveFilters(false)}>Workspace</button>
-            </ul>
+              {#each configFilters as f}
+                <div class="flex items-center py-1">
+                  <span
+                    class="w-24 cursor-pointer"
+                    on:click={() => selectFilter(f)}>{f.name}</span
+                  >
+                  <span
+                    class="h-4 cursor-pointer {f.default && 'text-green-500'}"
+                    on:click={() => defaultFilter(f)}
+                    ><Icon name="check" /></span
+                  >
+                  <span
+                    class="h-4 cursor-pointer"
+                    on:click={() => deleteFilter(f)}><Icon name="trash" /></span
+                  >
+                </div>
+              {/each}
+            </div>
           {/if}
-        </button>
-        <button
-          class="w-9 px-2 flex-none ml-2 flex items-center"
-          on:click={search}
-        >
-          <Icon name="refresh" class="w-full" title="Reload" />
-        </button>
+        </div>
+        <div class="flex justify-end items-center w-full mb-2">
+          <div class="flex w-6 items-center text-xs text-green-400">
+            <Icon name="clock" class="w-3 mr-1 flex-none stroke-current" />
+            <span>{trackedToday}</span>
+          </div>
+          <button
+            class="w-9 px-2 text-xs flex-none ml-4 flex items-center"
+            title={viewMode ? 'Switch to filter mode' : 'Switch to view mode'}
+            on:click={toggleView}
+          >
+            {#if viewMode}
+              <Icon name="board" class="w-full" />
+            {:else}
+              <Icon name="filter" class="w-full" />
+            {/if}
+          </button>
+          <button
+            class="w-5 flex-none ml-4 flex items-center"
+            title="Save filters"
+            on:click={() => saveFilters()}
+          >
+            <Icon name="save" />
+          </button>
+          <button
+            class="w-4 flex-none ml-1 flex items-center relative"
+            on:click|stopPropagation={() => toggleSaveOptions()}
+          >
+            <Icon name="ellipsis" class="flex-none" />
+            {#if showSaveOptions}
+              <ul
+                class="absolute p-2 w-24 top-full right-full bg-screen rounded-lg border border-gray-600 shadow overflow-hidden"
+              >
+                <button on:click={() => saveFilters(true)}>Save as...</button>
+              </ul>
+            {/if}
+          </button>
+          <button
+            class="w-9 px-2 flex-none ml-2 flex items-center"
+            on:click={search}
+          >
+            <Icon name="refresh" class="w-full" title="Reload" />
+          </button>
+        </div>
       </div>
     </div>
     <AdditionalFilters

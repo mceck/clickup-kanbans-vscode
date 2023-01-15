@@ -190,6 +190,16 @@ export default class MessageService {
     );
   }
 
+  showInput(query: any) {
+    const { nonce, options } = query;
+    this.sendResponse(() => vscode.window.showInputBox(options), nonce);
+  }
+
+  showSelect(query: any) {
+    const { nonce, options } = query;
+    this.sendResponse(() => vscode.window.showQuickPick(options), nonce);
+  }
+
   onVsMessage(data: any) {
     const { type, ...query } = data;
     if (type in this) {

@@ -19,6 +19,7 @@
   import trash from '../../assets/trash.svg';
   import expand from '../../assets/expand.svg';
   import collapse from '../../assets/collapse.svg';
+  import check from '../../assets/check.svg';
 
   export let name: string;
 
@@ -44,6 +45,7 @@
     trash,
     expand,
     collapse,
+    check,
   };
 </script>
 

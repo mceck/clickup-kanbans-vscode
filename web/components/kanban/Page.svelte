@@ -224,7 +224,7 @@
         prompt: 'Choose a name',
         value: '',
       });
-      filterToSave.name = data;
+      filterToSave.name = data.trim();
       if (!filterToSave.name || configFilters.find((f) => f.name === data)) {
         clickupService.showToast('error', 'Invalid name');
         return;

@@ -216,8 +216,9 @@
             viewCache[list.id] = viewList;
           });
         }
+      } else {
+        dispatch('selectList', list);
       }
-      dispatch('selectList', list);
     }
     searchText = '';
   }

@@ -10,6 +10,7 @@
   import TimeTrackInput from '../commons/TimeTrackInput.svelte';
   import Icon from '../commons/Icon.svelte';
   import TaskDetail from './TaskDetail.svelte';
+  import { user } from '../../store/users';
 
   export let task: Task;
   export let statusKeys: string[];
@@ -26,9 +27,9 @@
   async function toggleTracks() {
     showTracking = !showTracking;
     if (showTracking && !intervals.length) {
-      const res = await clickupService.getTimeTracked(task.id);
+      const res = await clickupService.findTimeTrack({ task_id: task.id });
       if (res.ok) {
-        intervals = (res.ok && res.data[0]?.intervals) || [];
+        intervals = (res.ok && res.data) || [];
       }
     }
   }
@@ -43,7 +44,7 @@
       timeTrackInput.focus();
       timeTrackInput.select();
     }, 0);
-    const t = moment(parseInt(track.time as any))?.add(-1, 'hour');
+    const t = moment(parseInt(track.duration as any))?.add(-1, 'hour');
     timeTrackText = t.format('HH') + 'h ' + t.format('mm') + 'm';
   }
 
@@ -53,7 +54,7 @@
       intervals = intervals.filter((i) => i.id !== track.id);
       const newTask = {
         ...task,
-        time_spent: parseInt(task.time_spent as any) - parseInt(track.time),
+        time_spent: parseInt(task.time_spent as any) - parseInt(track.duration),
       };
       if (intervals.length === 0) {
         showTracking = false;
@@ -85,7 +86,7 @@
     if (result.ok) {
       const newTask = {
         ...task,
-        time_spent: (task.time_spent || 0) + time - parseInt(interval.time),
+        time_spent: (task.time_spent || 0) + time - parseInt(interval.duration),
       };
       dispatch('refresh', newTask);
       showTracking = false;
@@ -145,12 +146,12 @@
     const res = await clickupService.getTimeTracked(task.id);
     const interval =
       res.ok &&
-      res.data[0]?.intervals?.find(
+      res.data?.find(
         (i) => parseInt(i.start) >= moment().startOf('day').valueOf()
       );
 
     if (interval) {
-      const updatedTime = parseInt(interval.time) + time;
+      const updatedTime = parseInt(interval.duration) + time;
       const resp = await clickupService.updateTimeTracked(
         task.id,
         interval.id,
@@ -277,7 +278,9 @@
       {#each intervals as track (track.id)}
         <div class="flex items-center">
           <p class="text-xs text-gray-300 flex-auto">{toDate(track.start)}</p>
-          <p class="text-xs text-gray-300 flex-auto">{toTime(track.time)}</p>
+          <p class="text-xs text-gray-300 flex-auto">
+            {toTime(track.duration)}
+          </p>
           <button
             class="flex-none w-8"
             on:click|stopPropagation={() => showEditTrack(track)}

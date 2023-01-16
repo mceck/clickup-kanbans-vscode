@@ -146,9 +146,10 @@ export interface Interval {
   id: string;
   start: number;
   end?: number;
-  time: number;
+  duration: number;
   source?: string;
   date_added?: number;
+  user: User;
 }
 
 export interface WorkspaceConfig {

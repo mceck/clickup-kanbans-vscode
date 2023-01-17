@@ -102,7 +102,7 @@ export interface Comment {
 
 export interface CommentDetail {
   text: string;
-  type?: 'tag' | 'frame' | 'attachment';
+  type?: 'tag' | 'frame' | 'attachment' | 'task_mention';
   frame?: {
     id: string;
     url: string;
@@ -124,6 +124,7 @@ export interface CommentDetail {
   attributes?: {
     link?: string;
   };
+  task_mention?: { task_id: string };
 }
 
 export interface User {

@@ -8,8 +8,10 @@
   $: previews = comment.comment.filter((e) => isImage(e.attachment));
 
   function isLink(detail: CommentDetail) {
+    console.log(detail);
     return (
-      ['frame', 'attachment'].includes(detail.type) || detail.attributes?.link
+      ['frame', 'attachment', 'task_mention'].includes(detail.type) ||
+      detail.attributes?.link
     );
   }
 
@@ -18,6 +20,9 @@
       return detail.frame.url;
     } else if (detail.type === 'attachment') {
       return detail.attachment.url;
+    } else if (detail.type === 'task_mention') {
+      const taskId = detail.task_mention?.task_id || detail.text;
+      return `https://app.clickup.com/t/${taskId}`;
     }
     return detail.attributes?.link ?? '#';
   }
@@ -27,12 +32,19 @@
       attachment?.mimetype
     );
   }
+
+  function getText(detail: CommentDetail) {
+    if (detail.type === 'task_mention') {
+      return `Task: ${detail.text}`;
+    }
+    return detail.text;
+  }
 </script>
 
 <div {...$$props}>
   {#each comment.comment as detail}
     {#if isLink(detail)}
-      <a class="link block" href={getLink(detail)}>{detail.text}</a>
+      <a class="link block" href={getLink(detail)}>{getText(detail)}</a>
     {:else if detail.type === 'tag'}
       <span class="link text-sm">{detail.text}</span>
     {:else}

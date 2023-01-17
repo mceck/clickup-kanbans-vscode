@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="w-full text-gray-400">
+<div class="w-full text-gray-400 {$$props.class}">
   <div
     class="mt-2 flex float-left items-center cursor-pointer"
     on:click={() => (collapsed = !collapsed)}
@@ -28,7 +28,9 @@
     />
   </div>
   <div
-    class="overflow-hidden w-full transition-all {collapsed ? 'h-0' : 'h-44'}"
+    class="overflow-hidden w-full transition-all pt-2 {collapsed
+      ? 'h-0'
+      : 'h-44'}"
   >
     {#if !viewMode}
       <div class="flex justify-end items-center mt-1">

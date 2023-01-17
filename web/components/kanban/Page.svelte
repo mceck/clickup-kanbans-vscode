@@ -26,6 +26,7 @@
   let initErrors = false;
   let configFilters: PageFilters[] = [];
   let showConfigurations = false;
+  let term = '';
 
   let filters: PageFilters = {
     name: '',
@@ -41,8 +42,12 @@
     include_closed: false,
   };
 
+  $: prefilteredTask = tasks?.filter(
+    (t) => !term || t.name.toLowerCase().includes(term.trim().toLowerCase())
+  );
+
   $: filteredTasks = viewMode
-    ? tasks?.filter((t) => {
+    ? prefilteredTask?.filter((t) => {
         let valid = true;
         if (filters.selectedAssignees.length) {
           valid = !!filters.selectedAssignees.find((t2) =>
@@ -72,7 +77,7 @@
 
         return valid;
       })
-    : tasks;
+    : prefilteredTask;
 
   onMount(() => {
     loadPage();
@@ -385,11 +390,20 @@
         </div>
       </div>
     </div>
-    <AdditionalFilters
-      {viewMode}
-      bind:filters
-      on:change={() => viewMode || search()}
-    />
+    <div class="relative mt-2">
+      <span class="w-36 absolute right-4 ">
+        <input
+          class="rounded-2xl search-input border"
+          placeholder="Search"
+          bind:value={term}
+        />
+      </span>
+      <AdditionalFilters
+        {viewMode}
+        bind:filters
+        on:change={() => viewMode || search()}
+      />
+    </div>
     {#if initErrors}
       <h1 class="text-red-600 text-lg">
         Connection error, try to reload the extension
@@ -407,3 +421,12 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .search-input {
+    padding: 0.25rem 1rem !important;
+
+    background-color: theme('colors.screen') !important;
+    border: 1px solid theme('colors.neutral.700') !important;
+  }
+</style>

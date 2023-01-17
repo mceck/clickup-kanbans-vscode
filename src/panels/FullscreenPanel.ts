@@ -6,7 +6,7 @@ export class FullscreenPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: FullscreenPanel | undefined;
+  private static panels = new Map<string, FullscreenPanel>();
 
   public static readonly viewType = 'swiper';
 
@@ -14,21 +14,25 @@ export class FullscreenPanel {
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
 
+  public static get currentPanel() {
+    return this.panels.get(this.name);
+  }
+
   public static createOrShow(extensionUri: vscode.Uri, compiled: string) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
 
     // If we already have a panel, show it.
-    if (FullscreenPanel.currentPanel) {
-      FullscreenPanel.currentPanel._panel.reveal(column);
-      FullscreenPanel.currentPanel._update();
+    if (this.currentPanel) {
+      this.currentPanel._panel.reveal(column);
+      this.currentPanel._update();
       return;
     }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-      FullscreenPanel.viewType,
+      this.viewType,
       'ClickupKanban',
       column || vscode.ViewColumn.One,
       {
@@ -45,10 +49,9 @@ export class FullscreenPanel {
       }
     );
 
-    FullscreenPanel.currentPanel = new FullscreenPanel(
-      panel,
-      extensionUri,
-      compiled
+    this.panels.set(
+      this.name,
+      new FullscreenPanel(panel, extensionUri, compiled)
     );
   }
 
@@ -82,7 +85,7 @@ export class FullscreenPanel {
   }
 
   public dispose() {
-    FullscreenPanel.currentPanel = undefined;
+    FullscreenPanel.panels.delete(this.constructor.name);
 
     // Clean up our resources
     this._panel.dispose();

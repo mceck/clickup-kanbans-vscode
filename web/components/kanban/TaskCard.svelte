@@ -10,7 +10,6 @@
   import TimeTrackInput from '../commons/TimeTrackInput.svelte';
   import Icon from '../commons/Icon.svelte';
   import TaskDetail from './TaskDetail.svelte';
-  import { user } from '../../store/users';
 
   export let task: Task;
   export let statusKeys: string[];
@@ -21,16 +20,19 @@
   let editTrack: Interval;
   let intervals: Interval[] = [];
   let expanded = false;
+  let loadingIntervals = false;
 
   const dispatch = createEventDispatcher();
 
   async function toggleTracks() {
     showTracking = !showTracking;
     if (showTracking && !intervals.length) {
+      loadingIntervals = true;
       const res = await clickupService.findTimeTrack({ task_id: task.id });
       if (res.ok) {
         intervals = (res.ok && res.data) || [];
       }
+      loadingIntervals = false;
     }
   }
 
@@ -272,8 +274,10 @@
       class="absolute w-4/5 max-h-24 top-5 z-10 p-1 bg-screen rounded border border-gray-700 overflow-auto"
       on:click|stopPropagation={() => (editTrack = undefined)}
     >
-      {#if intervals.length === 0}
-        <span class:animate-pulse={intervals.length === 0}>Loading...</span>
+      {#if loadingIntervals}
+        <span class="animate-pulse">Loading...</span>
+      {:else if intervals.length === 0}
+        <span>Empty</span>
       {/if}
       {#each intervals as track (track.id)}
         <div class="flex items-center">

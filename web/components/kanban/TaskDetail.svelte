@@ -25,7 +25,6 @@
   async function loadComments() {
     const res = await clickupService.getTaskComments(task.id);
     comments = res.data;
-    console.log(comments);
   }
 </script>
 

@@ -8,7 +8,6 @@
   $: previews = comment.comment.filter((e) => isImage(e.attachment));
 
   function isLink(detail: CommentDetail) {
-    console.log(detail);
     return (
       ['frame', 'attachment', 'task_mention'].includes(detail.type) ||
       detail.attributes?.link

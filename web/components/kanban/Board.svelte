@@ -90,7 +90,7 @@
   }
 </script>
 
-<div class="lg:flex w-full">
+<div class="sm:flex overflow-x-auto wsize">
   {#each statuses as [id, val] (id)}
     <div class="w-72 mx-2 my-4 flex-none">
       <div
@@ -121,3 +121,14 @@
     </div>
   {/each}
 </div>
+
+<style>
+  .wsize {
+    width: 100%;
+  }
+  @media (min-width: 1024px) {
+    .wsize {
+      width: calc(100vw - var(--container-paddding) * 2);
+    }
+  }
+</style>

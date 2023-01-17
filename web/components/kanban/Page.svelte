@@ -290,18 +290,16 @@
 />
 <div>
   <div>
-    <div
-      class="flex flex-col-reverse lg:justify-between items-center lg:flex-row"
-    >
-      <div class="flex justify-start w-full">
-        <div class="w-36 lg:w-72 flex-none">
+    <div class="flex flex-col-reverse sm:justify-between items-center">
+      <div class="flex justify-between w-full">
+        <div class="w-36 sm:w-72 flex-none">
           <AssigneesSelector
             bind:selectedAssignees={filters.selectedAssignees}
             on:add={() => viewMode || search()}
             on:remove={() => viewMode || search()}
           />
         </div>
-        <div class="w-36 lg:w-80 flex-none">
+        <div class="w-36 sm:w-80 flex-none">
           <ListSelector
             bind:selectedLists={filters.selectedLists}
             bind:selectedView={filters.selectedView}
@@ -391,7 +389,7 @@
       </div>
     </div>
     <div class="relative mt-2">
-      <span class="w-36 absolute right-4 ">
+      <span class="w-36 absolute right-0">
         <input
           class="rounded-2xl search-input border"
           placeholder="Search"
@@ -410,7 +408,7 @@
       </h1>
     {/if}
     {#if loading}
-      <div class="flex w-full justify-center">
+      <div class="flex w-full justify-center mt-4">
         <Icon name="cog" class="w-8 animate-spin" />
       </div>
     {:else}

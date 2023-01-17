@@ -22,6 +22,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.1.7]
+
+### Fixed
+
+- fix time track issue
+
 ## [1.1.6]
 
 ### Added

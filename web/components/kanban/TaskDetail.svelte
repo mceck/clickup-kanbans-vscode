@@ -35,7 +35,7 @@
     <div
       class="text-sm py-3 text-gray-400 of-over pb-10 {collapseDescription &&
         'max-h-60 mask-of'}"
-      on:click={() => (collapseDescription = !collapseDescription)}
+      on:dblclick={() => (collapseDescription = !collapseDescription)}
     >
       {fullTask?.description}
     </div>

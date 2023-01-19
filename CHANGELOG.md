@@ -31,7 +31,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 
-- improve gtiflow checkout
+- improve gitflow checkout
 
 ## [1.1.10]
 

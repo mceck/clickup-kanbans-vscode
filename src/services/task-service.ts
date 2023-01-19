@@ -122,6 +122,9 @@ class TaskService {
   private async fixGitStatus() {
     let res = await exec(this.cmd.gitStatus);
     if (res) {
+      if (res.includes('fatal')) {
+        throw new Error('Git is not initialized in the current project');
+      }
       res = await exec(this.cmd.gitStash);
       if (res) {
         throw new Error('Cannot stash changes, checkout branch manually');

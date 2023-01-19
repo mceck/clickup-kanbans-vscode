@@ -74,8 +74,6 @@ class TaskService {
       }
       vscode.window.showInformationMessage(`Created branch ${branchName}`);
     }
-    // refresh terminal
-    vscode.window.activeTerminal?.sendText('\n');
   }
 
   private gitflowOptions(customId: string): SelectOption[] {

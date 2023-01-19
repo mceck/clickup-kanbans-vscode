@@ -180,16 +180,7 @@
     }
 
     loading = false;
-    const res = await clickupService.findTimeTrack({
-      assignee: $user.id,
-      start_date: moment().startOf('day').valueOf(),
-      end_date: moment().endOf('day').valueOf(),
-    });
-
-    if (res.ok) {
-      const millis = res.data.reduce((p, v) => p + parseInt(v.duration), 0);
-      trackedToday = `${(millis / 3600000).toFixed(1)}h`;
-    }
+    refreshTimeTracked();
   }
 
   function selectFilter(f: PageFilters) {
@@ -269,9 +260,29 @@
     search();
   }
 
-  function updateTask(event: CustomEvent<Task>) {
-    const task = event.detail;
-    tasks = tasks.map((t) => (t.id === task.id ? task : t));
+  function updateTask(task: Task) {
+    tasks = tasks.map((t) => {
+      if (t.id === task.id) {
+        if (t.time_spent !== task.time_spent) {
+          refreshTimeTracked();
+        }
+        return task;
+      }
+      return t;
+    });
+  }
+
+  async function refreshTimeTracked() {
+    const res = await clickupService.findTimeTrack({
+      assignee: $user.id,
+      start_date: moment().startOf('day').valueOf() - 1,
+      end_date: moment().endOf('day').valueOf(),
+    });
+
+    if (res.ok) {
+      const millis = res.data.reduce((p, v) => p + parseInt(v.duration), 0);
+      trackedToday = `${(millis / 3600000).toFixed(1)}h`;
+    }
   }
 
   function toggleSaveOptions() {
@@ -412,7 +423,7 @@
         <Icon name="cog" class="w-8 animate-spin" />
       </div>
     {:else}
-      <Board tasks={filteredTasks} on:refresh={updateTask} />
+      <Board tasks={filteredTasks} on:refresh={(e) => updateTask(e.detail)} />
     {/if}
     {#if !loggedIn}
       <Login on:loggedIn={onLogin} />

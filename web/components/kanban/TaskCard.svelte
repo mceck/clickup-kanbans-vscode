@@ -174,7 +174,7 @@
       }
     } else {
       const resp = await clickupService.createTimeTrack(task.id, {
-        start: moment().valueOf(),
+        start: moment().startOf('day').valueOf(),
         time,
       });
       if (resp.ok) {

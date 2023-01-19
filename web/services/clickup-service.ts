@@ -194,7 +194,7 @@ class ClickupService {
   }
 
   gitCheckout(customId: string) {
-    return this.sendMessage({ type: 'gitCheckout', customId });
+    return this.sendMessage({ type: 'gitCheckout', customId }, 90000);
   }
 }
 

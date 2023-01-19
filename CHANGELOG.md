@@ -21,6 +21,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.1.11]
+
+### Added
+
+- improve gtiflow checkout
+
 ## [1.1.10]
 
 ### Added

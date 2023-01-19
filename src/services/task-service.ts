@@ -37,36 +37,62 @@ class TaskService {
       gitCurrent: 'git branch --show-current',
       gitCheckout: (name: string, isNew: boolean = false) =>
         `git checkout ${isNew ? '-b ' : ''}${name}`,
+      gitDevAndPull: (dev: string) => `git checkout ${dev} && git pull`,
     };
   }
 
   async gitCheckout(customId: string) {
-    let res = await exec(this.cmd.gitCurrent);
-    if (res.includes(customId)) {
-      vscode.window.showInformationMessage(`Already on ${res}`);
+    const currentBranch = await exec(this.cmd.gitCurrent);
+    if (currentBranch.includes(customId)) {
+      vscode.window.showInformationMessage(`Already on ${currentBranch}`);
       return;
     }
 
-    res = await exec(this.cmd.gitStatus);
+    let res = await exec(this.cmd.gitStatus);
     if (res) {
       throw new Error('Stash changes before checkout');
     }
 
-    res = await exec(this.cmd.gitBranches);
-    const existingBranch = res.split('\n').find((b) => b.includes(customId));
+    const branchList = (await exec(this.cmd.gitBranches)).split('\n');
+    const existingBranch = branchList.find((b) => b.includes(customId));
     if (existingBranch) {
+      // checkout existing branch
       res = await exec(this.cmd.gitCheckout(existingBranch));
       if (res) {
         throw new Error(res);
       }
       vscode.window.showInformationMessage(`Checkout branch ${existingBranch}`);
     } else {
+      // create new branch
+      // search develop branch in local branches to checkout from there
+      let devBranch: any = 'develop';
+      if (!branchList.includes(devBranch)) {
+        // not found, manually select
+        devBranch = (
+          await vscode.window.showQuickPick(
+            branchList.map((b) => ({
+              id: b,
+              label: b,
+              description: `Checkout from branch ${b}`,
+            }))
+          )
+        )?.id;
+      }
+      if (!devBranch) {
+        return;
+      }
+
+      // select gtiflow branch type
       const branchType = await vscode.window.showQuickPick(
         this.gitflowOptions(customId)
       );
       if (!branchType) {
         return;
       }
+
+      // checkout and pull develop
+      await exec(this.cmd.gitDevAndPull(devBranch));
+      // checkout new branch
       const branchName = `${branchType.id}/${customId}`;
       res = await exec(this.cmd.gitCheckout(branchName, true));
       if (res) {

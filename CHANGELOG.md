@@ -9,7 +9,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### TODO
 
 - support for space views and folder views in "view mode" (actually only list views can be selected from the picker)
-- gitflow checkout branch by custom ids
 - add comment
 - tag editing
 
@@ -21,6 +20,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - more cli commands
 - task creation
 - drag and drop
+
+## [1.1.10]
+
+### Added
+
+- gitflow checkout branch by custom ids
 
 ## [1.1.9]
 

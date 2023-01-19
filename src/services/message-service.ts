@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { SelectOption } from '../utils/interfaces';
 import clickupService from './clickup-service';
 import loginService from './login-service';
+import taskService from './task-service';
 
 export default class MessageService {
   constructor(private webview: vscode.Webview) {}
@@ -198,6 +198,11 @@ export default class MessageService {
   showSelect(query: any) {
     const { nonce, options } = query;
     this.sendResponse(() => vscode.window.showQuickPick(options), nonce);
+  }
+
+  gitCheckout(query: any) {
+    const { nonce, customId } = query;
+    this.sendResponse(() => taskService.gitCheckout(customId), nonce);
   }
 
   onVsMessage(data: any) {

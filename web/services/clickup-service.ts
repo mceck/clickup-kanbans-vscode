@@ -192,6 +192,10 @@ class ClickupService {
   getTaskComments(taskId: string, params?: any) {
     return this.sendMessage({ type: 'getTaskComments', taskId, ...params });
   }
+
+  gitCheckout(customId: string) {
+    return this.sendMessage({ type: 'gitCheckout', customId });
+  }
 }
 
 export default new ClickupService();

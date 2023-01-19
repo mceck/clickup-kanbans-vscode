@@ -102,6 +102,10 @@
       .then(() => clickupService.showStatusMessage('Copied'));
   }
 
+  function checkout() {
+    clickupService.gitCheckout(task.custom_id);
+  }
+
   async function addAssignee(assignee: User) {
     const oldAssignees = [...task.assignees];
     task.assignees = [...task.assignees, assignee];
@@ -243,18 +247,28 @@
       </small>
     {/if}
     {#if task.custom_id}
-      <div
-        class="left-20 -ml-1 top-1 cursor-pointer absolute flex items-center copy-hover"
-      >
-        <span class="opacity-0 transition-opacity">
+      <div class="left-20 -ml-1 top-1 absolute flex items-center copy-hover">
+        <span
+          class="opacity-0 transition-opacity cursor-pointer"
+          on:click|stopPropagation={copyCustomId}
+        >
           <Icon name="copy" class="w-3 text-yellow-100 stroke-current" />
         </span>
         <small
-          class="text-sm  text-yellow-600 "
+          class="text-sm  text-yellow-600 cursor-pointer"
           on:click|stopPropagation={copyCustomId}
         >
           {task.custom_id}
         </small>
+        <span
+          class="ml-1 opacity-0 transition-opacity cursor-pointer"
+          on:click|stopPropagation={checkout}
+        >
+          <Icon
+            name="git"
+            class="w-3 text-orange-500 hover:text-orange-400 stroke-current"
+          />
+        </span>
       </div>
     {/if}
   </div>

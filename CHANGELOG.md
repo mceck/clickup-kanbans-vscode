@@ -22,6 +22,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.1.9]
+
+### Added
+
+- quick filter tasks by name
+
+### Fixed
+
+- minor ui fixes
+
 ## [1.1.8]
 
 ### Added

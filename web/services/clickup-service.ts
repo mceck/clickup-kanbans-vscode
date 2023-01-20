@@ -1,15 +1,6 @@
 import type { InputOptions, WorkspaceConfig } from '../interfaces/clickup';
 import type { SpacesTree } from '../store/spaces-tree';
-
-export function getNonce() {
-  let text = '';
-  const possible =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
+import * as uuid from 'uuid';
 
 export interface ClickupServiceResponse {
   ok: boolean;
@@ -23,7 +14,7 @@ class ClickupService {
     timeout = 10000
   ): Promise<ClickupServiceResponse> {
     return new Promise((res, err) => {
-      const nonce = getNonce();
+      const nonce = uuid.v4();
       const fn = ({ data }) => {
         if (data.nonce === nonce) {
           clearTimeout(stop);

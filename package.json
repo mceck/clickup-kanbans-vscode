@@ -100,6 +100,7 @@
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.0.6",
     "@types/node-fetch": "^2.6.2",
+    "@types/uuid": "^9.0.0",
     "@types/vscode": "^1.51.0",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
@@ -126,6 +127,8 @@
   },
   "dependencies": {
     "moment": "^2.29.4",
-    "node-fetch": "^3.2.9"
+    "node-fetch": "^3.2.9",
+    "rollup-plugin-css-only": "^4.3.0",
+    "uuid": "^9.0.0"
   }
 }

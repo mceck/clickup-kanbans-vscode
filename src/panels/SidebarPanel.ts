@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { getNonce } from '../utils/getNonce';
 import MessageService from '../services/message-service';
+import * as uuid from 'uuid';
 
 export class SidebarPanel implements vscode.WebviewViewProvider {
   _view?: vscode.WebviewView;
@@ -43,10 +43,13 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
     );
+    const cssUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'kanban.css')
+    );
 
     // Use a nonce to only allow a specific script to be run.
-    const nonce = getNonce();
-    const config = vscode.workspace.getConfiguration('clickup-kanban.config');
+    const nonce = uuid.v4();
+
     return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -59,6 +62,7 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
+				<link href="${cssUri}" rel="stylesheet">
         <script nonce="${nonce}">
             function initVsCode() {
               const vscode = acquireVsCodeApi();

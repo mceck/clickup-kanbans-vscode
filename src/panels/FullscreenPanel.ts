@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
-import { getNonce } from '../utils/getNonce';
 import MessageService from '../services/message-service';
-
+import * as uuid from 'uuid';
 export class FullscreenPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
@@ -18,7 +17,11 @@ export class FullscreenPanel {
     return this.panels.get(this.name);
   }
 
-  public static createOrShow(extensionUri: vscode.Uri, compiled: string) {
+  public static createOrShow(
+    extensionUri: vscode.Uri,
+    js?: string,
+    css?: string
+  ) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
@@ -51,14 +54,15 @@ export class FullscreenPanel {
 
     this.panels.set(
       this.name,
-      new FullscreenPanel(panel, extensionUri, compiled)
+      new FullscreenPanel(panel, extensionUri, js, css)
     );
   }
 
   constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    private compiled: string
+    private js?: string,
+    private css?: string
   ) {
     this._panel = panel;
     this._extensionUri = extensionUri;
@@ -111,16 +115,24 @@ export class FullscreenPanel {
     const styleResetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
     );
-    const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', this.compiled)
-    );
+    let scriptUri;
+    if (this.js) {
+      scriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', this.js)
+      );
+    }
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
     );
+    let cssUri;
+    if (this.css) {
+      cssUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', this.css)
+      );
+    }
 
     // Use a nonce to only allow a specific script to be run.
-    const nonce = getNonce();
-    const config = vscode.workspace.getConfiguration('clickup-kanban.config');
+    const nonce = uuid.v4();
 
     return `<!DOCTYPE html>
 			<html lang="en">
@@ -130,10 +142,13 @@ export class FullscreenPanel {
 					Use a content security policy to only allow loading images from https or from our extension directory,
 					and only allow scripts that have a specific nonce.
         -->
-        <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
+        <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${
+          webview.cspSource
+        }; script-src 'nonce-${nonce}';">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
+				<link href="${cssUri || '#'}" rel="stylesheet">
         <script nonce="${nonce}">
         function initVsCode() {
           const vscode = acquireVsCodeApi();
@@ -143,7 +158,7 @@ export class FullscreenPanel {
         </script>
 			</head>
       <body>
-				<script nonce="${nonce}" src="${scriptUri}"></script>
+				<script nonce="${nonce}" src="${scriptUri || '#'}"></script>
 			</body>
 			</html>`;
   }

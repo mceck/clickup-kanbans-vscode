@@ -7,6 +7,7 @@ import typescript from '@rollup/plugin-typescript';
 import { svelteSVG } from 'rollup-plugin-svelte-svg';
 import path from 'path';
 import fs from 'fs';
+import css from 'rollup-plugin-css-only';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -22,17 +23,13 @@ export default fs
         format: 'iife',
         name: 'app',
         file: 'out/compiled/' + name + '.js',
+        assetFileNames: name + '.css',
       },
       plugins: [
         svelte({
           compilerOptions: {
             // enable run-time checks when not in production
             dev: !production,
-            // we'll extract any component CSS out into
-            // a separate file - better for performance
-            css: (css) => {
-              css.write(name + '.css');
-            },
           },
           preprocess: sveltePreprocess({
             sourceMap: !production,
@@ -40,8 +37,10 @@ export default fs
               plugins: [require('tailwindcss'), require('autoprefixer')],
             },
           }),
-          emitCss: false,
+          emitCss: production,
         }),
+        // extract css
+        css(),
 
         // If you have external dependencies installed from
         // npm, you'll most likely need these plugins. In

@@ -21,6 +21,7 @@
   import collapse from '../../assets/collapse.svg';
   import check from '../../assets/check.svg';
   import git from '../../assets/git.svg';
+  import plus from '../../assets/plus.svg';
 
   export let name: string;
 
@@ -48,6 +49,7 @@
     collapse,
     check,
     git,
+    plus,
   };
 </script>
 

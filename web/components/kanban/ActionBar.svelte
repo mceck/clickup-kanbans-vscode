@@ -1,16 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import type { Task } from '../../interfaces/clickup';
-  import TimeTrackInput from '../commons/TimeTrackInput.svelte';
 
   import Icon from '../commons/Icon.svelte';
 
   export let task: Task;
   export let statuses: string[];
   export let expanded: boolean;
-
-  let timeTrackInput: HTMLInputElement;
-  let showTimeTrack = false;
 
   const dispatch = createEventDispatcher();
 
@@ -29,22 +25,14 @@
     dispatch('prev', nextStatus);
   }
 
-  function actionTimeTrack() {
-    showTimeTrack = true;
-    setTimeout(() => timeTrackInput.focus(), 0);
-  }
-
-  async function track(time: number) {
-    showTimeTrack = false;
-    dispatch('track', time);
+  function gitCheckout() {
+    dispatch('checkout');
   }
 
   function actionExpand() {
     dispatch('expand', !expanded);
   }
 </script>
-
-<svelte:window on:click={() => (showTimeTrack = false)} />
 
 <div class="relative">
   <div class="grid grid-cols-5 rounded overflow-hidden">
@@ -53,8 +41,8 @@
     >
     <button
       class="flex justify-center items-center"
-      on:click|stopPropagation={actionTimeTrack}
-      ><Icon class="h-6" name="clock" /></button
+      on:click|stopPropagation={gitCheckout}
+      ><Icon class="h-6" name="git" /></button
     >
     <button class="flex justify-center items-center" on:click={actionExpand}
       ><Icon class="h-6" name={expanded ? 'collapse' : 'expand'} /></button
@@ -68,19 +56,4 @@
       ><Icon class="h-6 rotate-180 transform" name="left" /></button
     >
   </div>
-  {#if showTimeTrack}
-    <div
-      class="absolute bottom-full z-10 bg-screen rounded-lg border border-gray-600 w-36 opacity-100"
-      on:click|stopPropagation
-    >
-      <TimeTrackInput
-        bind:timeTrackInput
-        on:submit={({ detail }) => track(detail)}
-        on:cancel={() => (showTimeTrack = false)}
-      />
-    </div>
-  {/if}
 </div>
-
-<style>
-</style>

@@ -1,11 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import type { PageFilters } from '../../interfaces/clickup';
   import Icon from '../commons/Icon.svelte';
   import StatusPicker from '../commons/StatusPicker.svelte';
   import TagPicker from '../commons/TagPicker.svelte';
 
-  export let viewMode;
-  export let filters;
+  export let viewMode: boolean;
+  export let filters: PageFilters;
 
   let collapsed = true;
 

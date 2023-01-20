@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
 
   import type {
+    Interval,
     PageFilters,
     Task,
     WorkspaceConfig,
@@ -16,17 +17,19 @@
   import Login from './Login.svelte';
   import Icon from '../commons/Icon.svelte';
   import AdditionalFilters from './AdditionalFilters.svelte';
+  import EditTracking from './EditTracking.svelte';
 
   let tasks: Task[] = [];
   let loading = false;
   let viewMode = false;
-  let trackedToday = '0.0h';
   let showSaveOptions = false;
   let loggedIn = true;
   let initErrors = false;
   let configFilters: PageFilters[] = [];
   let showConfigurations = false;
   let term = '';
+  let trackingToday: Interval[] = [];
+  let showTodayTrackEdit = false;
 
   let filters: PageFilters = {
     name: '',
@@ -40,7 +43,12 @@
     due_date_lt: undefined,
     subtasks: true,
     include_closed: false,
+    allTracking: false,
   };
+
+  $: trackedToday = `${(
+    trackingToday.reduce((a, t) => a + +t.duration, 0) / 3600000
+  ).toFixed(1)}h`;
 
   $: prefilteredTask = tasks?.filter(
     (t) => !term || t.name.toLowerCase().includes(term.trim().toLowerCase())
@@ -280,8 +288,11 @@
     });
 
     if (res.ok) {
-      const millis = res.data.reduce((p, v) => p + parseInt(v.duration), 0);
-      trackedToday = `${(millis / 3600000).toFixed(1)}h`;
+      trackingToday =
+        res.data.map((v) => ({
+          ...v,
+          duration: parseInt(v.duration || 0),
+        })) ?? [];
     }
   }
 
@@ -292,17 +303,47 @@
   function onLogin() {
     loadPage();
   }
+
+  async function deleteTrack(track: Interval) {
+    const result = await clickupService.deleteTimeTracked(
+      track.task.id,
+      track.id
+    );
+    showTodayTrackEdit = false;
+    if (result.ok) {
+      search();
+      clickupService.showToast('info', 'Tracking deleted');
+    }
+  }
+
+  async function updateTrack(interval: Interval, time: number) {
+    const result = await clickupService.updateTimeTracked(
+      interval.task.id,
+      interval.id,
+      {
+        start: interval.start,
+        end: +interval.start + time,
+        time,
+      }
+    );
+    showTodayTrackEdit = false;
+    if (result.ok) {
+      search();
+      clickupService.showStatusMessage('Time tracked');
+    }
+  }
 </script>
 
 <svelte:window
-  on:click={() => (showSaveOptions = showConfigurations = false)}
+  on:click={() =>
+    (showSaveOptions = showConfigurations = showTodayTrackEdit = false)}
   on:keydown={(e) =>
     e.key === 'Escape' && (showSaveOptions = showConfigurations = false)}
 />
 <div>
   <div>
     <div class="flex flex-col-reverse sm:justify-between items-center">
-      <div class="flex justify-between w-full">
+      <div class="flex justify-between w-full mt-3">
         <div class="w-36 sm:w-72 flex-none">
           <AssigneesSelector
             bind:selectedAssignees={filters.selectedAssignees}
@@ -355,10 +396,22 @@
           {/if}
         </div>
         <div class="flex justify-end items-center w-full mb-2">
-          <div class="flex w-6 items-center text-xs text-green-400">
+          <div
+            class="flex w-6 items-center text-xs text-green-400"
+            title="Time tracked today"
+            on:click|stopPropagation={() =>
+              (showTodayTrackEdit = !showTodayTrackEdit)}
+          >
             <Icon name="clock" class="w-3 mr-1 flex-none stroke-current" />
             <span>{trackedToday}</span>
           </div>
+          {#if showTodayTrackEdit}
+            <EditTracking
+              intervals={trackingToday}
+              on:update={({ detail }) => updateTrack(detail.track, detail.time)}
+              on:delete={({ detail }) => deleteTrack(detail)}
+            />
+          {/if}
           <button
             class="w-9 px-2 text-xs flex-none ml-4 flex items-center"
             title={viewMode ? 'Switch to filter mode' : 'Switch to view mode'}

@@ -10,23 +10,24 @@
   import TimeTrackInput from '../commons/TimeTrackInput.svelte';
   import Icon from '../commons/Icon.svelte';
   import TaskDetail from './TaskDetail.svelte';
+  import EditTracking from './EditTracking.svelte';
 
   export let task: Task;
   export let statusKeys: string[];
 
-  let timeTrackInput: HTMLInputElement;
-  let timeTrackText: string = '';
+  let addTimeTrackInput: HTMLInputElement;
   let showTracking = false;
-  let editTrack: Interval;
   let intervals: Interval[] = [];
   let expanded = false;
   let loadingIntervals = false;
+  let showAddTrack = false;
 
   const dispatch = createEventDispatcher();
 
   async function toggleTracks() {
     showTracking = !showTracking;
     if (showTracking && !intervals.length) {
+      showAddTrack = false;
       loadingIntervals = true;
       const res = await clickupService.findTimeTrack({ task_id: task.id });
       if (res.ok) {
@@ -34,20 +35,6 @@
       }
       loadingIntervals = false;
     }
-  }
-
-  function showEditTrack(track: Interval) {
-    if (editTrack) {
-      editTrack = undefined;
-      return;
-    }
-    editTrack = track;
-    setTimeout(() => {
-      timeTrackInput.focus();
-      timeTrackInput.select();
-    }, 0);
-    const t = moment(parseInt(track.duration as any))?.add(-1, 'hour');
-    timeTrackText = t.format('HH') + 'h ' + t.format('mm') + 'm';
   }
 
   async function deleteTrack(track) {
@@ -66,22 +53,13 @@
     }
   }
 
-  function toDate(time) {
-    return moment(parseInt(time)).format('DD/MM/YYYY');
-  }
-
-  function toTime(time) {
-    return moment(parseInt(time)).add(-1, 'hour').format('HH:mm');
-  }
-
   async function updateTrack(interval, time: number) {
-    editTrack = undefined;
     const result = await clickupService.updateTimeTracked(
       task.id,
       interval.id,
       {
         start: interval.start,
-        end: parseInt(interval.start) + time,
+        end: +interval.start + time,
         time,
       }
     );
@@ -91,6 +69,9 @@
         time_spent: (task.time_spent || 0) + time - parseInt(interval.duration),
       };
       dispatch('refresh', newTask);
+      intervals = intervals.map((i) =>
+        i.id === interval.id ? { ...i, duration: time } : i
+      );
       showTracking = false;
       clickupService.showStatusMessage('Time tracked');
     }
@@ -100,10 +81,6 @@
     navigator.clipboard
       .writeText(task.custom_id)
       .then(() => clickupService.showStatusMessage('Copied'));
-  }
-
-  function checkout() {
-    clickupService.gitCheckout(task.custom_id);
   }
 
   async function addAssignee(assignee: User) {
@@ -148,7 +125,15 @@
     }
   }
 
+  function startAddTrack() {
+    showAddTrack = true;
+    showTracking = false;
+
+    setTimeout(() => addTimeTrackInput.focus(), 0);
+  }
+
   async function trackTaskTime(task: Task, time: number) {
+    showAddTrack = false;
     const res = await clickupService.getTimeTracked(task.id);
     const interval =
       res.ok &&
@@ -189,88 +174,114 @@
     };
     dispatch('refresh', task);
   }
+
+  function gitCheckout(task: Task) {
+    clickupService.gitCheckout(task.custom_id);
+  }
 </script>
 
 <svelte:window
   on:click={() => {
     showTracking = false;
-    editTrack = undefined;
+    showAddTrack = false;
   }}
 />
 <div
   class="px-2 pt-6 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
 >
   <div
-    class="flex flex-col overflow-auto w-auto {expanded ? 'min-h-16' : 'h-16'}"
+    class="flex flex-col overflow-auto w-auto {expanded ? 'min-h-20' : 'h-20'}"
   >
-    <div class="absolute top-1 right-1">
-      <AssigneesSelector
-        anchor="right"
-        selectedAssignees={task.assignees}
-        on:add={(e) => addAssignee(e.detail)}
-        on:remove={(e) => removeAssignee(e.detail)}
-        maxShown={4}
-        small
-        manual
-      />
-    </div>
-    <div class="flex">
-      {#each task.tags as tag (tag.name)}
-        <span
-          class="w-12 px-1 rounded text-xs text-white shadow overflow-ellipsis whitespace-nowrap overflow-hidden"
-          style={`background-color: ${tag.tag_bg || '#1c1c1c'};`}
-          title={tag.name}>{tag.name}</span
-        >
-      {/each}
-    </div>
-    <p>
-      {task.name}
-    </p>
-    {#if expanded}
-      <TaskDetail {task} />
-    {/if}
-    {#if task.time_estimate}
-      <small
-        class="text-sm absolute left-2 top-1 text-gray-400"
-        title="Time estimated"
-      >
-        {(task.time_estimate / 3600000).toFixed(0)}h
-      </small>
-    {/if}
-    {#if task.time_spent}
-      <small
-        class="text-sm absolute text-green-500 left-12 -ml-2 top-1 cursor-pointer"
-        title="Time tracked"
-        on:click|stopPropagation={toggleTracks}
-      >
-        {(task.time_spent / 3600000).toFixed(1)}h
-      </small>
-    {/if}
-    {#if task.custom_id}
-      <div class="left-20 -ml-1 top-1 absolute flex items-center copy-hover">
-        <span
-          class="opacity-0 transition-opacity cursor-pointer"
-          on:click|stopPropagation={copyCustomId}
-        >
-          <Icon name="copy" class="w-3 text-yellow-100 stroke-current" />
-        </span>
-        <small
-          class="text-sm  text-yellow-600 cursor-pointer"
-          on:click|stopPropagation={copyCustomId}
-        >
-          {task.custom_id}
-        </small>
-        <span
-          class="ml-1 opacity-0 transition-opacity cursor-pointer"
-          on:click|stopPropagation={checkout}
-        >
-          <Icon
-            name="git"
-            class="w-3 text-orange-500 hover:text-orange-400 stroke-current"
-          />
-        </span>
+    <div
+      class="absolute left-0 top-0 px-2 pt-1 w-full flex items-center justify-between"
+    >
+      <div class="w-1/12 flex" title="Time estimated">
+        {#if task.time_estimate}
+          <small class="text-xs text-gray-400" title="Time estimated">
+            {(task.time_estimate / 3600000).toFixed(0)}h
+          </small>
+        {/if}
       </div>
-    {/if}
+      <div class="w-2/12 ml-1 flex" title="Time tracked">
+        {#if task.time_spent}
+          <small
+            class="text-xs text-green-500 cursor-pointer"
+            title="Time tracked"
+            on:click|stopPropagation={toggleTracks}
+          >
+            {(task.time_spent / 3600000).toFixed(1)}h
+          </small>
+        {/if}
+      </div>
+      <div
+        class="max-w-1/12 cursor-pointer"
+        on:click|stopPropagation={startAddTrack}
+        title="Add time track"
+      >
+        <Icon
+          name="plus"
+          class="w-3 text-green-400 hover:text-green-300 stroke-current"
+        />
+        {#if showAddTrack}
+          <div
+            class="absolute top-full z-10 bg-screen rounded-lg border border-gray-600 w-36 opacity-100"
+            on:click|stopPropagation
+          >
+            <TimeTrackInput
+              bind:timeTrackInput={addTimeTrackInput}
+              on:submit={({ detail }) => trackTaskTime(task, detail)}
+              on:cancel={() => (showAddTrack = false)}
+            />
+          </div>
+        {/if}
+      </div>
+      <div class="w-3/12 ml-1">
+        {#if task.custom_id}
+          <div class="-ml-1 flex items-center copy-hover">
+            <span
+              class="opacity-0 transition-opacity cursor-pointer"
+              on:click|stopPropagation={copyCustomId}
+            >
+              <Icon name="copy" class="w-3 text-yellow-100 stroke-current" />
+            </span>
+            <small
+              class="text-xs  text-yellow-600 cursor-pointer whitespace-nowrap"
+              on:click|stopPropagation={copyCustomId}
+            >
+              {task.custom_id}
+            </small>
+          </div>
+        {/if}
+      </div>
+      <div class="w-4/12 flex justify-end">
+        <AssigneesSelector
+          anchor="right"
+          selectedAssignees={task.assignees}
+          on:add={(e) => addAssignee(e.detail)}
+          on:remove={(e) => removeAssignee(e.detail)}
+          maxShown={4}
+          small
+          manual
+        />
+      </div>
+    </div>
+    <div class="h-full overflow-hidden">
+      <div class="flex mt-1">
+        {#each task.tags as tag (tag.name)}
+          <span
+            class="w-12 px-1 rounded text-xs text-white shadow overflow-ellipsis whitespace-nowrap overflow-hidden"
+            style={`background-color: ${tag.tag_bg || '#1c1c1c'};`}
+            title={tag.name}>{tag.name}</span
+          >
+        {/each}
+      </div>
+      <p>
+        {task.name}
+      </p>
+      {#if expanded}
+        <TaskDetail {task} />
+      {/if}
+    </div>
   </div>
   <div class="w-full px-2 pb-2 rounded shadow">
     <ActionBar
@@ -279,50 +290,17 @@
       {expanded}
       on:next={(e) => setTaskState(task, e.detail)}
       on:prev={(e) => setTaskState(task, e.detail)}
-      on:track={(e) => trackTaskTime(task, e.detail)}
+      on:checkout={(e) => gitCheckout(task)}
       on:expand={(e) => (expanded = !!e.detail)}
     />
   </div>
   {#if showTracking}
-    <div
-      class="absolute w-4/5 max-h-24 top-5 z-10 p-1 bg-screen rounded border border-gray-700 overflow-auto"
-      on:click|stopPropagation={() => (editTrack = undefined)}
-    >
-      {#if loadingIntervals}
-        <span class="animate-pulse">Loading...</span>
-      {:else if intervals.length === 0}
-        <span>Empty</span>
-      {/if}
-      {#each intervals as track (track.id)}
-        <div class="flex items-center">
-          <p class="text-xs text-gray-300 flex-auto">{toDate(track.start)}</p>
-          <p class="text-xs text-gray-300 flex-auto">
-            {toTime(track.duration)}
-          </p>
-          <button
-            class="flex-none w-8"
-            on:click|stopPropagation={() => showEditTrack(track)}
-            ><Icon name="edit" /></button
-          >
-          <button class="flex-none w-8" on:click={() => deleteTrack(track)}
-            ><Icon name="trash" /></button
-          >
-          {#if editTrack && editTrack.id === track.id}
-            <div
-              class="absolute left-20 text-xs z-10 bg-screen rounded-lg border border-gray-600 w-16 opacity-100"
-              on:click|stopPropagation
-            >
-              <TimeTrackInput
-                bind:timeTrackInput
-                bind:timeTrackText
-                on:submit={({ detail }) => updateTrack(track, detail)}
-                on:cancel={() => (editTrack = undefined)}
-              />
-            </div>
-          {/if}
-        </div>
-      {/each}
-    </div>
+    <EditTracking
+      {intervals}
+      loading={loadingIntervals}
+      on:update={({ detail }) => updateTrack(detail.track, detail.time)}
+      on:delete={({ detail }) => deleteTrack(detail)}
+    />
   {/if}
 </div>
 
@@ -331,7 +309,7 @@
     opacity: 1;
   }
 
-  .min-h-16 {
-    min-height: theme('spacing.16');
+  .min-h-20 {
+    min-height: theme('spacing.20');
   }
 </style>

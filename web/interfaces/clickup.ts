@@ -151,6 +151,7 @@ export interface Interval {
   source?: string;
   date_added?: number;
   user: User;
+  task: Task;
 }
 
 export interface WorkspaceConfig {
@@ -165,10 +166,11 @@ export interface PageFilters {
   selectedView: View;
   tags: string[];
   statuses: string[];
-  due_date_gt: undefined;
-  due_date_lt: undefined;
-  subtasks: true;
-  include_closed: false;
+  due_date_gt?: number;
+  due_date_lt?: number;
+  subtasks: boolean;
+  include_closed: boolean;
+  allTracking: boolean;
 }
 
 export interface View {

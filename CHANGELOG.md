@@ -21,6 +21,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.1.13]
+
+### Added
+
+- minor ux improvements
+
 ## [1.1.12]
 
 ### Fixed

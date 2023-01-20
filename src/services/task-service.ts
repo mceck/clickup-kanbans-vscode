@@ -1,33 +1,6 @@
 import * as vscode from 'vscode';
-import { exec as e } from 'child_process';
+import { exec } from '../utils/cmd';
 import { SelectOption } from '../utils/interfaces';
-
-function exec(cmd: string): Promise<string> {
-  return new Promise((res, rej) => {
-    try {
-      if (!vscode.workspace.workspaceFolders?.length) {
-        throw new Error('Open a workspace before executing commands');
-      }
-      e(
-        cmd,
-        { cwd: vscode.workspace.workspaceFolders[0].uri.path },
-        (err, stdout, stderr) => {
-          if (err) {
-            throw new Error(stderr);
-          }
-          res(
-            stdout
-              ?.split('\n')
-              .map((r) => r.trim())
-              .join('\n')
-          );
-        }
-      );
-    } catch (e) {
-      rej(e);
-    }
-  });
-}
 
 class TaskService {
   private get cmd() {
@@ -53,34 +26,43 @@ class TaskService {
 
     const stashed = await this.fixGitStatus();
 
-    const branchList = (await exec(this.cmd.gitBranches)).split('\n');
-    const existingBranch = branchList.find((b) => b.includes(customId));
-    if (existingBranch) {
-      // checkout existing branch
-      await this.gitCheckoutExisting(existingBranch);
-    } else {
-      // create new branch
-      // search develop branch in local branches to checkout from there
-      const devBranch = await this.getDefaultBranch(branchList);
-      if (devBranch) {
-        // select gitflow branch type feature/bugfix/hotfix...
-        const branchType = await vscode.window.showQuickPick(
-          this.gitflowOptions(customId)
-        );
-        if (branchType) {
-          // checkout and pull develop
-          await this.gitCheckoutPull(devBranch);
-          // checkout new branch
-          const branchName = `${branchType.id}/${customId}`;
-          await this.gitCheckoutNew(branchName);
+    try {
+      const branchList = (await exec(this.cmd.gitBranches)).split('\n');
+      const existingBranch = branchList.find((b) => b.includes(customId));
+      if (existingBranch) {
+        // checkout existing branch
+        await this.gitCheckoutExisting(existingBranch);
+      } else {
+        // create new branch
+        // search develop branch in local branches to checkout from there
+        const devBranch = await this.getDefaultBranch(branchList);
+        if (devBranch) {
+          // select gitflow branch type feature/bugfix/hotfix...
+          const branchType = await vscode.window.showQuickPick(
+            this.gitflowOptions(customId)
+          );
+          if (branchType) {
+            // checkout and pull develop
+            await this.gitCheckoutPull(devBranch);
+            // checkout new branch
+            const branchName = `${branchType.id}/${customId}`;
+            await this.gitCheckoutNew(branchName);
+          }
         }
       }
+      if (stashed) {
+        await exec(this.cmd.gitUnstash);
+      }
+      // refresh active terminal
+      vscode.window.activeTerminal?.sendText(String.fromCharCode(3));
+    } catch (e) {
+      // restore branch
+      this.gitCheckoutExisting(currentBranch, true);
+      if (stashed) {
+        await exec(this.cmd.gitUnstash);
+      }
+      throw e;
     }
-    if (stashed) {
-      await exec(this.cmd.gitUnstash);
-    }
-    // refresh active terminal
-    vscode.window.activeTerminal?.sendText(String.fromCharCode(3));
   }
 
   private async gitCheckoutNew(branch: string) {
@@ -114,9 +96,11 @@ class TaskService {
     return 'develop';
   }
 
-  private async gitCheckoutExisting(branch: string) {
+  private async gitCheckoutExisting(branch: string, muted = false) {
     const res = await exec(this.cmd.gitCheckout(branch));
-    vscode.window.showInformationMessage(res);
+    if (!muted) {
+      vscode.window.showInformationMessage(res);
+    }
   }
 
   private async fixGitStatus() {

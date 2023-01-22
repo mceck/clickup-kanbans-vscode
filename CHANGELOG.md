@@ -21,6 +21,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.1.14]
+
+### Added
+
+- cache last search
+
 ## [1.1.13]
 
 ### Added

@@ -54,13 +54,20 @@ export class FullscreenPanel {
 
     this.panels.set(
       this.name,
-      new FullscreenPanel(panel, extensionUri, js, css)
+      new FullscreenPanel(
+        panel,
+        extensionUri,
+        this.name,
+        js,
+        css,
+      )
     );
   }
 
   constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
+    private panelKey: string,
     private js?: string,
     private css?: string
   ) {
@@ -89,7 +96,7 @@ export class FullscreenPanel {
   }
 
   public dispose() {
-    FullscreenPanel.panels.delete(this.constructor.name);
+    FullscreenPanel.panels.delete(this.panelKey);
 
     // Clean up our resources
     this._panel.dispose();

@@ -1,6 +1,6 @@
 {
   "name": "clickup-kanban",
-  "displayName": "clickup-kanban",
+  "displayName": "Clickup Kanbans",
   "publisher": "mcdev",
   "repository": {
     "url": "https://github.com/mceck/clickup-kanbans-vscode"

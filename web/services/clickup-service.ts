@@ -187,6 +187,14 @@ class ClickupService {
   gitCheckout(customId: string) {
     return this.sendMessage({ type: 'gitCheckout', customId }, 90000);
   }
+
+  getCache(key: string) {
+    return this.sendMessage({ type: 'getCache', key });
+  }
+
+  setCache(key: string, value: any) {
+    return this.sendMessage({ type: 'setCache', key, value });
+  }
 }
 
 export default new ClickupService();

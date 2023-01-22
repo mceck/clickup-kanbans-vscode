@@ -108,10 +108,9 @@
     if (!loggedIn) {
       return;
     }
-    search();
-    if ($spacesTree.spaces.length > 0) {
-      return;
-    }
+
+    await loadCache();
+    search(!tasks.length);
 
     clickupService
       .getAllLists()
@@ -138,12 +137,21 @@
     );
   }
 
-  async function search() {
+  async function loadCache() {
+    const { data } = await clickupService.getCache('tasks');
+    tasks = data || [];
+  }
+
+  async function updateCache() {
+    await clickupService.setCache('tasks', tasks);
+  }
+
+  async function search(load = true) {
     if (viewMode) {
       if (!filters.selectedView) {
         return;
       }
-      loading = true;
+      loading = load;
       const { data } = await clickupService.getViewTasks(
         filters.selectedView.id
       );
@@ -152,7 +160,7 @@
       if (!hasFilters()) {
         return;
       }
-      loading = true;
+      loading = load;
       const params: any = {
         subtasks: !!filters.subtasks,
         include_closed: !!filters.include_closed,
@@ -186,6 +194,7 @@
 
       tasks = data || [];
     }
+    await updateCache();
 
     loading = false;
     refreshTimeTracked();
@@ -357,9 +366,9 @@
             bind:selectedView={filters.selectedView}
             right
             {viewMode}
-            on:selectView={search}
-            on:selectList={search}
-            on:removeList={search}
+            on:selectView={() => search()}
+            on:selectList={() => search()}
+            on:removeList={() => search()}
           />
         </div>
       </div>
@@ -445,7 +454,7 @@
           </button>
           <button
             class="w-9 px-2 flex-none ml-2 flex items-center"
-            on:click={search}
+            on:click={() => search()}
           >
             <Icon name="refresh" class="w-full" title="Reload" />
           </button>

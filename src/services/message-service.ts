@@ -1,27 +1,11 @@
 import * as vscode from 'vscode';
+import { CacheProvider } from '../providers/cache-provider';
 import clickupService from './clickup-service';
 import loginService from './login-service';
 import taskService from './task-service';
 
 export default class MessageService {
   constructor(private webview: vscode.Webview) {}
-
-  private async sendResponse(fetchData: Function, nonce: string) {
-    try {
-      const result = await fetchData();
-      this.webview.postMessage({
-        ok: true,
-        data: result,
-        nonce,
-      });
-    } catch (e: any) {
-      this.webview.postMessage({
-        ok: false,
-        error: e?.message || 'generic_error',
-        nonce,
-      });
-    }
-  }
 
   onInfo(query: any) {
     if (!query.value) {
@@ -203,6 +187,39 @@ export default class MessageService {
   gitCheckout(query: any) {
     const { nonce, customId } = query;
     this.sendResponse(() => taskService.gitCheckout(customId), nonce);
+  }
+
+  getCache(query: any) {
+    const { nonce, key } = query;
+    this.sendResponse(
+      () => Promise.resolve(CacheProvider.instance.get(key)),
+      nonce
+    );
+  }
+
+  setCache(query: any) {
+    const { nonce, key, value } = query;
+    this.sendResponse(
+      () => Promise.resolve(CacheProvider.instance.set(key, value)),
+      nonce
+    );
+  }
+
+  private async sendResponse(fetchData: Function, nonce: string) {
+    try {
+      const result = await fetchData();
+      this.webview.postMessage({
+        ok: true,
+        data: result,
+        nonce,
+      });
+    } catch (e: any) {
+      this.webview.postMessage({
+        ok: false,
+        error: e?.message || 'generic_error',
+        nonce,
+      });
+    }
   }
 
   onVsMessage(data: any) {

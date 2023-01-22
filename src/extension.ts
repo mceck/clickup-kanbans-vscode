@@ -1,11 +1,14 @@
 import * as vscode from 'vscode';
 import { SidebarPanel } from './panels/SidebarPanel';
 import Commands from './commands/handlers';
+import { CacheProvider } from './providers/cache-provider';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log(
     'Congratulations, your extension "clickup-kanban" is now active!'
   );
+
+  CacheProvider.init(context);
   const sidebarPanel = new SidebarPanel(context.extensionUri);
   const commands = new Commands(context);
 

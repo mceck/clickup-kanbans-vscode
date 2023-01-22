@@ -144,7 +144,9 @@
 
   async function loadCache() {
     const results = await Promise.all([
-      clickupService.getCache('tasks'),
+      mode === 'timesheet'
+        ? Promise.resolve({ data: [] })
+        : clickupService.getCache('tasks'),
       clickupService.getCache('spaces'),
       clickupService.getCache('users'),
       clickupService.getCache('expiration'),
@@ -162,6 +164,9 @@
   }
 
   async function updateTasksCache() {
+    if (mode === 'timesheet') {
+      return;
+    }
     await clickupService.setCache('tasks', tasks);
   }
 
@@ -349,6 +354,7 @@
 
   function handleForceRefresh(e: KeyboardEvent) {
     if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+      search();
       loadStores();
     }
   }

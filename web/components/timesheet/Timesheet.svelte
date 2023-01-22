@@ -83,15 +83,28 @@
     editing = { taskId, day };
     setTimeout(() => inputsRef[`${taskId}_${day}`]?.focus(), 0);
   }
+
+  function goWeek(add: number) {
+    trackedWeek = moment(trackedWeek)
+      .add(7 * add, 'days')
+      .format('YYYY-[W]WW');
+    changeWeek();
+  }
 </script>
 
 <svelte:window on:click={() => (editing = null)} />
 <div>
   <div class="flex items-center mt-2 mb-4">
     <p>Week:</p>
-    <div class="ml-2 w-56">
+    <span class="cursor-pointer" on:click={() => goWeek(-1)}
+      ><Icon name="chevron" class="w-6 rotate-90 ml-2" /></span
+    >
+    <div class="mx-2 w-56">
       <input type="week" bind:value={trackedWeek} on:change={changeWeek} />
     </div>
+    <span class="cursor-pointer" on:click={() => goWeek(1)}
+      ><Icon name="chevron" class="w-6 -rotate-90" /></span
+    >
   </div>
 
   <div class="flex flex-wrap w-full">

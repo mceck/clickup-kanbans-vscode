@@ -14,6 +14,10 @@ Use button on sidebar or command Clickup>Open kanban to open full screen view
 
 ![preview](media/docs/preview.png)
 
+Use command Clickup>Open timesheet to open timesheet view
+
+![preview](media/docs/timesheet.png)
+
 #### view mode
 
 ![preview](media/docs/view-mode.png)

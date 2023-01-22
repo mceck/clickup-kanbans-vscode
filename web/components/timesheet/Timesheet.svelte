@@ -97,7 +97,7 @@
   <div class="flex flex-wrap w-full">
     <div class="flex w-full items-center mb-3 text-lg font-bold">
       <p class="w-1/12"><Icon class="w-6" name="star" /></p>
-      <p class="w-6/12 align-baseline">
+      <p class="w-6/12">
         Task <span class="font-normal text-sm italic float-right pt-1 mr-8"
           >{moment(trackedWeek).format('DD/MM/yyyy')} - {moment(trackedWeek)
             .add(4, 'days')

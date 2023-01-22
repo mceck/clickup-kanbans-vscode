@@ -5,7 +5,7 @@
   import clickupService from '../../services/clickup-service';
   import Icon from '../commons/Icon.svelte';
   import TimeTrackInput from '../commons/TimeTrackInput.svelte';
-  import { toHours, toTimeInput } from '../utils/formatters';
+  import { toHours, toTime, toTimeInput } from '../utils/formatters';
 
   export let tasks: Task[];
   export let trackings: Interval[];
@@ -180,6 +180,7 @@
                 totalForTaskDay(trackings, task.id, 0)
               )}
               on:submit={({ detail: time }) => updateTrack(task, 0, time)}
+              on:cancel={() => (editing = null)}
             />
           {:else}
             <span
@@ -187,7 +188,7 @@
               class:text-neutral-600={totalForTaskDay(trackings, task.id, 0) ===
                 0}
             >
-              {toHours(totalForTaskDay(trackings, task.id, 0))}
+              {toTime(totalForTaskDay(trackings, task.id, 0))}
             </span>
           {/if}
         </p>
@@ -200,6 +201,7 @@
                 totalForTaskDay(trackings, task.id, 1)
               )}
               on:submit={({ detail: time }) => updateTrack(task, 1, time)}
+              on:cancel={() => (editing = null)}
             />
           {:else}
             <span
@@ -207,7 +209,7 @@
               class:text-neutral-600={totalForTaskDay(trackings, task.id, 1) ===
                 0}
             >
-              {toHours(totalForTaskDay(trackings, task.id, 1))}
+              {toTime(totalForTaskDay(trackings, task.id, 1))}
             </span>
           {/if}
         </p>
@@ -220,6 +222,7 @@
                 totalForTaskDay(trackings, task.id, 2)
               )}
               on:submit={({ detail: time }) => updateTrack(task, 2, time)}
+              on:cancel={() => (editing = null)}
             />
           {:else}
             <span
@@ -227,7 +230,7 @@
               class:text-neutral-600={totalForTaskDay(trackings, task.id, 2) ===
                 0}
             >
-              {toHours(totalForTaskDay(trackings, task.id, 2))}
+              {toTime(totalForTaskDay(trackings, task.id, 2))}
             </span>
           {/if}
         </p>
@@ -240,6 +243,7 @@
                 totalForTaskDay(trackings, task.id, 3)
               )}
               on:submit={({ detail: time }) => updateTrack(task, 3, time)}
+              on:cancel={() => (editing = null)}
             />
           {:else}
             <span
@@ -247,7 +251,7 @@
               class:text-neutral-600={totalForTaskDay(trackings, task.id, 3) ===
                 0}
             >
-              {toHours(totalForTaskDay(trackings, task.id, 3))}
+              {toTime(totalForTaskDay(trackings, task.id, 3))}
             </span>
           {/if}
         </p>
@@ -260,6 +264,7 @@
                 totalForTaskDay(trackings, task.id, 4)
               )}
               on:submit={({ detail: time }) => updateTrack(task, 4, time)}
+              on:cancel={() => (editing = null)}
             />
           {:else}
             <span
@@ -267,7 +272,7 @@
               class:text-neutral-600={totalForTaskDay(trackings, task.id, 4) ===
                 0}
             >
-              {toHours(totalForTaskDay(trackings, task.id, 4))}
+              {toTime(totalForTaskDay(trackings, task.id, 4))}
             </span>
           {/if}
         </p>

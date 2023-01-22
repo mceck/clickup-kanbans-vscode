@@ -17,6 +17,8 @@
 
   let inputsRef: Record<string, HTMLInputElement> = {};
 
+  const ferialDays = [0, 1, 2, 3, 4];
+
   const dispatch = createEventDispatcher();
 
   $: sortedTasks = [...tasks].sort((a, b) => {
@@ -117,50 +119,24 @@
             .format('DD/MM/yyyy')}</span
         >
       </p>
-      <p class="w-1/12">{moment(trackedWeek).add(0, 'days').format('ddd')}</p>
-      <p class="w-1/12">{moment(trackedWeek).add(1, 'days').format('ddd')}</p>
-      <p class="w-1/12">{moment(trackedWeek).add(2, 'days').format('ddd')}</p>
-      <p class="w-1/12">{moment(trackedWeek).add(3, 'days').format('ddd')}</p>
-      <p class="w-1/12">{moment(trackedWeek).add(4, 'days').format('ddd')}</p>
+      {#each ferialDays as day}
+        <p class="w-1/12">
+          {moment(trackedWeek).add(day, 'days').format('ddd')}
+        </p>
+      {/each}
     </div>
     <div class="flex w-full items-center pb-3 border-b-4 border-neutral-800">
       <p class="w-1/12" />
       <p class="w-6/12" />
-      <p
-        class="w-1/12 {totalForDay(trackings, 0) === 3600000 * 8
-          ? 'text-green-500'
-          : 'text-red-400'}"
-      >
-        {toHours(totalForDay(trackings, 0))}
-      </p>
-      <p
-        class="w-1/12 {totalForDay(trackings, 1) === 3600000 * 8
-          ? 'text-green-500'
-          : 'text-red-400'}"
-      >
-        {toHours(totalForDay(trackings, 1))}
-      </p>
-      <p
-        class="w-1/12 {totalForDay(trackings, 2) === 3600000 * 8
-          ? 'text-green-500'
-          : 'text-red-400'}"
-      >
-        {toHours(totalForDay(trackings, 2))}
-      </p>
-      <p
-        class="w-1/12 {totalForDay(trackings, 3) === 3600000 * 8
-          ? 'text-green-500'
-          : 'text-red-400'}"
-      >
-        {toHours(totalForDay(trackings, 3))}
-      </p>
-      <p
-        class="w-1/12 {totalForDay(trackings, 4) === 3600000 * 8
-          ? 'text-green-500'
-          : 'text-red-400'}"
-      >
-        {toHours(totalForDay(trackings, 4))}
-      </p>
+      {#each ferialDays as day}
+        <p
+          class="w-1/12 {totalForDay(trackings, day) >= 3600000 * 8
+            ? 'text-green-500'
+            : 'text-red-400'}"
+        >
+          {toHours(totalForDay(trackings, day))}
+        </p>
+      {/each}
     </div>
     {#each sortedTasks as task (task.id)}
       <div class="flex w-full items-center py-4 border-b border-neutral-800">
@@ -171,111 +147,32 @@
           />
         </p>
         <p class="w-6/12">{task.name}</p>
-        <p class="w-1/12 pr-4" on:click|stopPropagation>
-          {#if editing && isEditing(task.id, 0)}
-            <TimeTrackInput
-              bind:timeTrackInput={inputsRef[`${task.id}_0`]}
-              class="nopady"
-              timeTrackText={toTimeInput(
-                totalForTaskDay(trackings, task.id, 0)
-              )}
-              on:submit={({ detail: time }) => updateTrack(task, 0, time)}
-              on:cancel={() => (editing = null)}
-            />
-          {:else}
-            <span
-              on:click|stopPropagation={() => toggleEdit(task.id, 0)}
-              class:text-neutral-600={totalForTaskDay(trackings, task.id, 0) ===
-                0}
-            >
-              {toTime(totalForTaskDay(trackings, task.id, 0))}
-            </span>
-          {/if}
-        </p>
-        <p class="w-1/12 pr-4" on:click|stopPropagation>
-          {#if editing && isEditing(task.id, 1)}
-            <TimeTrackInput
-              bind:timeTrackInput={inputsRef[`${task.id}_1`]}
-              class="nopady"
-              timeTrackText={toTimeInput(
-                totalForTaskDay(trackings, task.id, 1)
-              )}
-              on:submit={({ detail: time }) => updateTrack(task, 1, time)}
-              on:cancel={() => (editing = null)}
-            />
-          {:else}
-            <span
-              on:click|stopPropagation={() => toggleEdit(task.id, 1)}
-              class:text-neutral-600={totalForTaskDay(trackings, task.id, 1) ===
-                0}
-            >
-              {toTime(totalForTaskDay(trackings, task.id, 1))}
-            </span>
-          {/if}
-        </p>
-        <p class="w-1/12 pr-4" on:click|stopPropagation>
-          {#if editing && isEditing(task.id, 2)}
-            <TimeTrackInput
-              bind:timeTrackInput={inputsRef[`${task.id}_2`]}
-              class="nopady"
-              timeTrackText={toTimeInput(
-                totalForTaskDay(trackings, task.id, 2)
-              )}
-              on:submit={({ detail: time }) => updateTrack(task, 2, time)}
-              on:cancel={() => (editing = null)}
-            />
-          {:else}
-            <span
-              on:click|stopPropagation={() => toggleEdit(task.id, 2)}
-              class:text-neutral-600={totalForTaskDay(trackings, task.id, 2) ===
-                0}
-            >
-              {toTime(totalForTaskDay(trackings, task.id, 2))}
-            </span>
-          {/if}
-        </p>
-        <p class="w-1/12 pr-4" on:click|stopPropagation>
-          {#if editing && isEditing(task.id, 3)}
-            <TimeTrackInput
-              bind:timeTrackInput={inputsRef[`${task.id}_3`]}
-              class="nopady"
-              timeTrackText={toTimeInput(
-                totalForTaskDay(trackings, task.id, 3)
-              )}
-              on:submit={({ detail: time }) => updateTrack(task, 3, time)}
-              on:cancel={() => (editing = null)}
-            />
-          {:else}
-            <span
-              on:click|stopPropagation={() => toggleEdit(task.id, 3)}
-              class:text-neutral-600={totalForTaskDay(trackings, task.id, 3) ===
-                0}
-            >
-              {toTime(totalForTaskDay(trackings, task.id, 3))}
-            </span>
-          {/if}
-        </p>
-        <p class="w-1/12 pr-4" on:click|stopPropagation>
-          {#if editing && isEditing(task.id, 4)}
-            <TimeTrackInput
-              bind:timeTrackInput={inputsRef[`${task.id}_4`]}
-              class="nopady"
-              timeTrackText={toTimeInput(
-                totalForTaskDay(trackings, task.id, 4)
-              )}
-              on:submit={({ detail: time }) => updateTrack(task, 4, time)}
-              on:cancel={() => (editing = null)}
-            />
-          {:else}
-            <span
-              on:click|stopPropagation={() => toggleEdit(task.id, 4)}
-              class:text-neutral-600={totalForTaskDay(trackings, task.id, 4) ===
-                0}
-            >
-              {toTime(totalForTaskDay(trackings, task.id, 4))}
-            </span>
-          {/if}
-        </p>
+        {#each ferialDays as day}
+          <p class="w-1/12 pr-4" on:click|stopPropagation>
+            {#if editing && isEditing(task.id, day)}
+              <TimeTrackInput
+                bind:timeTrackInput={inputsRef[`${task.id}_${day}`]}
+                class="nopady"
+                timeTrackText={toTimeInput(
+                  totalForTaskDay(trackings, task.id, day)
+                )}
+                on:submit={({ detail: time }) => updateTrack(task, day, time)}
+                on:cancel={() => (editing = null)}
+              />
+            {:else}
+              <span
+                on:click|stopPropagation={() => toggleEdit(task.id, day)}
+                class:text-neutral-600={totalForTaskDay(
+                  trackings,
+                  task.id,
+                  day
+                ) === 0}
+              >
+                {toTime(totalForTaskDay(trackings, task.id, day))}
+              </span>
+            {/if}
+          </p>
+        {/each}
       </div>
     {/each}
   </div>

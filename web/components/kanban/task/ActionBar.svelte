@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import type { Task } from '../../interfaces/clickup';
+  import type { Task } from '../../../interfaces/clickup';
 
-  import Icon from '../commons/Icon.svelte';
+  import Icon from '../../commons/Icon.svelte';
 
   export let task: Task;
   export let statuses: string[];

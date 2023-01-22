@@ -16,6 +16,7 @@
   ],
   "activationEvents": [
     "onCommand:clickup-kanban.openKanban",
+    "onCommand:clickup-kanban.openTimesheet",
     "onCommand:clickup-kanban.setToken",
     "onCommand:clickup-kanban.setTeamId",
     "onView:clickup-kanban-sidebar"
@@ -48,6 +49,10 @@
         "title": "Clickup>Open kanban"
       },
       {
+        "command": "clickup-kanban.openTimesheet",
+        "title": "Clickup>Open timesheet"
+      },
+      {
         "command": "clickup-kanban.setToken",
         "title": "Clickup>Set token"
       },
@@ -70,6 +75,10 @@
         "clickup-kanban.config.vs-config": {
           "type": "object",
           "markdownDescription": "Default filters configuration"
+        },
+        "clickup-kanban.config.ts-config": {
+          "type": "object",
+          "markdownDescription": "Default filters configuration for timesheets"
         }
       }
     }

@@ -19,8 +19,10 @@ export class FullscreenPanel {
 
   public static createOrShow(
     extensionUri: vscode.Uri,
+    title: string,
     js?: string,
-    css?: string
+    css?: string,
+    svelteViewParam?: string
   ) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
@@ -36,7 +38,7 @@ export class FullscreenPanel {
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
       this.viewType,
-      'ClickupKanban',
+      title,
       column || vscode.ViewColumn.One,
       {
         // Enable javascript in the webview
@@ -60,6 +62,7 @@ export class FullscreenPanel {
         this.name,
         js,
         css,
+        svelteViewParam
       )
     );
   }
@@ -69,7 +72,8 @@ export class FullscreenPanel {
     extensionUri: vscode.Uri,
     private panelKey: string,
     private js?: string,
-    private css?: string
+    private css?: string,
+    private svelteViewParam?: string
   ) {
     this._panel = panel;
     this._extensionUri = extensionUri;
@@ -82,17 +86,10 @@ export class FullscreenPanel {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // // Handle messages from the webview
-    // this._panel.webview.onDidReceiveMessage(
-    //   (message) => {
-    //     switch (message.command) {
-    //       case "alert":
-    //         vscode.window.showErrorMessage(message.text);
-    //         return;
-    //     }
-    //   },
-    //   null,
-    //   this._disposables
-    // );
+    const webview = this._panel.webview;
+    webview.onDidReceiveMessage((e) =>
+      new MessageService(webview).onVsMessage(e)
+    );
   }
 
   public dispose() {
@@ -113,9 +110,6 @@ export class FullscreenPanel {
     const webview = this._panel.webview;
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
-    webview.onDidReceiveMessage((e) =>
-      new MessageService(webview).onVsMessage(e)
-    );
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
@@ -162,6 +156,7 @@ export class FullscreenPanel {
           return vscode;
         }
         const webVscode = initVsCode();
+        var __vs_svelte_view = '${this.svelteViewParam ?? ''}';
         </script>
 			</head>
       <body>

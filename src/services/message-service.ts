@@ -99,19 +99,19 @@ export default class MessageService {
   }
 
   saveConfig(query: any) {
-    const { nonce, global, ...configuration } = query;
+    const { nonce, global, configName, ...configuration } = query;
     this.sendResponse(async () => {
       const config = vscode.workspace.getConfiguration('clickup-kanban.config');
-      await config.update('vs-config', configuration, global);
+      await config.update(configName ?? 'vs-config', configuration, global);
       return configuration;
     }, nonce);
   }
 
   getConfig(query: any) {
-    const { nonce } = query;
+    const { nonce, configName } = query;
     this.sendResponse(async () => {
       const config = vscode.workspace.getConfiguration('clickup-kanban.config');
-      return config.get('vs-config');
+      return config.get(configName ?? 'vs-config');
     }, nonce);
   }
   getViewTasks(query: any) {

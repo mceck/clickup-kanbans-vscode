@@ -115,18 +115,24 @@ class ClickupService {
     return this.sendMessage({ type: 'updateTask', taskId, ...task });
   }
 
-  async saveConfig(config: WorkspaceConfig, global: boolean = true) {
+  async saveConfig(
+    config: WorkspaceConfig,
+    configName: string = 'vs-config',
+    global: boolean = true
+  ) {
     const ret = await this.sendMessage({
       type: 'saveConfig',
       global,
+      configName,
       ...config,
     });
     return ret;
   }
 
-  getConfig() {
+  getConfig(configName: string = 'vs-config') {
     return this.sendMessage({
       type: 'getConfig',
+      configName,
     });
   }
 
@@ -160,6 +166,9 @@ class ClickupService {
     });
     const results = await Promise.all(promises);
     for (let i = 0; i < results.length; i++) {
+      if (!results[i].ok) {
+        throw new Error(results[i].error);
+      }
       const res = results[i].data;
       const space = spacesTree.spaces.find((s) => s?.id === res[0]?.space.id);
       if (!space) {

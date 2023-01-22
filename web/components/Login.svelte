@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import clickupService from '../../services/clickup-service';
+  import clickupService from '../services/clickup-service';
 
   const dispatch = createEventDispatcher();
   let personalToken = '';

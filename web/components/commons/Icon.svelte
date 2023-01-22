@@ -22,6 +22,8 @@
   import check from '../../assets/check.svg';
   import git from '../../assets/git.svg';
   import plus from '../../assets/plus.svg';
+  import star from '../../assets/star.svg';
+  import starEmpty from '../../assets/star-empty.svg';
 
   export let name: string;
 
@@ -50,6 +52,8 @@
     check,
     git,
     plus,
+    star,
+    'star-empty': starEmpty,
   };
 </script>
 

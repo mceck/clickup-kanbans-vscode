@@ -21,6 +21,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task creation
 - drag and drop
 
+## [1.2.0]
+
+### Added
+
+- timesheet view (cmd Clickup>Open timesheet)
+- cache assignees and lists
+
+### Fixed
+
+- fullscreen view refresh issue
+
 ## [1.1.14]
 
 ### Added

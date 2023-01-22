@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Comment, CommentDetail } from '../../interfaces/clickup';
-  import Icon from '../commons/Icon.svelte';
+  import type { Comment, CommentDetail } from '../../../interfaces/clickup';
+  import Icon from '../../commons/Icon.svelte';
 
   export let comment: Comment;
   let showPreviews = false;

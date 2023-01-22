@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Task, Comment } from '../../interfaces/clickup';
-  import clickupService from '../../services/clickup-service';
-  import AssigneeBadge from '../commons/assignees-selector/AssigneeBadge.svelte';
-  import Icon from '../commons/Icon.svelte';
+  import type { Task, Comment } from '../../../interfaces/clickup';
+  import clickupService from '../../../services/clickup-service';
+  import AssigneeBadge from '../../commons/assignees-selector/AssigneeBadge.svelte';
+  import Icon from '../../commons/Icon.svelte';
   import CommentText from './CommentText.svelte';
 
   export let task: Task;

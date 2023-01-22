@@ -1,9 +1,10 @@
 <script lang="ts">
   import moment from 'moment';
   import { createEventDispatcher } from 'svelte';
-  import type { Interval } from '../../interfaces/clickup';
-  import Icon from '../commons/Icon.svelte';
-  import TimeTrackInput from '../commons/TimeTrackInput.svelte';
+  import type { Interval } from '../../../interfaces/clickup';
+  import Icon from '../../commons/Icon.svelte';
+  import TimeTrackInput from '../../commons/TimeTrackInput.svelte';
+  import { toDate, toTime, toTimeInput } from '../../utils/formatters';
 
   export let intervals: Interval[];
   export let loading: boolean = false;
@@ -13,14 +14,6 @@
   let timeTrackText: string = '';
 
   const dispatch = createEventDispatcher();
-
-  function toDate(time) {
-    return moment(parseInt(time)).format('DD/MM/YYYY');
-  }
-
-  function toTime(time) {
-    return moment(parseInt(time)).add(-1, 'hour').format('HH:mm');
-  }
 
   function showEditTrack(track: Interval) {
     if (editTrack) {
@@ -32,8 +25,7 @@
       timeTrackInput.focus();
       timeTrackInput.select();
     }, 0);
-    const t = moment(parseInt(track.duration as any))?.add(-1, 'hour');
-    timeTrackText = t.format('HH') + 'h ' + t.format('mm') + 'm';
+    timeTrackText = toTimeInput(track.duration);
   }
 </script>
 

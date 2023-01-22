@@ -1,25 +1,30 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from 'svelte';
 
-  export let timeTrackText: string = "";
+  export let timeTrackText: string = '';
   export let timeTrackInput: HTMLInputElement = null;
 
   const dispatch = createEventDispatcher();
   const regex = /((\d?\d(.\d)?)\s?(h))|((\d?\d)\s?(m))/gi;
 
   function handleInputs(e) {
-    if (e.key === "Escape") {
-      dispatch("cancel");
+    if (e.key === 'Escape') {
+      dispatch('cancel');
       return;
     }
     const match = timeTrackText.match(regex)?.filter((m) => m.trim());
     if (!match) {
+      const t = timeTrackText.replace(',', '.');
+      if (t.match(/^[\d.]+$/) && e.key === 'Enter') {
+        const millis = parseFloat(t) * 3600000;
+        dispatch('submit', millis);
+      }
       return;
     }
     let hours = 0;
     let mins = 0;
     for (let a of match) {
-      for (let m of a.split(" ")) {
+      for (let m of a.split(' ')) {
         if (m.match(/h$/i)) {
           hours += parseFloat(m);
         }
@@ -32,14 +37,15 @@
       return;
     }
     const millis = mins * 60000 + hours * 3600000;
-    dispatch("input", millis);
-    if (e.key === "Enter") {
-      dispatch("submit", millis);
+    dispatch('input', millis);
+    if (e.key === 'Enter') {
+      dispatch('submit', millis);
     }
   }
 </script>
 
 <input
+  class={$$props.class}
   placeholder="es. 1h 30m"
   bind:value={timeTrackText}
   bind:this={timeTrackInput}

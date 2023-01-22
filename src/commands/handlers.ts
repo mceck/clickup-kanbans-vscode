@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { MainPanel } from '../panels/MainPanel';
+import { TimesheetPanel } from '../panels/TimesheetPanel';
 import clickupService from '../services/clickup-service';
 import loginService from '../services/login-service';
 import { SelectOption } from '../utils/interfaces';
@@ -11,12 +12,17 @@ export default class Commands {
     /* eslint-disable @typescript-eslint/naming-convention */
     return Object.entries({
       'clickup-kanban.openKanban': () => this.onOpenKanban(),
+      'clickup-kanban.openTimesheet': () => this.onOpenTimesheet(),
       'clickup-kanban.setToken': () => this.setToken(),
       'clickup-kanban.setTeamId': () => this.setTeamId(),
     });
   }
   private onOpenKanban() {
     MainPanel.createOrShow(this.context.extensionUri);
+  }
+
+  private onOpenTimesheet() {
+    TimesheetPanel.createOrShow(this.context.extensionUri);
   }
 
   private async setToken() {

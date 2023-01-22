@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte';
 
   import type { Status, Task } from '../../interfaces/clickup';
-  import TaskCard from './TaskCard.svelte';
+  import TaskCard from './task/TaskCard.svelte';
 
   import { spacesTree } from '../../store/spaces-tree';
   import Icon from '../commons/Icon.svelte';

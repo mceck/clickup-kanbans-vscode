@@ -69,6 +69,7 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
               return vscode;
             }
             const webVscode = initVsCode();
+            const __vs_svelte_view = 'kanban';
         </script>
 			</head>
       <body style="overflow: scroll">

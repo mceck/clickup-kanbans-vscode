@@ -3,14 +3,15 @@
 
   import { createEventDispatcher } from 'svelte';
 
-  import type { Interval, Task, User } from '../../interfaces/clickup';
-  import clickupService from '../../services/clickup-service';
+  import type { Interval, Task, User } from '../../../interfaces/clickup';
+  import clickupService from '../../../services/clickup-service';
   import ActionBar from './ActionBar.svelte';
-  import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
-  import TimeTrackInput from '../commons/TimeTrackInput.svelte';
-  import Icon from '../commons/Icon.svelte';
+  import AssigneesSelector from '../../commons/assignees-selector/AssigneesSelector.svelte';
+  import TimeTrackInput from '../../commons/TimeTrackInput.svelte';
+  import Icon from '../../commons/Icon.svelte';
   import TaskDetail from './TaskDetail.svelte';
   import EditTracking from './EditTracking.svelte';
+  import { toHours } from '../../utils/formatters';
 
   export let task: Task;
   export let statusKeys: string[];
@@ -43,7 +44,7 @@
       intervals = intervals.filter((i) => i.id !== track.id);
       const newTask = {
         ...task,
-        time_spent: parseInt(task.time_spent as any) - parseInt(track.duration),
+        time_spent: +task.time_spent - +track.duration,
       };
       if (intervals.length === 0) {
         showTracking = false;
@@ -198,7 +199,7 @@
       <div class="w-1/12 flex" title="Time estimated">
         {#if task.time_estimate}
           <small class="text-xs text-gray-400" title="Time estimated">
-            {(task.time_estimate / 3600000).toFixed(0)}h
+            {toHours(task.time_estimate, 0)}
           </small>
         {/if}
       </div>
@@ -209,7 +210,7 @@
             title="Time tracked"
             on:click|stopPropagation={toggleTracks}
           >
-            {(task.time_spent / 3600000).toFixed(1)}h
+            {toHours(task.time_spent)}
           </small>
         {/if}
       </div>

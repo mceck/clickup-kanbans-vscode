@@ -9,17 +9,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### TODO
 
 - support for space views and folder views in "view mode" (actually only list views can be selected from the picker)
+- try to merge filter and view mode in a single filter
+- task attachments list and download/preview
+- drag and drop
+- more cli commands
 - add comment
 - tag editing
-
-### TODO maybe
-
-- task content and comments edit
-- task attachments list and download/preview
-- monade timesheets
-- more cli commands
 - task creation
-- drag and drop
+
+## [1.2.1]
+
+### Added
+
+- minor timesheet ui improvements
 
 ## [1.2.0]
 

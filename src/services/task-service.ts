@@ -53,8 +53,6 @@ class TaskService {
       if (stashed) {
         await exec(this.cmd.gitUnstash);
       }
-      // refresh active terminal
-      vscode.window.activeTerminal?.sendText(String.fromCharCode(3));
     } catch (e) {
       // restore branch
       this.gitCheckoutExisting(currentBranch, true);

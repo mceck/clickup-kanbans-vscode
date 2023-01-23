@@ -316,40 +316,50 @@
     );
     tracks.reverse();
     const sum = tracks.reduce((acc, t) => acc + +t.duration, 0);
-    if (time > 0) {
-      // add new track
-      await clickupService.createTimeTrack(task.id, {
-        start: moment(day).startOf('day').valueOf(),
-        time,
-      });
-    } else if (sum >= absTime) {
-      // diff tracks
-      let acc = 0;
-      const toDelete = tracks.filter((t) => {
-        const ret = acc < absTime;
-        acc += +t.duration;
-        return ret;
-      });
+    loading = true;
 
-      const toAdd = toDelete.reduce((acc, t) => acc + +t.duration, 0) - absTime;
-      if (toAdd) {
+    try {
+      if (time > 0) {
+        // add new track
         await clickupService.createTimeTrack(task.id, {
           start: moment(day).startOf('day').valueOf(),
-          time: toAdd,
+          time,
         });
-      }
+      } else if (sum >= absTime) {
+        // diff tracks
+        let acc = 0;
+        const toDelete = tracks.filter((t) => {
+          const ret = acc < absTime;
+          acc += +t.duration;
+          return ret;
+        });
 
-      for (let del of toDelete) {
-        await clickupService.deleteTimeTracked(task.id, del.id);
+        const toAdd =
+          toDelete.reduce((acc, t) => acc + +t.duration, 0) - absTime;
+        if (toAdd) {
+          await clickupService.createTimeTrack(task.id, {
+            start: moment(day).startOf('day').valueOf(),
+            time: toAdd,
+          });
+        }
+
+        for (let del of toDelete) {
+          await clickupService.deleteTimeTracked(task.id, del.id);
+        }
+      } else {
+        throw new Error("Can't update trackings");
       }
-    } else {
-      throw new Error("Can't update trackings");
+      updateTask({
+        ...task,
+        time_spent: +task.time_spent + time,
+      });
+      // wait for clickup...
+      await new Promise((r) => setTimeout(r, 500));
+      refreshTimeTracked();
+    } catch (error) {
+      loading = false;
+      throw error;
     }
-    updateTask({
-      ...task,
-      time_spent: +task.time_spent + time,
-    });
-    refreshTimeTracked();
   }
 
   function handleForceRefresh(e: KeyboardEvent) {

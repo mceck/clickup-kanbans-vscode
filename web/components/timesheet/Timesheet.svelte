@@ -83,7 +83,10 @@
 
   function toggleEdit(taskId: string, day: number) {
     editing = { taskId, day };
-    setTimeout(() => inputsRef[`${taskId}_${day}`]?.focus(), 0);
+    setTimeout(() => {
+      inputsRef[`${taskId}_${day}`]?.focus();
+      inputsRef[`${taskId}_${day}`]?.select();
+    }, 0);
   }
 
   function goWeek(add: number) {

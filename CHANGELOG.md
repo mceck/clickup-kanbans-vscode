@@ -17,6 +17,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation
 
+## [1.2.2]
+
+### Fixed
+
+- fix spinner on update timesheet
+
 ## [1.2.1]
 
 ### Added

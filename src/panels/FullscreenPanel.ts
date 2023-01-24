@@ -30,9 +30,8 @@ export class FullscreenPanel {
 
     // If we already have a panel, show it.
     if (this.currentPanel) {
-      this.currentPanel._panel.reveal(column);
-      this.currentPanel._update();
-      return;
+      this.currentPanel.dispose();
+      this.panels.delete(this.name);
     }
 
     // Otherwise, create a new panel.

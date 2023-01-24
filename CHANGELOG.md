@@ -16,6 +16,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation from template
 
+## [1.2.5]
+
+### Fixed
+
+- fix switch opened view issue
+
 ## [1.2.4]
 
 ### Added

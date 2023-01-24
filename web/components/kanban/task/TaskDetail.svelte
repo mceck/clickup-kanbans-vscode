@@ -33,6 +33,7 @@
 
   async function sendComment(e: KeyboardEvent) {
     if (newComment && e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       const { ok } = await clickupService.createTaskComment(task.id, {
         comment_text: newComment,
         notify_all: true,

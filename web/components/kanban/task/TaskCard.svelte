@@ -191,7 +191,7 @@
   class="px-2 pt-6 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
 >
   <div
-    class="flex flex-col overflow-auto w-auto {expanded ? 'min-h-20' : 'h-20'}"
+    class="flex flex-col overflow-auto w-auto {expanded ? 'min-h-24' : 'h-24'}"
   >
     <div
       class="absolute left-0 top-0 px-2 pt-1 w-full flex items-center justify-between"
@@ -267,6 +267,7 @@
       </div>
     </div>
     <div class="h-full overflow-hidden">
+      <div class="text-xs text-neutral-500">{task.list.name}</div>
       <div class="flex mt-1">
         {#each task.tags as tag (tag.name)}
           <span

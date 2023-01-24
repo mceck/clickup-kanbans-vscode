@@ -17,6 +17,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation
 
+## [1.2.3]
+
+### Fixed
+
+- unstar timesheet tasks
+
 ## [1.2.2]
 
 ### Fixed

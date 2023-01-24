@@ -111,6 +111,10 @@ class ClickupService extends BaseService {
     );
     return comments;
   }
+
+  async createTaskComment(taskId: string, comment: any) {
+    return this.doPost(`/v2/task/${taskId}/comment`, comment);
+  }
 }
 
 export default new ClickupService();

@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import type { Task, Comment } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
+  import { user } from '../../../store/users';
   import AssigneeBadge from '../../commons/assignees-selector/AssigneeBadge.svelte';
   import Icon from '../../commons/Icon.svelte';
   import CommentText from './CommentText.svelte';
@@ -11,6 +12,9 @@
   let comments: Comment[];
   let collapseDescription = true;
   let collapseComments = true;
+  let newComment = '';
+
+  const dispatch = createEventDispatcher();
 
   onMount(() => {
     loadTask();
@@ -26,6 +30,20 @@
     const res = await clickupService.getTaskComments(task.id);
     comments = res.data;
   }
+
+  async function sendComment(e: KeyboardEvent) {
+    if (newComment && e.key === 'Enter' && !e.shiftKey) {
+      const { ok } = await clickupService.createTaskComment(task.id, {
+        comment_text: newComment,
+        assignee: $user.id,
+        notify_all: true,
+      });
+      if (ok) {
+        newComment = '';
+        loadComments();
+      }
+    }
+  }
 </script>
 
 <div class="breakspaces">
@@ -39,32 +57,38 @@
     >
       {fullTask?.description}
     </div>
-    {#if comments.length}
-      <div class="border-t border-gray-500">
-        <div
-          class="cursor-pointer text-sm w-full my-2 flex items-center"
-          on:click={() => (collapseComments = !collapseComments)}
-        >
-          <span>Comments</span>
-          <Icon
-            class="w-4 ml-2 {!collapseComments && 'rotate-180'}"
-            name="chevron"
+    <div class="border-t border-gray-500">
+      <div
+        class="cursor-pointer text-sm w-full my-2 flex items-center"
+        on:click={() => (collapseComments = !collapseComments)}
+      >
+        <span>Comments</span>
+        <Icon
+          class="w-4 ml-2 {!collapseComments && 'rotate-180'}"
+          name="chevron"
+        />
+      </div>
+      {#if !collapseComments}
+        {#each comments as comment}
+          <div
+            class="flex items-start p-3 mb-2 bg-gray-800 rounded-lg text-gray-400"
+          >
+            <div class="w-6 flex-none">
+              <AssigneeBadge user={comment.user} />
+            </div>
+            <CommentText class="pl-2" {comment} />
+          </div>
+        {/each}
+        <div>
+          <textarea
+            class="p-2 mb-2 rounded"
+            placeholder="Add comment"
+            bind:value={newComment}
+            on:keydown={sendComment}
           />
         </div>
-        {#if !collapseComments}
-          {#each comments as comment}
-            <div
-              class="flex items-start p-3 mb-2 bg-gray-800 rounded-lg text-gray-400"
-            >
-              <div class="w-6 flex-none">
-                <AssigneeBadge user={comment.user} />
-              </div>
-              <CommentText class="pl-2" {comment} />
-            </div>
-          {/each}
-        {/if}
-      </div>
-    {/if}
+      {/if}
+    </div>
   {/if}
 </div>
 

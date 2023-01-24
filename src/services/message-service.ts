@@ -174,6 +174,14 @@ export default class MessageService {
     );
   }
 
+  createTaskComment(query: any) {
+    const { nonce, taskId, ...params } = query;
+    this.sendResponse(
+      () => clickupService.createTaskComment(taskId, params),
+      nonce
+    );
+  }
+
   showInput(query: any) {
     const { nonce, options } = query;
     this.sendResponse(() => vscode.window.showInputBox(options), nonce);

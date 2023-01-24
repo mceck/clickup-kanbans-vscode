@@ -17,6 +17,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation
 
+## [1.2.4]
+
+### Added
+
+- add comment to tasks
+
 ## [1.2.3]
 
 ### Fixed

@@ -13,15 +13,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - task attachments list and download/preview
 - drag and drop
 - more cli commands
-- add comment
 - tag editing
-- task creation
+- task creation from template
 
 ## [1.2.4]
 
 ### Added
 
 - add comment to tasks
+- add list name on task card
 
 ## [1.2.3]
 

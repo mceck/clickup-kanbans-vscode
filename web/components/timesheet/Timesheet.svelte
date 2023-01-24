@@ -73,7 +73,11 @@
   }
 
   async function star(taskId: string) {
-    starred = [...starred, taskId];
+    if (starred.includes(taskId)) {
+      starred = starred.filter((t) => t !== taskId);
+    } else {
+      starred = [...starred, taskId];
+    }
     await clickupService.setCache('starred', starred);
   }
 

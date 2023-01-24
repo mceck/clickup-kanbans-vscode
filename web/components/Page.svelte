@@ -337,10 +337,13 @@
         const toAdd =
           toDelete.reduce((acc, t) => acc + +t.duration, 0) - absTime;
         if (toAdd) {
-          await clickupService.createTimeTrack(task.id, {
+          const { ok, error } = await clickupService.createTimeTrack(task.id, {
             start: moment(day).startOf('day').valueOf(),
             time: toAdd,
           });
+          if (!ok) {
+            throw new Error(error);
+          }
         }
 
         for (let del of toDelete) {

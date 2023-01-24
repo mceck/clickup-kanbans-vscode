@@ -16,6 +16,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation from template
 
+## [1.2.6]
+
+### Fixed
+
+- add comment
+
 ## [1.2.5]
 
 ### Fixed

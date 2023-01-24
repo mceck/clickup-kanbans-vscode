@@ -35,7 +35,6 @@
     if (newComment && e.key === 'Enter' && !e.shiftKey) {
       const { ok } = await clickupService.createTaskComment(task.id, {
         comment_text: newComment,
-        assignee: $user.id,
         notify_all: true,
       });
       if (ok) {

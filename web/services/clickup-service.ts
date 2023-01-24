@@ -194,7 +194,7 @@ class ClickupService {
   }
 
   createTaskComment(taskId: string, comment: any) {
-    return this.sendMessage({ type: 'getTaskComment', taskId, ...comment });
+    return this.sendMessage({ type: 'createTaskComment', taskId, ...comment });
   }
 
   gitCheckout(customId: string) {

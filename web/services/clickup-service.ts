@@ -11,7 +11,7 @@ export interface ClickupServiceResponse {
 class ClickupService {
   private sendMessage(
     obj: any,
-    timeout = 10000
+    timeout = 30000
   ): Promise<ClickupServiceResponse> {
     return new Promise((res, err) => {
       const nonce = uuid.v4();
@@ -27,6 +27,7 @@ class ClickupService {
       };
       const stop = setTimeout(() => {
         window.removeEventListener('message', fn);
+        this.showToast('error', 'Timeout');
         err('timeout');
       }, timeout);
       const message = { ...obj, nonce };

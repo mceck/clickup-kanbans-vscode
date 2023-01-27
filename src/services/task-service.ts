@@ -1,17 +1,17 @@
-import * as vscode from 'vscode';
-import { exec } from '../utils/cmd';
-import { SelectOption } from '../utils/interfaces';
+import * as vscode from "vscode";
+import { exec } from "../utils/cmd";
+import { SelectOption } from "../utils/interfaces";
 
 class TaskService {
   private get cmd() {
     return {
-      gitStatus: 'git status --porcelain',
+      gitStatus: "git status --porcelain",
       gitBranches: "git for-each-ref --format '%(refname:short)' refs/heads/",
-      gitCurrent: 'git branch --show-current',
-      gitStash: 'git stash push --include-untracked --quiet',
-      gitUnstash: 'git stash apply --quiet',
+      gitCurrent: "git branch --show-current",
+      gitStash: "git stash push --include-untracked --quiet",
+      gitUnstash: "git stash apply --quiet",
       gitCheckout: (name: string, isNew: boolean = false) =>
-        `git checkout ${isNew ? '-b ' : ''}${name} --quiet`,
+        `git checkout ${isNew ? "-b " : ""}${name} --quiet`,
       gitDevAndPull: (dev: string) =>
         `git checkout ${dev} --quiet && git pull --quiet`,
     };
@@ -23,25 +23,26 @@ class TaskService {
       vscode.window.showInformationMessage(`Already on ${currentBranch}`);
       return;
     }
-
     const stashed = await this.fixGitStatus();
 
     try {
-      const branchList = (await exec(this.cmd.gitBranches)).split('\n');
+      const branchList = (await exec(this.cmd.gitBranches)).split("\n");
       const existingBranch = branchList.find((b) => b.includes(customId));
       if (existingBranch) {
         // checkout existing branch
         await this.gitCheckoutExisting(existingBranch);
       } else {
         // create new branch
-        // search develop branch in local branches to checkout from there
-        const devBranch = await this.getDefaultBranch(branchList);
-        if (devBranch) {
-          // select gitflow branch type feature/bugfix/hotfix...
-          const branchType = await vscode.window.showQuickPick(
-            this.gitflowOptions(customId)
-          );
-          if (branchType) {
+        // select gitflow branch type feature/bugfix/hotfix...
+        const branchType = await vscode.window.showQuickPick(
+          this.gitflowOptions(customId)
+        );
+        if (branchType) {
+          // search develop branch in local branches to checkout from there
+          const defaults =
+            branchType.id === "hotfix" ? ["master", "main"] : ["develop"];
+          const devBranch = await this.getDefaultBranch(branchList, defaults);
+          if (devBranch) {
             // checkout and pull develop
             await this.gitCheckoutPull(devBranch);
             // checkout new branch
@@ -78,8 +79,9 @@ class TaskService {
     }
   }
 
-  private async getDefaultBranch(branchList: string[]) {
-    if (!branchList.includes('develop')) {
+  private async getDefaultBranch(branchList: string[], defaults = ["develop"]) {
+    const branch = defaults.find((b) => branchList.includes(b));
+    if (!branch) {
       // not found, manually select
       return (
         await vscode.window.showQuickPick(
@@ -91,7 +93,7 @@ class TaskService {
         )
       )?.id;
     }
-    return 'develop';
+    return branch;
   }
 
   private async gitCheckoutExisting(branch: string, muted = false) {
@@ -104,12 +106,12 @@ class TaskService {
   private async fixGitStatus() {
     let res = await exec(this.cmd.gitStatus);
     if (res) {
-      if (res.includes('fatal')) {
-        throw new Error('Git is not initialized in the current project');
+      if (res.includes("fatal")) {
+        throw new Error("Git is not initialized in the current project");
       }
       res = await exec(this.cmd.gitStash);
       if (res) {
-        throw new Error('Cannot stash changes, checkout branch manually');
+        throw new Error("Cannot stash changes, checkout branch manually");
       }
       return true;
     }
@@ -119,22 +121,22 @@ class TaskService {
   private gitflowOptions(customId: string): SelectOption[] {
     return [
       {
-        id: 'feature',
+        id: "feature",
         label: `feature/${customId}`,
         description: `Create new feature branch`,
       },
       {
-        id: 'bugfix',
+        id: "bugfix",
         label: `bugfix/${customId}`,
         description: `Create new bugfix branch`,
       },
       {
-        id: 'hotfix',
+        id: "hotfix",
         label: `hotfix/${customId}`,
         description: `Create new hotfix branch`,
       },
       {
-        id: 'release',
+        id: "release",
         label: `release/${customId}`,
         description: `Create new release branch`,
       },

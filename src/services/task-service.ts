@@ -56,7 +56,7 @@ class TaskService {
       }
     } catch (e) {
       // restore branch
-      this.gitCheckoutExisting(currentBranch, true);
+      await this.gitCheckoutExisting(currentBranch, true);
       if (stashed) {
         await exec(this.cmd.gitUnstash);
       }

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import moment from 'moment';
-  import { createEventDispatcher, onMount } from 'svelte';
-  import type { Interval, Task } from '../../interfaces/clickup';
-  import clickupService from '../../services/clickup-service';
-  import Icon from '../commons/Icon.svelte';
-  import TimeTrackInput from '../commons/TimeTrackInput.svelte';
-  import { toHours, toTime, toTimeInput } from '../utils/formatters';
+  import moment from "moment";
+  import { createEventDispatcher, onMount } from "svelte";
+  import type { Interval, Task } from "../../interfaces/clickup";
+  import clickupService from "../../services/clickup-service";
+  import Icon from "../commons/Icon.svelte";
+  import TimeTrackInput from "../commons/TimeTrackInput.svelte";
+  import { toHours, toTime, toTimeInput } from "../utils/formatters";
 
   export let tasks: Task[];
   export let trackings: Interval[];
@@ -31,15 +31,15 @@
   });
 
   onMount(async () => {
-    const { data } = await clickupService.getCache('starred');
+    const { data } = await clickupService.getCache("starred");
     starred = data ?? [];
   });
 
   function tracksForTaskDay(trackings, taskId: string, day: number) {
     return trackings.filter((t) => {
-      const d = moment(trackedWeek).add(day, 'days');
-      const start = d.startOf('day').valueOf();
-      const end = d.endOf('day').valueOf();
+      const d = moment(trackedWeek).add(day, "days");
+      const start = d.startOf("day").valueOf();
+      const end = d.endOf("day").valueOf();
       return t.task.id === taskId && t.start >= start && t.start <= end;
     });
   }
@@ -53,9 +53,9 @@
   function totalForDay(trackings, day: number) {
     return trackings
       .filter((t) => {
-        const d = moment(trackedWeek).add(day, 'days');
-        const start = d.startOf('day').valueOf();
-        const end = d.endOf('day').valueOf();
+        const d = moment(trackedWeek).add(day, "days");
+        const start = d.startOf("day").valueOf();
+        const end = d.endOf("day").valueOf();
         return t.start >= start && t.start <= end;
       })
       .reduce((acc, t) => acc + t.duration, 0);
@@ -63,13 +63,13 @@
 
   function updateTrack(task: Task, day: number, newTime: number) {
     const time = newTime - totalForTaskDay(trackings, task.id, day);
-    const date = moment(trackedWeek).add(day, 'days').startOf('day').valueOf();
-    dispatch('addTrack', { task, time, day: date });
+    const date = moment(trackedWeek).add(day, "days").startOf("day").valueOf();
+    dispatch("addTrack", { task, time, day: date });
     editing = null;
   }
 
   function changeWeek() {
-    dispatch('changeWeek');
+    dispatch("changeWeek");
   }
 
   async function star(taskId: string) {
@@ -78,7 +78,7 @@
     } else {
       starred = [...starred, taskId];
     }
-    await clickupService.setCache('starred', starred);
+    await clickupService.setCache("starred", starred);
   }
 
   function isEditing(taskId: string, day: number) {
@@ -95,8 +95,8 @@
 
   function goWeek(add: number) {
     trackedWeek = moment(trackedWeek)
-      .add(7 * add, 'days')
-      .format('YYYY-[W]WW');
+      .add(7 * add, "days")
+      .format("YYYY-[W]WW");
     changeWeek();
   }
 </script>
@@ -121,14 +121,14 @@
       <p class="w-1/12"><Icon class="w-6" name="star" /></p>
       <p class="w-6/12">
         Task <span class="font-normal text-sm italic float-right pt-1 mr-8"
-          >{moment(trackedWeek).format('DD/MM/yyyy')} - {moment(trackedWeek)
-            .add(4, 'days')
-            .format('DD/MM/yyyy')}</span
+          >{moment(trackedWeek).format("DD/MM/yyyy")} - {moment(trackedWeek)
+            .add(4, "days")
+            .format("DD/MM/yyyy")}</span
         >
       </p>
       {#each ferialDays as day}
         <p class="w-1/12">
-          {moment(trackedWeek).add(day, 'days').format('ddd')}
+          {moment(trackedWeek).add(day, "days").format("ddd")}
         </p>
       {/each}
     </div>
@@ -149,11 +149,11 @@
       <div class="flex w-full items-center py-4 border-b border-neutral-800">
         <p class="w-1/12" on:click={() => star(task.id)}>
           <Icon
-            name={starred.includes(task.id) ? 'star' : 'star-empty'}
+            name={starred.includes(task.id) ? "star" : "star-empty"}
             class="w-6"
           />
         </p>
-        <p class="w-6/12">{task.name}</p>
+        <a class="w-6/12" href={task.url}>{task.name}</a>
         {#each ferialDays as day}
           <p class="w-1/12 pr-4" on:click|stopPropagation>
             {#if editing && isEditing(task.id, day)}

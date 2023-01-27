@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
-  import type { Task, Comment } from '../../../interfaces/clickup';
-  import clickupService from '../../../services/clickup-service';
-  import { user } from '../../../store/users';
-  import AssigneeBadge from '../../commons/assignees-selector/AssigneeBadge.svelte';
-  import Icon from '../../commons/Icon.svelte';
-  import CommentText from './CommentText.svelte';
+  import { createEventDispatcher, onMount } from "svelte";
+  import type { Task, Comment } from "../../../interfaces/clickup";
+  import clickupService from "../../../services/clickup-service";
+  import { user } from "../../../store/users";
+  import AssigneeBadge from "../../commons/assignees-selector/AssigneeBadge.svelte";
+  import Icon from "../../commons/Icon.svelte";
+  import CommentText from "./CommentText.svelte";
 
   export let task: Task;
   let fullTask: Task;
   let comments: Comment[];
   let collapseDescription = true;
   let collapseComments = true;
-  let newComment = '';
+  let newComment = "";
 
   const dispatch = createEventDispatcher();
 
@@ -32,15 +32,17 @@
   }
 
   async function sendComment(e: KeyboardEvent) {
-    if (newComment && e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      const { ok } = await clickupService.createTaskComment(task.id, {
-        comment_text: newComment,
-        notify_all: true,
-      });
-      if (ok) {
-        newComment = '';
-        loadComments();
+      if (newComment?.trim()) {
+        const { ok } = await clickupService.createTaskComment(task.id, {
+          comment_text: newComment,
+          notify_all: true,
+        });
+        if (ok) {
+          newComment = "";
+          loadComments();
+        }
       }
     }
   }

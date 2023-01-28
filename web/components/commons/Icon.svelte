@@ -1,5 +1,4 @@
 <script lang="ts">
-  // @ts-nocheck
   import addAssignee from '../../assets/add-assignee.svg';
   import board from '../../assets/board.svg';
   import chevron from '../../assets/chevron.svg';
@@ -25,7 +24,7 @@
   import star from '../../assets/star.svg';
   import starEmpty from '../../assets/star-empty.svg';
 
-  export let name: string;
+  export let name: keyof typeof icons;
 
   const icons = {
     'add-assignee': addAssignee,
@@ -33,7 +32,6 @@
     clickup,
     board,
     left,
-    board,
     chevron,
     clock,
     cog,
@@ -42,7 +40,6 @@
     ellipsis,
     filter,
     folder,
-    left,
     refresh,
     save,
     search,

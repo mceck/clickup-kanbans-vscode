@@ -10,7 +10,7 @@
   import TimeTrackInput from '../../commons/TimeTrackInput.svelte';
   import Icon from '../../commons/Icon.svelte';
   import TaskDetail from './TaskDetail.svelte';
-  import EditTracking from './EditTracking.svelte';
+  import EditTracking from '../../commons/EditTracking.svelte';
   import { toHours } from '../../utils/formatters';
 
   export let task: Task;

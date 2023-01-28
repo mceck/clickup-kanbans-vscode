@@ -1,13 +1,13 @@
 <script lang="ts">
-  import moment from 'moment';
   import { createEventDispatcher } from 'svelte';
-  import type { Interval } from '../../../interfaces/clickup';
-  import Icon from '../../commons/Icon.svelte';
-  import TimeTrackInput from '../../commons/TimeTrackInput.svelte';
-  import { toDate, toTime, toTimeInput } from '../../utils/formatters';
+  import type { Interval } from '../../interfaces/clickup';
+  import Icon from './Icon.svelte';
+  import TimeTrackInput from './TimeTrackInput.svelte';
+  import { toDate, toTime, toTimeInput } from '../utils/formatters';
 
   export let intervals: Interval[];
   export let loading: boolean = false;
+  export let showTask: boolean = false;
 
   let editTrack: Interval = undefined;
   let timeTrackInput: HTMLInputElement;
@@ -32,7 +32,7 @@
 <svelte:window on:click={() => (editTrack = undefined)} />
 
 <div
-  class="absolute w-4/5 max-h-24 top-7 z-10 p-1 bg-screen rounded border border-gray-700 overflow-auto"
+  class="absolute w-4/5 max-h-24 top-7 z-10 p-1 bg-screen rounded border border-gray-700 overflow-auto {$$props.class}"
   on:click|stopPropagation={() => (editTrack = undefined)}
 >
   {#if loading}
@@ -42,10 +42,18 @@
   {/if}
   {#each intervals as track (track.id)}
     <div class="flex items-center">
-      <p class="text-xs text-gray-300 flex-auto">{toDate(track.start)}</p>
-      <p class="text-xs text-gray-300 flex-auto">
+      <p class="text-xs text-gray-300 pr-2 {showTask ? 'w-20' : 'flex-auto'}">
+        {toDate(track.start)}
+      </p>
+      <p class="text-xs text-gray-300 px-2 {showTask ? 'w-12' : 'flex-auto'}">
         {toTime(track.duration)}
       </p>
+      {#if showTask}
+        <a
+          class="text-xs text-gray-300 flex-1 cursor-pointer px-2"
+          href={track.task.url}>{track.task.name}</a
+        >
+      {/if}
       <button
         class="flex-none w-8"
         on:click|stopPropagation={() => showEditTrack(track)}

@@ -8,7 +8,7 @@
   } from '../interfaces/clickup';
   import clickupService from '../services/clickup-service';
   import Icon from './commons/Icon.svelte';
-  import EditTracking from './kanban/task/EditTracking.svelte';
+  import EditTracking from './commons/EditTracking.svelte';
   import { toHours } from './utils/formatters';
 
   export let filters: PageFilters;
@@ -179,6 +179,7 @@
     </div>
     {#if showTodayTrackEdit}
       <EditTracking
+        showTask={true}
         intervals={trackingToday}
         on:update={({ detail }) => updateTrack(detail.track, detail.time)}
         on:delete={({ detail }) => deleteTrack(detail)}

@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
 
-  import type { Interval, PageFilters, Task } from "../interfaces/clickup";
-  import clickupService from "../services/clickup-service";
-  import { user, userList } from "../store/users";
-  import Board from "./kanban/Board.svelte";
-  import { spacesTree } from "../store/spaces-tree";
-  import moment from "moment";
-  import Login from "./Login.svelte";
-  import Icon from "./commons/Icon.svelte";
-  import Filters from "./filters/Filters.svelte";
-  import Header from "./Header.svelte";
-  import Timesheet from "./timesheet/Timesheet.svelte";
+  import type { Interval, PageFilters, Task } from '../interfaces/clickup';
+  import clickupService from '../services/clickup-service';
+  import { user, userList } from '../store/users';
+  import Board from './kanban/Board.svelte';
+  import { spacesTree } from '../store/spaces-tree';
+  import moment from 'moment';
+  import Login from './Login.svelte';
+  import Icon from './commons/Icon.svelte';
+  import Filters from './filters/Filters.svelte';
+  import Header from './Header.svelte';
+  import Timesheet from './timesheet/Timesheet.svelte';
 
-  export let mode: "kanban" | "timesheet" = "kanban";
+  export let mode: 'kanban' | 'timesheet' = 'kanban';
 
   let tasks: Task[] = [];
   let loading = false;
@@ -21,13 +21,13 @@
   let loggedIn = true;
   let initErrors = false;
   let configFilters: PageFilters[] = [];
-  let term = "";
+  let term = '';
   let trackings: Interval[] = [];
-  let trackedWeek: string = moment().format("YYYY-[W]WW");
+  let trackedWeek: string = moment().format('YYYY-[W]WW');
   let cacheExpiration: number;
 
   let filters: PageFilters = {
-    name: "",
+    name: '',
     default: true,
     selectedLists: [],
     selectedAssignees: [],
@@ -88,7 +88,7 @@
     loggedIn = ok;
     user.set(usr || {});
     const { data } = await clickupService.getConfig(
-      mode === "timesheet" ? "ts-config" : "vs-config"
+      mode === 'timesheet' ? 'ts-config' : 'vs-config'
     );
     configFilters = data?.filters ?? [];
     const defFilters = configFilters.find((e) => e.default);
@@ -101,7 +101,7 @@
     }
 
     await loadCache();
-    search(!tasks.length || mode === "timesheet");
+    search(!tasks.length || mode === 'timesheet');
 
     if (cacheExpiration && cacheExpiration > moment().valueOf()) {
       return;
@@ -144,12 +144,12 @@
 
   async function loadCache() {
     const results = await Promise.all([
-      mode === "timesheet"
+      mode === 'timesheet'
         ? Promise.resolve({ data: [] })
-        : clickupService.getCache("tasks"),
-      clickupService.getCache("spaces"),
-      clickupService.getCache("users"),
-      clickupService.getCache("expiration"),
+        : clickupService.getCache('tasks'),
+      clickupService.getCache('spaces'),
+      clickupService.getCache('users'),
+      clickupService.getCache('expiration'),
     ]);
 
     const [t, s, u, c] = results.map((r) => r.data);
@@ -164,18 +164,18 @@
   }
 
   async function updateTasksCache() {
-    if (mode === "timesheet") {
+    if (mode === 'timesheet') {
       return;
     }
-    await clickupService.setCache("tasks", tasks);
+    await clickupService.setCache('tasks', tasks);
   }
 
   async function updateSelectorsCache() {
-    cacheExpiration = moment().add(1, "hour").valueOf();
+    cacheExpiration = moment().add(1, 'hour').valueOf();
     await Promise.all([
-      clickupService.setCache("spaces", $spacesTree),
-      clickupService.setCache("users", $userList),
-      clickupService.setCache("expiration", cacheExpiration),
+      clickupService.setCache('spaces', $spacesTree),
+      clickupService.setCache('users', $userList),
+      clickupService.setCache('expiration', cacheExpiration),
     ]);
   }
 
@@ -246,17 +246,17 @@
   }
 
   async function refreshTimeTracked() {
-    loading = mode === "timesheet";
+    loading = mode === 'timesheet';
     let start = moment();
     let end = moment();
-    if (mode === "timesheet") {
-      start = moment(trackedWeek).startOf("week");
-      end = moment(trackedWeek).endOf("week");
+    if (mode === 'timesheet') {
+      start = moment(trackedWeek).startOf('week');
+      end = moment(trackedWeek).endOf('week');
     }
     const res = await clickupService.findTimeTrack({
       assignee: $user.id,
-      start_date: start.startOf("day").valueOf() - 1,
-      end_date: end.endOf("day").valueOf(),
+      start_date: start.startOf('day').valueOf() - 1,
+      end_date: end.endOf('day').valueOf(),
     });
 
     if (res.ok) {
@@ -280,7 +280,7 @@
     );
     if (result.ok) {
       search(false);
-      clickupService.showToast("info", "Tracking deleted");
+      clickupService.showToast('info', 'Tracking deleted');
     }
   }
 
@@ -299,7 +299,7 @@
     );
     if (result.ok) {
       search(false);
-      clickupService.showStatusMessage("Time tracked");
+      clickupService.showStatusMessage('Time tracked');
     }
   }
 
@@ -311,8 +311,8 @@
     const tracks = trackings.filter(
       (t) =>
         t.task.id === task.id &&
-        moment(day).startOf("day").valueOf() ===
-          moment(+t.start).startOf("day").valueOf()
+        moment(day).startOf('day').valueOf() ===
+          moment(+t.start).startOf('day').valueOf()
     );
     tracks.reverse();
     const sum = tracks.reduce((acc, t) => acc + +t.duration, 0);
@@ -322,7 +322,7 @@
       if (time > 0) {
         // add new track
         await clickupService.createTimeTrack(task.id, {
-          start: moment(day).startOf("day").valueOf(),
+          start: moment(day).startOf('day').valueOf(),
           time,
         });
       } else if (sum >= absTime) {
@@ -338,7 +338,7 @@
           toDelete.reduce((acc, t) => acc + +t.duration, 0) - absTime;
         if (toAdd) {
           const { ok, error } = await clickupService.createTimeTrack(task.id, {
-            start: moment(day).startOf("day").valueOf(),
+            start: moment(day).startOf('day').valueOf(),
             time: toAdd,
           });
           if (!ok) {
@@ -366,10 +366,10 @@
   }
 
   function handleForceRefresh(e: KeyboardEvent) {
-    if (e.ctrlKey && e.shiftKey && e.key === "R") {
+    if (e.ctrlKey && e.shiftKey && e.key === 'R') {
       search();
       loadStores();
-      clickupService.setCache("starred", []);
+      clickupService.setCache('starred', []);
     }
   }
 </script>
@@ -396,14 +396,15 @@
     <div class="flex w-full justify-center mt-4">
       <Icon name="cog" class="w-8 animate-spin" />
     </div>
-  {:else if mode === "kanban"}
+  {:else if mode === 'kanban'}
     <Board tasks={filteredTasks} on:refresh={(e) => updateTask(e.detail)} />
-  {:else if mode === "timesheet"}
+  {:else if mode === 'timesheet'}
     <Timesheet
       bind:trackedWeek
       tasks={filteredTasks}
       {trackings}
       on:updateTrack={({ detail }) => updateTrack(detail.track, detail.time)}
+      on:deleteTrack={(e) => deleteTrack(e.detail)}
       on:addTrack={({ detail }) =>
         addTrack(detail.task, detail.day, detail.time)}
       on:changeWeek={() => refreshTimeTracked()}

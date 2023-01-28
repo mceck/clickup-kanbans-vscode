@@ -1,11 +1,12 @@
 <script lang="ts">
-  import moment from "moment";
-  import { createEventDispatcher, onMount } from "svelte";
-  import type { Interval, Task } from "../../interfaces/clickup";
-  import clickupService from "../../services/clickup-service";
-  import Icon from "../commons/Icon.svelte";
-  import TimeTrackInput from "../commons/TimeTrackInput.svelte";
-  import { toHours, toTime, toTimeInput } from "../utils/formatters";
+  import moment from 'moment';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import type { Interval, Task } from '../../interfaces/clickup';
+  import clickupService from '../../services/clickup-service';
+  import EditTracking from '../commons/EditTracking.svelte';
+  import Icon from '../commons/Icon.svelte';
+  import TimeTrackInput from '../commons/TimeTrackInput.svelte';
+  import { toHours, toTime, toTimeInput } from '../utils/formatters';
 
   export let tasks: Task[];
   export let trackings: Interval[];
@@ -16,6 +17,8 @@
   let editing: { day: number; taskId: string } | null = null;
 
   let inputsRef: Record<string, HTMLInputElement> = {};
+
+  let showTrackingsDetailForDay: boolean[] = new Array(5).fill(false);
 
   const ferialDays = [0, 1, 2, 3, 4];
 
@@ -31,45 +34,59 @@
   });
 
   onMount(async () => {
-    const { data } = await clickupService.getCache("starred");
+    const { data } = await clickupService.getCache('starred');
     starred = data ?? [];
   });
 
-  function tracksForTaskDay(trackings, taskId: string, day: number) {
+  function tracksForTaskDay(
+    trackings: Interval[],
+    taskId: string,
+    day: number
+  ) {
     return trackings.filter((t) => {
-      const d = moment(trackedWeek).add(day, "days");
-      const start = d.startOf("day").valueOf();
-      const end = d.endOf("day").valueOf();
+      const d = moment(trackedWeek).add(day, 'days');
+      const start = d.startOf('day').valueOf();
+      const end = d.endOf('day').valueOf();
       return t.task.id === taskId && t.start >= start && t.start <= end;
     });
   }
 
-  function totalForTaskDay(trackings, taskId: string, day: number) {
+  function totalForTaskDay(trackings: Interval[], taskId: string, day: number) {
     const tracks = tracksForTaskDay(trackings, taskId, day);
     const duration = tracks.reduce((acc, t) => acc + t.duration, 0);
     return duration;
   }
 
-  function totalForDay(trackings, day: number) {
-    return trackings
-      .filter((t) => {
-        const d = moment(trackedWeek).add(day, "days");
-        const start = d.startOf("day").valueOf();
-        const end = d.endOf("day").valueOf();
-        return t.start >= start && t.start <= end;
-      })
-      .reduce((acc, t) => acc + t.duration, 0);
+  function trackingsForDay(trackings: Interval[], day: number) {
+    return trackings.filter((t) => {
+      const d = moment(trackedWeek).add(day, 'days');
+      const start = d.startOf('day').valueOf();
+      const end = d.endOf('day').valueOf();
+      return t.start >= start && t.start <= end;
+    });
+  }
+  function totalForDay(trackings: Interval[], day: number) {
+    return trackingsForDay(trackings, day).reduce(
+      (acc, t) => acc + t.duration,
+      0
+    );
   }
 
   function updateTrack(task: Task, day: number, newTime: number) {
     const time = newTime - totalForTaskDay(trackings, task.id, day);
-    const date = moment(trackedWeek).add(day, "days").startOf("day").valueOf();
-    dispatch("addTrack", { task, time, day: date });
+    const date = moment(trackedWeek).add(day, 'days').startOf('day').valueOf();
+    dispatch('addTrack', { task, time, day: date });
     editing = null;
   }
 
   function changeWeek() {
-    dispatch("changeWeek");
+    dispatch('changeWeek');
+  }
+
+  function showTrackingsForDay(day: number = -1) {
+    showTrackingsDetailForDay = showTrackingsDetailForDay.map((v, i) =>
+      i === day ? !v : false
+    );
   }
 
   async function star(taskId: string) {
@@ -78,7 +95,7 @@
     } else {
       starred = [...starred, taskId];
     }
-    await clickupService.setCache("starred", starred);
+    await clickupService.setCache('starred', starred);
   }
 
   function isEditing(taskId: string, day: number) {
@@ -95,14 +112,24 @@
 
   function goWeek(add: number) {
     trackedWeek = moment(trackedWeek)
-      .add(7 * add, "days")
-      .format("YYYY-[W]WW");
+      .add(7 * add, 'days')
+      .format('YYYY-[W]WW');
     changeWeek();
+  }
+
+  function editTrack(track: Interval, time: number) {
+    dispatch('updateTrack', { track, time });
+    showTrackingsForDay();
+  }
+
+  function deleteTrack(interval: Interval) {
+    dispatch('deleteTrack', interval);
+    showTrackingsForDay();
   }
 </script>
 
-<svelte:window on:click={() => (editing = null)} />
-<div>
+<svelte:window on:click={() => (editing = null) || showTrackingsForDay()} />
+<div class="timesheet">
   <div class="flex items-center mt-2 mb-4">
     <p>Week:</p>
     <span class="cursor-pointer" on:click={() => goWeek(-1)}
@@ -121,14 +148,14 @@
       <p class="w-1/12"><Icon class="w-6" name="star" /></p>
       <p class="w-6/12">
         Task <span class="font-normal text-sm italic float-right pt-1 mr-8"
-          >{moment(trackedWeek).format("DD/MM/yyyy")} - {moment(trackedWeek)
-            .add(4, "days")
-            .format("DD/MM/yyyy")}</span
+          >{moment(trackedWeek).format('DD/MM/yyyy')} - {moment(trackedWeek)
+            .add(4, 'days')
+            .format('DD/MM/yyyy')}</span
         >
       </p>
       {#each ferialDays as day}
         <p class="w-1/12">
-          {moment(trackedWeek).add(day, "days").format("ddd")}
+          {moment(trackedWeek).add(day, 'days').format('ddd')}
         </p>
       {/each}
     </div>
@@ -137,11 +164,22 @@
       <p class="w-6/12" />
       {#each ferialDays as day}
         <p
-          class="w-1/12 {totalForDay(trackings, day) >= 3600000 * 8
+          class="w-1/12 cursor-pointer relative {totalForDay(trackings, day) >=
+          3600000 * 8
             ? 'text-green-500'
             : 'text-red-400'}"
+          on:click|stopPropagation={() => showTrackingsForDay(day)}
         >
           {toHours(totalForDay(trackings, day))}
+          {#if showTrackingsDetailForDay[day]}
+            <EditTracking
+              class="w-track right-1/2 max-h-56 text-white"
+              showTask={true}
+              intervals={trackingsForDay(trackings, day)}
+              on:update={({ detail }) => editTrack(detail.track, detail.time)}
+              on:delete={({ detail }) => deleteTrack(detail)}
+            />
+          {/if}
         </p>
       {/each}
     </div>
@@ -149,7 +187,7 @@
       <div class="flex w-full items-center py-4 border-b border-neutral-800">
         <p class="w-1/12" on:click={() => star(task.id)}>
           <Icon
-            name={starred.includes(task.id) ? "star" : "star-empty"}
+            name={starred.includes(task.id) ? 'star' : 'star-empty'}
             class="w-6"
           />
         </p>
@@ -184,3 +222,9 @@
     {/each}
   </div>
 </div>
+
+<style global>
+  .timesheet .w-track {
+    width: 450px;
+  }
+</style>

@@ -167,7 +167,7 @@
   </div>
   <div class="flex justify-end items-center w-full mb-2">
     <div
-      class="flex w-6 items-center text-xs text-green-400 mr-3"
+      class="flex w-10 items-center text-xs text-green-400 mr-3 cursor-pointer"
       title="Time tracked today"
       on:click|stopPropagation={() => {
         showTodayTrackEdit = !showTodayTrackEdit;

@@ -16,6 +16,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation from template
 
+## [1.2.9]
+
+### Added
+
+- timesheet daily tracked view
+
 ## [1.2.8]
 
 ### Added

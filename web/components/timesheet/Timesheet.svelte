@@ -180,7 +180,7 @@
           class="mr-8 float-right"
           title="Show total tracked time only for filtered tasks"
         >
-          <span class="mr-2">Totals filtered: </span>
+          <span class="mr-2 text-neutral-400">Totals filtered: </span>
           <Switch
             value={onlyFilteredTasks}
             on:change={(e) => updateOnlyFiltered(e.detail)}

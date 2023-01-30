@@ -5,6 +5,7 @@
   import clickupService from '../../services/clickup-service';
   import EditTracking from '../commons/EditTracking.svelte';
   import Icon from '../commons/Icon.svelte';
+  import Switch from '../commons/Switch.svelte';
   import TimeTrackInput from '../commons/TimeTrackInput.svelte';
   import { toHours, toTime, toTimeInput } from '../utils/formatters';
 
@@ -12,6 +13,8 @@
   export let trackings: Interval[];
 
   export let trackedWeek: string;
+
+  let onlyFilteredTasks: boolean = false;
 
   let starred: string[] = [];
   let editing: { day: number; taskId: string } | null = null;
@@ -34,8 +37,10 @@
   });
 
   onMount(async () => {
-    const { data } = await clickupService.getCache('starred');
-    starred = data ?? [];
+    let r = await clickupService.getCache('starred');
+    starred = r?.data ?? [];
+    r = await clickupService.getCache('onlyFilteredTasks');
+    onlyFilteredTasks = !!r.data;
   });
 
   function tracksForTaskDay(
@@ -62,10 +67,14 @@
       const d = moment(trackedWeek).add(day, 'days');
       const start = d.startOf('day').valueOf();
       const end = d.endOf('day').valueOf();
-      return t.start >= start && t.start <= end;
+      return (
+        t.start >= start &&
+        t.start <= end &&
+        (!onlyFilteredTasks || tasks.map((e) => e.id).includes(t.task.id))
+      );
     });
   }
-  function totalForDay(trackings: Interval[], day: number) {
+  function totalForDay(trackings: Interval[], day: number, _?: boolean) {
     return trackingsForDay(trackings, day).reduce(
       (acc, t) => acc + t.duration,
       0
@@ -85,7 +94,7 @@
 
   function showTrackingsForDay(day: number = -1) {
     showTrackingsDetailForDay = showTrackingsDetailForDay.map((v, i) =>
-      i === day ? !v : false
+      i === day ? !(onlyFilteredTasks || v) : false
     );
   }
 
@@ -126,6 +135,11 @@
     dispatch('deleteTrack', interval);
     showTrackingsForDay();
   }
+
+  function updateOnlyFiltered(value: boolean) {
+    onlyFilteredTasks = value;
+    clickupService.setCache('onlyFilteredTasks', value);
+  }
 </script>
 
 <svelte:window on:click={() => (editing = null) || showTrackingsForDay()} />
@@ -161,16 +175,31 @@
     </div>
     <div class="flex w-full items-center pb-3 border-b-4 border-neutral-800">
       <p class="w-1/12" />
-      <p class="w-6/12" />
+      <p class="w-6/12">
+        <span
+          class="mr-8 float-right"
+          title="Show total tracked time only for filtered tasks"
+        >
+          <span class="mr-2">Totals filtered: </span>
+          <Switch
+            value={onlyFilteredTasks}
+            on:change={(e) => updateOnlyFiltered(e.detail)}
+          />
+        </span>
+      </p>
       {#each ferialDays as day}
         <p
-          class="w-1/12 cursor-pointer relative {totalForDay(trackings, day) >=
+          class="w-1/12 relative {totalForDay(
+            trackings,
+            day,
+            onlyFilteredTasks
+          ) >=
           3600000 * 8
             ? 'text-green-500'
-            : 'text-red-400'}"
+            : 'text-red-400'} {!onlyFilteredTasks && 'cursor-pointer'}"
           on:click|stopPropagation={() => showTrackingsForDay(day)}
         >
-          {toHours(totalForDay(trackings, day))}
+          {toHours(totalForDay(trackings, day, onlyFilteredTasks))}
           {#if showTrackingsDetailForDay[day]}
             <EditTracking
               class="w-track right-1/2 max-h-56 text-white"

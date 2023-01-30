@@ -23,6 +23,7 @@
   import plus from '../../assets/plus.svg';
   import star from '../../assets/star.svg';
   import starEmpty from '../../assets/star-empty.svg';
+  import link from '../../assets/link.svg';
 
   export let name: keyof typeof icons;
 
@@ -49,6 +50,7 @@
     check,
     git,
     plus,
+    link,
     star,
     'star-empty': starEmpty,
   };

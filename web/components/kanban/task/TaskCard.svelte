@@ -84,6 +84,12 @@
       .then(() => clickupService.showStatusMessage('Copied'));
   }
 
+  function copyTaskLink() {
+    navigator.clipboard
+      .writeText(task.url)
+      .then(() => clickupService.showStatusMessage('Copied'));
+  }
+
   async function addAssignee(assignee: User) {
     const oldAssignees = [...task.assignees];
     task.assignees = [...task.assignees, assignee];
@@ -266,7 +272,7 @@
         />
       </div>
     </div>
-    <div class="h-full overflow-hidden">
+    <div class="h-full overflow-hidden group">
       <div class="text-xs text-neutral-500">{task.list.name}</div>
       <div class="flex mt-1">
         {#each task.tags as tag (tag.name)}
@@ -277,7 +283,11 @@
           >
         {/each}
       </div>
-      <p>
+      <p class="w-full">
+        <span
+          class="float-right cursor-pointer p-1 opacity-0 group-hover:opacity-100"
+          on:click={copyTaskLink}><Icon name="link" class="w-3" /></span
+        >
         {task.name}
       </p>
       {#if expanded}

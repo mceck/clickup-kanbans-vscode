@@ -18,9 +18,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [1.2.10]
 
-### Changed
+### Added
 
-- timesheet totals for days and detail
+- timesheet totals for days and detail filterable by showed tasks
+- copy task link
 
 ## [1.2.9]
 

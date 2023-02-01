@@ -1,4 +1,5 @@
 <script>
+  import Suspender from '../../components/commons/Suspender.svelte';
   import TailwindWrapper from '../../components/commons/TailwindWrapper.svelte';
   import Page from '../../components/Page.svelte';
 
@@ -6,5 +7,7 @@
 </script>
 
 <TailwindWrapper>
-  <Page {mode} />
+  <Suspender>
+    <Page {mode} />
+  </Suspender>
 </TailwindWrapper>

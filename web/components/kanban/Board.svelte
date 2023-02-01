@@ -114,7 +114,10 @@
           <TaskCard
             bind:task
             statusKeys={statusKeys[task.id]}
-            on:refresh={(e) => dispatch('refresh', e.detail)}
+            on:updateTask={(e) => dispatch('updateTask', e.detail)}
+            on:addTrack={(e) => dispatch('addTrack', e.detail)}
+            on:changeTrack={(e) => dispatch('changeTrack', e.detail)}
+            on:deleteTrack={(e) => dispatch('deleteTrack', e.detail)}
           />
         {/each}
       {/if}

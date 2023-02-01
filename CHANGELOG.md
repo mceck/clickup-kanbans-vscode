@@ -16,6 +16,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation from template
 
+## [1.3.0]
+
+### Changed
+
+- spinner and loadings refactoring
+
 ## [1.2.10]
 
 ### Added

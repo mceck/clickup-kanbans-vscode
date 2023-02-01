@@ -1,6 +1,4 @@
 <script lang="ts">
-  import moment from 'moment';
-
   import { createEventDispatcher } from 'svelte';
 
   import type { Interval, Task, User } from '../../../interfaces/clickup';
@@ -25,6 +23,55 @@
 
   const dispatch = createEventDispatcher();
 
+  async function trackTaskTime(task: Task, time: number) {
+    dispatch('addTrack', { task, time });
+    showAddTrack = false;
+    intervals = [];
+  }
+
+  async function deleteTrack(track: Interval) {
+    dispatch('deleteTrack', track);
+    showTracking = false;
+    intervals = [];
+  }
+
+  async function updateTrack(track: Interval, time: number) {
+    dispatch('changeTrack', { track, time });
+    showTracking = false;
+    intervals = [];
+  }
+
+  async function addAssignee(assignee: User) {
+    dispatch('updateTask', {
+      id: task.id,
+      assignees: { add: [assignee.id] },
+    });
+    // close picker
+    document.body.click();
+  }
+
+  async function removeAssignee(assignee: User) {
+    dispatch('updateTask', {
+      id: task.id,
+      assignees: { rem: [assignee.id] },
+    });
+  }
+
+  async function setTaskState(task: Task, state: string) {
+    dispatch('updateTask', {
+      id: task.id,
+      status: state,
+      refresh: true,
+    });
+  }
+
+  function startAddTrack() {
+    showAddTrack = true;
+    showTracking = false;
+
+    setTimeout(() => addTimeTrackInput.focus(), 0);
+  }
+
   async function toggleTracks() {
     showTracking = !showTracking;
     if (showTracking && !intervals.length) {
@@ -38,44 +85,8 @@
     }
   }
 
-  async function deleteTrack(track) {
-    const result = await clickupService.deleteTimeTracked(task.id, track.id);
-    if (result.ok) {
-      intervals = intervals.filter((i) => i.id !== track.id);
-      const newTask = {
-        ...task,
-        time_spent: +task.time_spent - +track.duration,
-      };
-      if (intervals.length === 0) {
-        showTracking = false;
-      }
-      dispatch('refresh', newTask);
-      clickupService.showToast('info', 'Tracking deleted');
-    }
-  }
-
-  async function updateTrack(interval, time: number) {
-    const result = await clickupService.updateTimeTracked(
-      task.id,
-      interval.id,
-      {
-        start: interval.start,
-        end: +interval.start + time,
-        time,
-      }
-    );
-    if (result.ok) {
-      const newTask = {
-        ...task,
-        time_spent: (task.time_spent || 0) + time - parseInt(interval.duration),
-      };
-      dispatch('refresh', newTask);
-      intervals = intervals.map((i) =>
-        i.id === interval.id ? { ...i, duration: time } : i
-      );
-      showTracking = false;
-      clickupService.showStatusMessage('Time tracked');
-    }
+  function gitCheckout(task: Task) {
+    clickupService.gitCheckout(task.custom_id);
   }
 
   function copyCustomId() {
@@ -88,102 +99,6 @@
     navigator.clipboard
       .writeText(task.url)
       .then(() => clickupService.showStatusMessage('Copied'));
-  }
-
-  async function addAssignee(assignee: User) {
-    const oldAssignees = [...task.assignees];
-    task.assignees = [...task.assignees, assignee];
-    try {
-      const res = await clickupService.updateTask(task.id, {
-        assignees: { add: [assignee.id] },
-      });
-      if (!res.data?.assignees) {
-        throw new Error();
-      }
-      task.assignees = res.data.assignees;
-    } catch (e) {
-      task.assignees = oldAssignees;
-    }
-  }
-
-  async function removeAssignee(assignee: User) {
-    const oldAssignees = [...task.assignees];
-    task.assignees = task.assignees.filter((e) => e.id !== assignee.id);
-    try {
-      const res = await clickupService.updateTask(task.id, {
-        assignees: { rem: [assignee.id] },
-      });
-      if (!res.data?.assignees) {
-        throw new Error();
-      }
-      task.assignees = res.data.assignees;
-    } catch (e) {
-      task.assignees = oldAssignees;
-    }
-  }
-
-  async function setTaskState(task: Task, state: string) {
-    const result = await clickupService.updateTask(task.id, {
-      status: state,
-    });
-    if (result.ok) {
-      clickupService.showStatusMessage('Task updated');
-      dispatch('refresh', result.data);
-    }
-  }
-
-  function startAddTrack() {
-    showAddTrack = true;
-    showTracking = false;
-
-    setTimeout(() => addTimeTrackInput.focus(), 0);
-  }
-
-  async function trackTaskTime(task: Task, time: number) {
-    showAddTrack = false;
-    const res = await clickupService.getTimeTracked(task.id);
-    const interval =
-      res.ok &&
-      res.data?.find(
-        (i) => parseInt(i.start) >= moment().startOf('day').valueOf()
-      );
-
-    if (interval) {
-      const updatedTime = parseInt(interval.duration) + time;
-      const resp = await clickupService.updateTimeTracked(
-        task.id,
-        interval.id,
-        {
-          start: interval.start,
-          end: parseInt(interval.start) + updatedTime,
-          time: updatedTime,
-        }
-      );
-      if (resp.ok) {
-        clickupService.showStatusMessage('Time tracked');
-      } else {
-        return;
-      }
-    } else {
-      const resp = await clickupService.createTimeTrack(task.id, {
-        start: moment().startOf('day').valueOf(),
-        time,
-      });
-      if (resp.ok) {
-        clickupService.showStatusMessage('Time tracked');
-      } else {
-        return;
-      }
-    }
-    task = {
-      ...task,
-      time_spent: (task.time_spent || 0) + time,
-    };
-    dispatch('refresh', task);
-  }
-
-  function gitCheckout(task: Task) {
-    clickupService.gitCheckout(task.custom_id);
   }
 </script>
 

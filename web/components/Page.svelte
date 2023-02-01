@@ -8,15 +8,14 @@
   import { spacesTree } from '../store/spaces-tree';
   import moment from 'moment';
   import Login from './Login.svelte';
-  import Icon from './commons/Icon.svelte';
   import Filters from './filters/Filters.svelte';
   import Header from './Header.svelte';
   import Timesheet from './timesheet/Timesheet.svelte';
+  import { suspend } from '../store/suspender';
 
   export let mode: 'kanban' | 'timesheet' = 'kanban';
 
   let tasks: Task[] = [];
-  let loading = false;
   let viewMode = false;
   let loggedIn = true;
   let initErrors = false;
@@ -180,11 +179,17 @@
   }
 
   async function search(load = true) {
+    await Promise.all([
+      load ? suspend(refreshTasks()) : refreshTasks(),
+      refreshTimeTracked(),
+    ]);
+  }
+
+  async function refreshTasks() {
     if (viewMode) {
       if (!filters.selectedView) {
         return;
       }
-      loading = load;
       const { data } = await clickupService.getViewTasks(
         filters.selectedView.id
       );
@@ -193,7 +198,6 @@
       if (!hasFilters()) {
         return;
       }
-      loading = load;
       const params: any = {
         subtasks: !!filters.subtasks,
         include_closed: !!filters.include_closed,
@@ -228,36 +232,59 @@
       tasks = data || [];
     }
     await updateTasksCache();
-
-    loading = false;
-    refreshTimeTracked();
   }
 
-  function updateTask(task: Task) {
+  async function refreshTask(id: string) {
+    const res = await suspend(clickupService.getTask(id));
+    if (res.ok) {
+      tasks = tasks.map((t) => (t.id === id ? res.data : t));
+    }
+  }
+
+  async function updateTaskLocal(task: Task) {
+    let refresh = false;
     tasks = tasks.map((t) => {
       if (t.id === task.id) {
         if (t.time_spent !== task.time_spent) {
-          refreshTimeTracked();
+          refresh = true;
         }
         return task;
       }
       return t;
     });
+    if (refresh) {
+      await refreshTimeTracked();
+    }
+  }
+
+  async function updateTask(task: any) {
+    const { id, refresh, ...params } = task;
+    const res = await suspend(clickupService.updateTask(id, params));
+    if (res.ok) {
+      if (refresh) {
+        search();
+      } else {
+        updateTaskLocal(res.data);
+      }
+    }
   }
 
   async function refreshTimeTracked() {
-    loading = mode === 'timesheet';
     let start = moment();
     let end = moment();
     if (mode === 'timesheet') {
       start = moment(trackedWeek).startOf('week');
       end = moment(trackedWeek).endOf('week');
     }
-    const res = await clickupService.findTimeTrack({
+    let call = clickupService.findTimeTrack({
       assignee: $user.id,
       start_date: start.startOf('day').valueOf() - 1,
       end_date: end.endOf('day').valueOf(),
     });
+    if (mode === 'timesheet') {
+      call = suspend(call);
+    }
+    const res = await call;
 
     if (res.ok) {
       trackings =
@@ -266,7 +293,6 @@
           duration: parseInt(v.duration || 0),
         })) ?? [];
     }
-    loading = false;
   }
 
   function onLogin() {
@@ -274,13 +300,12 @@
   }
 
   async function deleteTrack(track: Interval) {
-    const result = await clickupService.deleteTimeTracked(
-      track.task.id,
-      track.id
+    const result = await suspend(
+      clickupService.deleteTimeTracked(track.task.id, track.id)
     );
     if (result.ok) {
-      search(false);
-      clickupService.showToast('info', 'Tracking deleted');
+      refreshTask(track.task.id);
+      refreshTimeTracked();
     }
   }
 
@@ -288,81 +313,76 @@
     if (!time) {
       return deleteTrack(interval);
     }
-    const result = await clickupService.updateTimeTracked(
-      interval.task.id,
-      interval.id,
-      {
+    const result = await suspend(
+      clickupService.updateTimeTracked(interval.task.id, interval.id, {
         start: interval.start,
         end: +interval.start + time,
         time,
-      }
+      })
     );
     if (result.ok) {
-      search(false);
-      clickupService.showStatusMessage('Time tracked');
+      refreshTask(interval.task.id);
+      refreshTimeTracked();
     }
   }
 
-  async function addTrack(task: Task, day: number, time: number) {
-    if (!time) {
-      return;
-    }
-    const absTime = Math.abs(time);
-    const tracks = trackings.filter(
-      (t) =>
-        t.task.id === task.id &&
-        moment(day).startOf('day').valueOf() ===
-          moment(+t.start).startOf('day').valueOf()
-    );
-    tracks.reverse();
-    const sum = tracks.reduce((acc, t) => acc + +t.duration, 0);
-    loading = true;
-
-    try {
-      if (time > 0) {
-        // add new track
-        await clickupService.createTimeTrack(task.id, {
-          start: moment(day).startOf('day').valueOf(),
-          time,
-        });
-      } else if (sum >= absTime) {
-        // diff tracks
-        let acc = 0;
-        const toDelete = tracks.filter((t) => {
-          const ret = acc < absTime;
-          acc += +t.duration;
-          return ret;
-        });
-
-        const toAdd =
-          toDelete.reduce((acc, t) => acc + +t.duration, 0) - absTime;
-        if (toAdd) {
-          const { ok, error } = await clickupService.createTimeTrack(task.id, {
-            start: moment(day).startOf('day').valueOf(),
-            time: toAdd,
+  function addTrack(task: Task, day: number, time: number) {
+    return suspend(
+      (async () => {
+        if (!time) {
+          return;
+        }
+        const absTime = Math.abs(time);
+        const tracks = trackings.filter(
+          (t) =>
+            t.task.id === task.id &&
+            moment(day).startOf('day').valueOf() ===
+              moment(+t.start).startOf('day').valueOf()
+        );
+        tracks.reverse();
+        const sum = tracks.reduce((acc, t) => acc + +t.duration, 0);
+        if (time > 0) {
+          // add new track
+          await clickupService.createTimeTrack(task.id, {
+            start: moment(day).startOf('day').valueOf() + 1000,
+            time,
           });
-          if (!ok) {
-            throw new Error(error);
-          }
-        }
+        } else if (sum >= absTime) {
+          // diff tracks
+          let acc = 0;
+          const toDelete = tracks.filter((t) => {
+            const ret = acc < absTime;
+            acc += +t.duration;
+            return ret;
+          });
 
-        for (let del of toDelete) {
-          await clickupService.deleteTimeTracked(task.id, del.id);
+          const toAdd =
+            toDelete.reduce((acc, t) => acc + +t.duration, 0) - absTime;
+          if (toAdd) {
+            const { ok, error } = await clickupService.createTimeTrack(
+              task.id,
+              {
+                start: moment(day).startOf('day').valueOf() + 1000,
+                time: toAdd,
+              }
+            );
+            if (!ok) {
+              throw new Error(error);
+            }
+          }
+
+          for (let del of toDelete) {
+            await clickupService.deleteTimeTracked(task.id, del.id);
+          }
+        } else {
+          throw new Error("Can't update trackings");
         }
-      } else {
-        throw new Error("Can't update trackings");
-      }
-      updateTask({
-        ...task,
-        time_spent: +task.time_spent + time,
-      });
-      // wait for clickup...
-      await new Promise((r) => setTimeout(r, 500));
-      refreshTimeTracked();
-    } catch (error) {
-      loading = false;
-      throw error;
-    }
+        // wait for clickup...
+        await new Promise((r) => setTimeout(r, 300));
+        refreshTask(task.id);
+        refreshTimeTracked();
+      })()
+    );
   }
 
   function handleForceRefresh(e: KeyboardEvent) {
@@ -392,12 +412,15 @@
       Connection error, try to reload the extension
     </h1>
   {/if}
-  {#if loading}
-    <div class="flex w-full justify-center mt-4">
-      <Icon name="cog" class="w-8 animate-spin" />
-    </div>
-  {:else if mode === 'kanban'}
-    <Board tasks={filteredTasks} on:refresh={(e) => updateTask(e.detail)} />
+  {#if mode === 'kanban'}
+    <Board
+      tasks={filteredTasks}
+      on:updateTask={(e) => updateTask(e.detail)}
+      on:addTrack={({ detail }) =>
+        addTrack(detail.task, moment().valueOf(), detail.time)}
+      on:deleteTrack={(e) => deleteTrack(e.detail)}
+      on:changeTrack={({ detail }) => updateTrack(detail.track, detail.time)}
+    />
   {:else if mode === 'timesheet'}
     <Timesheet
       bind:trackedWeek

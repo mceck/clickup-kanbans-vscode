@@ -16,6 +16,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation from template
 
+## [1.3.1]
+
+### Added
+
+- quicksearch for list name
+
 ## [1.3.0]
 
 ### Changed

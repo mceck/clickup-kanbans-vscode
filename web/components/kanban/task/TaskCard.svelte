@@ -201,6 +201,7 @@
       <p class="w-full">
         <span
           class="float-right cursor-pointer p-1 opacity-0 group-hover:opacity-100"
+          title="Copy task link"
           on:click={copyTaskLink}><Icon name="link" class="w-3" /></span
         >
         {task.name}

@@ -13,6 +13,12 @@
     color: white;
   }
 
+  button:disabled {
+    @apply text-neutral-500 cursor-not-allowed;
+  }
+  /* button:hover:disabled {
+    @apply bg-screen;
+  } */
   input[type='checkbox'] {
     accent-color: #2e2e2e !important;
     outline: none !important;

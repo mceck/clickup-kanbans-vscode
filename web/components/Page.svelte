@@ -41,7 +41,10 @@
   };
 
   $: prefilteredTask = tasks?.filter(
-    (t) => !term || t.name.toLowerCase().includes(term.trim().toLowerCase())
+    (t) =>
+      !term ||
+      t.name.toLowerCase().includes(term.trim().toLowerCase()) ||
+      t.list?.name?.toLowerCase().includes(term.trim().toLowerCase())
   );
 
   $: filteredTasks = viewMode

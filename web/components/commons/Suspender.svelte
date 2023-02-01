@@ -6,7 +6,7 @@
 <slot />
 {#if $loading}
   <div
-    class="fixed z-50 top-0 left-0 w-screen h-screen flex justify-center items-center backdrop-blur-sm fade-in ani"
+    class="fixed z-50 top-0 left-0 w-screen h-screen flex justify-center items-center backdrop-blur-sm fade-in"
     on:click|stopPropagation
   >
     <Icon name="cog" class="w-10 animate-spin" />

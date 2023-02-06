@@ -16,6 +16,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - tag editing
 - task creation from template
 
+## [1.3.2]
+
+### Changed
+
+- track time at 9am
+
 ## [1.3.1]
 
 ### Added

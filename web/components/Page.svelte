@@ -347,7 +347,7 @@
         if (time > 0) {
           // add new track
           await clickupService.createTimeTrack(task.id, {
-            start: moment(day).startOf('day').valueOf() + 1000,
+            start: moment(day).startOf('day').add(9, 'hours').valueOf(),
             time,
           });
         } else if (sum >= absTime) {
@@ -365,7 +365,7 @@
             const { ok, error } = await clickupService.createTimeTrack(
               task.id,
               {
-                start: moment(day).startOf('day').valueOf() + 1000,
+                start: moment(day).startOf('day').add(9, 'hours').valueOf(),
                 time: toAdd,
               }
             );

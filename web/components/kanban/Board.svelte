@@ -14,7 +14,16 @@
   $: statuses = (
     Object.entries(
       tasks.reduce(
-        (prev, val) => ({ ...prev, [val.status.status]: val.status }),
+        (prev, val) => ({
+          ...prev,
+          [val.status.status]: {
+            ...val.status,
+            orderindex:
+              prev[val.status.status]?.orderindex <= val.status.orderindex
+                ? val.status.orderindex
+                : prev[val.status.status]?.orderindex,
+          },
+        }),
         {}
       )
     ) as [string, Status][]

@@ -20,15 +20,13 @@ Use command Clickup>Open timesheet to open timesheet view
 
 #### view mode
 
-![preview](media/docs/view-mode.png)
+![preview](media/docs/task-view.png)
 
 With this view mode you can open a clickup view
 
 Select the view from the picker than you can filter tasks by assignees and more...
 
-#### filter mode
-
-![preview](media/docs/filter-mode.png)
+#### tasks mode
 
 With this view mode you can filter tasks by assignees and lists and more...
 

@@ -399,17 +399,23 @@
 
 <svelte:window on:keypress={handleForceRefresh} />
 <div>
-  <Header
-    bind:filters
-    bind:configFilters
-    bind:viewMode
-    {mode}
-    {trackings}
-    on:search={() => search()}
-    on:updateTrack={({ detail }) => updateTrack(detail.track, detail.time)}
-    on:deleteTrack={(e) => deleteTrack(e.detail)}
-  />
-  <Filters bind:filters bind:viewMode bind:term on:search={() => search()} />
+  <div
+    class="fixed top-0 left-0 w-full bg-screen z-20 px-4 pt-1"
+    on:click|stopPropagation
+  >
+    <Header
+      bind:filters
+      bind:configFilters
+      bind:viewMode
+      {mode}
+      {trackings}
+      on:search={() => search()}
+      on:updateTrack={({ detail }) => updateTrack(detail.track, detail.time)}
+      on:deleteTrack={(e) => deleteTrack(e.detail)}
+    />
+    <Filters bind:filters bind:viewMode bind:term on:search={() => search()} />
+  </div>
+  <div class="h-40" />
   {#if initErrors}
     <h1 class="text-red-600 text-lg">
       Connection error, try to reload the extension

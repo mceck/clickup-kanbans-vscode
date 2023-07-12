@@ -144,74 +144,82 @@
 
 <svelte:window on:click={() => (editing = null) || showTrackingsForDay()} />
 <div class="timesheet">
-  <div class="flex items-center mt-2 mb-4">
-    <p>Week:</p>
-    <span class="cursor-pointer" on:click={() => goWeek(-1)}
-      ><Icon name="chevron" class="w-6 rotate-90 ml-2" /></span
-    >
-    <div class="mx-2 w-56">
-      <input type="week" bind:value={trackedWeek} on:change={changeWeek} />
+  <div
+    class="fixed top-28 left-0 w-full z-10 bg-screen px-5 pt-4"
+    on:click|stopPropagation
+  >
+    <div class="flex items-center mt-2 mb-4">
+      <p>Week:</p>
+      <span class="cursor-pointer" on:click={() => goWeek(-1)}
+        ><Icon name="chevron" class="w-6 rotate-90 ml-2" /></span
+      >
+      <div class="mx-2 w-56">
+        <input type="week" bind:value={trackedWeek} on:change={changeWeek} />
+      </div>
+      <span class="cursor-pointer" on:click={() => goWeek(1)}
+        ><Icon name="chevron" class="w-6 -rotate-90" /></span
+      >
     </div>
-    <span class="cursor-pointer" on:click={() => goWeek(1)}
-      ><Icon name="chevron" class="w-6 -rotate-90" /></span
-    >
-  </div>
 
-  <div class="flex flex-wrap w-full">
-    <div class="flex w-full items-center mb-3 text-lg font-bold">
-      <p class="w-1/12"><Icon class="w-6" name="star" /></p>
-      <p class="w-6/12">
-        Task <span class="font-normal text-sm italic float-right pt-1 mr-8"
-          >{moment(trackedWeek).format('DD/MM/yyyy')} - {moment(trackedWeek)
-            .add(4, 'days')
-            .format('DD/MM/yyyy')}</span
-        >
-      </p>
-      {#each ferialDays as day}
-        <p class="w-1/12">
-          {moment(trackedWeek).add(day, 'days').format('ddd')}
+    <div class="flex flex-wrap w-full">
+      <div class="flex w-full items-center mb-3 text-lg font-bold">
+        <p class="w-1/12"><Icon class="w-6" name="star" /></p>
+        <p class="w-6/12">
+          Task <span class="font-normal text-sm italic float-right pt-1 mr-8"
+            >{moment(trackedWeek).format('DD/MM/yyyy')} - {moment(trackedWeek)
+              .add(4, 'days')
+              .format('DD/MM/yyyy')}</span
+          >
         </p>
-      {/each}
-    </div>
-    <div class="flex w-full items-center pb-3 border-b-4 border-neutral-800">
-      <p class="w-1/12" />
-      <p class="w-6/12">
-        <span
-          class="mr-8 float-right"
-          title="Show total tracked time only for filtered tasks"
-        >
-          <span class="mr-2 text-neutral-400">Totals filtered: </span>
-          <Switch
-            value={onlyFilteredTasks}
-            on:change={(e) => updateOnlyFiltered(e.detail)}
-          />
-        </span>
-      </p>
-      {#each ferialDays as day}
-        <p
-          class="w-1/12 relative {totalForDay(
-            trackings,
-            day,
-            onlyFilteredTasks
-          ) >=
-          3600000 * 8
-            ? 'text-green-500'
-            : 'text-red-400'} {!onlyFilteredTasks && 'cursor-pointer'}"
-          on:click|stopPropagation={() => showTrackingsForDay(day)}
-        >
-          {toHours(totalForDay(trackings, day, onlyFilteredTasks))}
-          {#if showTrackingsDetailForDay[day]}
-            <EditTracking
-              class="w-track right-1/2 max-h-56 text-white"
-              showTask={true}
-              intervals={trackingsForDay(trackings, day)}
-              on:update={({ detail }) => editTrack(detail.track, detail.time)}
-              on:delete={({ detail }) => deleteTrack(detail)}
+        {#each ferialDays as day}
+          <p class="w-1/12">
+            {moment(trackedWeek).add(day, 'days').format('ddd')}
+          </p>
+        {/each}
+      </div>
+      <div class="flex w-full items-center pb-3 border-b-4 border-neutral-800">
+        <p class="w-1/12" />
+        <p class="w-6/12">
+          <span
+            class="mr-8 float-right"
+            title="Show total tracked time only for filtered tasks"
+          >
+            <span class="mr-2 text-neutral-400">Totals filtered: </span>
+            <Switch
+              value={onlyFilteredTasks}
+              on:change={(e) => updateOnlyFiltered(e.detail)}
             />
-          {/if}
+          </span>
         </p>
-      {/each}
+        {#each ferialDays as day}
+          <p
+            class="w-1/12 relative {totalForDay(
+              trackings,
+              day,
+              onlyFilteredTasks
+            ) >=
+            3600000 * 8
+              ? 'text-green-500'
+              : 'text-red-400'} {!onlyFilteredTasks && 'cursor-pointer'}"
+            on:click|stopPropagation={() => showTrackingsForDay(day)}
+          >
+            {toHours(totalForDay(trackings, day, onlyFilteredTasks))}
+            {#if showTrackingsDetailForDay[day]}
+              <EditTracking
+                class="w-track right-1/2 max-h-56 text-white"
+                showTask={true}
+                intervals={trackingsForDay(trackings, day)}
+                on:update={({ detail }) => editTrack(detail.track, detail.time)}
+                on:delete={({ detail }) => deleteTrack(detail)}
+              />
+            {/if}
+          </p>
+        {/each}
+      </div>
     </div>
+  </div>
+  <div class="h-28" />
+  <div>
     {#each sortedTasks as task (task.id)}
       <div class="flex w-full items-center py-4 border-b border-neutral-800">
         <p class="w-1/12" on:click={() => star(task.id)}>

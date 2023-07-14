@@ -12,11 +12,13 @@
   import Header from './Header.svelte';
   import Timesheet from './timesheet/Timesheet.svelte';
   import { suspend } from '../store/suspender';
+  import Gantt from './gantt/Gantt.svelte';
 
   export let mode: 'kanban' | 'timesheet' = 'kanban';
 
   let tasks: Task[] = [];
   let viewMode = false;
+  let ganttMode = false;
   let loggedIn = true;
   let initErrors = false;
   let configFilters: PageFilters[] = [];
@@ -93,6 +95,7 @@
       mode === 'timesheet' ? 'ts-config' : 'vs-config'
     );
     configFilters = data?.filters ?? [];
+    ganttMode = data?.ganttMode ?? false;
     const defFilters = configFilters.find((e) => e.default);
     filters = defFilters ? { ...filters, ...defFilters } : filters;
     if (defFilters?.selectedView) {
@@ -407,6 +410,7 @@
       bind:filters
       bind:configFilters
       bind:viewMode
+      bind:ganttMode
       {mode}
       {trackings}
       on:search={() => search()}
@@ -422,14 +426,18 @@
     </h1>
   {/if}
   {#if mode === 'kanban'}
-    <Board
-      tasks={filteredTasks}
-      on:updateTask={(e) => updateTask(e.detail)}
-      on:addTrack={({ detail }) =>
-        addTrack(detail.task, moment().valueOf(), detail.time)}
-      on:deleteTrack={(e) => deleteTrack(e.detail)}
-      on:changeTrack={({ detail }) => updateTrack(detail.track, detail.time)}
-    />
+    {#if ganttMode}
+      <Gantt tasks={filteredTasks} users={$userList.users} />
+    {:else}
+      <Board
+        tasks={filteredTasks}
+        on:updateTask={(e) => updateTask(e.detail)}
+        on:addTrack={({ detail }) =>
+          addTrack(detail.task, moment().valueOf(), detail.time)}
+        on:deleteTrack={(e) => deleteTrack(e.detail)}
+        on:changeTrack={({ detail }) => updateTrack(detail.track, detail.time)}
+      />
+    {/if}
   {:else if mode === 'timesheet'}
     <Timesheet
       bind:trackedWeek

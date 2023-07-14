@@ -14,6 +14,7 @@
   export let filters: PageFilters;
   export let configFilters: PageFilters[];
   export let viewMode: boolean;
+  export let ganttMode: boolean;
   export let trackings: Interval[];
   export let mode: 'kanban' | 'timesheet';
 
@@ -41,6 +42,10 @@
     search();
   }
 
+  function toggleChartMode() {
+    ganttMode = !ganttMode;
+  }
+
   function search() {
     dispatch('search');
   }
@@ -64,7 +69,10 @@
 
   async function defaultFilter(f: PageFilters) {
     configFilters = configFilters.map((e) => ({ ...e, default: e === f }));
-    await clickupService.saveConfig({ filters: configFilters }, configName);
+    await clickupService.saveConfig(
+      { filters: configFilters, ganttMode },
+      configName
+    );
     showConfigurations = false;
   }
 
@@ -75,7 +83,10 @@
       filters = configFilters[0] ?? { ...f, name: '' };
       filters.default = true;
     }
-    clickupService.saveConfig({ filters: configFilters }, configName);
+    clickupService.saveConfig(
+      { filters: configFilters, ganttMode },
+      configName
+    );
     showConfigurations = false;
     viewMode = !!filters.selectedView;
     search();
@@ -107,6 +118,7 @@
           ...configFilters.map((f) => ({ ...f, default: false })),
           filterToSave,
         ],
+        ganttMode,
       };
       const res = await clickupService.saveConfig(config, configName);
       if (res.ok) {
@@ -119,7 +131,7 @@
       if (idx >= 0) {
         configFilters[idx] = { ...filters };
         const res = await clickupService.saveConfig(
-          { filters: configFilters },
+          { filters: configFilters, ganttMode },
           configName
         );
         if (res.ok) {
@@ -188,6 +200,19 @@
           on:update={({ detail }) => updateTrack(detail.track, detail.time)}
           on:delete={({ detail }) => deleteTrack(detail)}
         />
+      {/if}
+      {#if mode === 'kanban'}
+        <button
+          class="w-9 px-2 text-xs flex-none flex items-center"
+          title={ganttMode ? 'Switch to kanban' : 'Switch to gantt'}
+          on:click={toggleChartMode}
+        >
+          {#if ganttMode}
+            <Icon name="gantt" class="w-full" />
+          {:else}
+            <Icon name="board" class="w-full" />
+          {/if}
+        </button>
       {/if}
       <button
         class="w-5 flex-none ml-4 flex items-center"

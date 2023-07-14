@@ -156,6 +156,7 @@ export interface Interval {
 
 export interface WorkspaceConfig {
   filters: PageFilters[];
+  ganttMode: boolean;
 }
 
 export interface PageFilters {

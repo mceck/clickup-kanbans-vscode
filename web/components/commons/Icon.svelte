@@ -24,6 +24,7 @@
   import star from '../../assets/star.svg';
   import starEmpty from '../../assets/star-empty.svg';
   import link from '../../assets/link.svg';
+  import gantt from '../../assets/gantt.svg';
 
   export let name: keyof typeof icons;
 
@@ -52,6 +53,7 @@
     plus,
     link,
     star,
+    gantt,
     'star-empty': starEmpty,
   };
 </script>

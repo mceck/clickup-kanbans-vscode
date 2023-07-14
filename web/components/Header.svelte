@@ -1,22 +1,20 @@
 <script lang="ts">
-  import moment from 'moment';
-  import { createEventDispatcher } from 'svelte';
+  import moment from "moment";
+  import { createEventDispatcher } from "svelte";
   import type {
     Interval,
     PageFilters,
     WorkspaceConfig,
-  } from '../interfaces/clickup';
-  import clickupService from '../services/clickup-service';
-  import Icon from './commons/Icon.svelte';
-  import EditTracking from './commons/EditTracking.svelte';
-  import { toHours } from './utils/formatters';
+  } from "../interfaces/clickup";
+  import clickupService from "../services/clickup-service";
+  import Icon from "./commons/Icon.svelte";
+  import EditTracking from "./commons/EditTracking.svelte";
+  import { toHours } from "./utils/formatters";
 
   export let filters: PageFilters;
   export let configFilters: PageFilters[];
-  export let viewMode: boolean;
-  export let ganttMode: boolean;
   export let trackings: Interval[];
-  export let mode: 'kanban' | 'timesheet';
+  export let mode: "kanban" | "timesheet";
 
   let showConfigurations = false;
   let showTodayTrackEdit = false;
@@ -26,53 +24,50 @@
 
   $: trackingToday = trackings.filter(
     (t) =>
-      +t.start >= moment().startOf('day').valueOf() &&
-      +t.start <= moment().endOf('day').valueOf()
+      +t.start >= moment().startOf("day").valueOf() &&
+      +t.start <= moment().endOf("day").valueOf()
   );
 
   $: trackedToday = toHours(trackingToday.reduce((a, t) => a + +t.duration, 0));
 
-  $: configName = mode === 'timesheet' ? 'ts-config' : 'vs-config';
+  $: configName = mode === "timesheet" ? "ts-config" : "vs-config";
 
   function setViewMode(mode: boolean) {
-    if (mode === viewMode) {
+    if (mode === filters.viewMode) {
       return;
     }
-    viewMode = mode;
+    filters.viewMode = mode;
     search();
   }
 
   function toggleChartMode() {
-    ganttMode = !ganttMode;
+    filters.ganttMode = !filters.ganttMode;
   }
 
   function search() {
-    dispatch('search');
+    dispatch("search");
   }
 
   function updateTrack(track: Interval, time: number) {
     showTodayTrackEdit = false;
-    dispatch('updateTrack', { track, time });
+    dispatch("updateTrack", { track, time });
   }
 
   function deleteTrack(track: Interval) {
     showTodayTrackEdit = false;
-    dispatch('deleteTrack', track);
+    dispatch("deleteTrack", track);
   }
 
   function selectFilter(f: PageFilters) {
     filters = f ?? filters;
-    viewMode = !!filters.selectedView;
+    filters.viewMode = !!filters.selectedView;
     search();
     showConfigurations = false;
   }
 
   async function defaultFilter(f: PageFilters) {
     configFilters = configFilters.map((e) => ({ ...e, default: e === f }));
-    await clickupService.saveConfig(
-      { filters: configFilters, ganttMode },
-      configName
-    );
+    await clickupService.saveConfig({ filters: configFilters }, configName);
     showConfigurations = false;
   }
 
@@ -80,15 +75,12 @@
     configFilters = configFilters.filter((e) => e !== f);
     filters = configFilters.find((e) => e.default);
     if (!filters) {
-      filters = configFilters[0] ?? { ...f, name: '' };
+      filters = configFilters[0] ?? { ...f, name: "" };
       filters.default = true;
     }
-    clickupService.saveConfig(
-      { filters: configFilters, ganttMode },
-      configName
-    );
+    clickupService.saveConfig({ filters: configFilters }, configName);
     showConfigurations = false;
-    viewMode = !!filters.selectedView;
+    filters.viewMode = !!filters.selectedView;
     search();
   }
 
@@ -99,16 +91,16 @@
     if (isNew) {
       const filterToSave = { ...filters, default: true };
       const { data } = await clickupService.showInput({
-        placeHolder: 'Configuration name',
-        prompt: 'Choose a name',
-        value: '',
+        placeHolder: "Configuration name",
+        prompt: "Choose a name",
+        value: "",
       });
       filterToSave.name = data.trim();
       if (!filterToSave.name || configFilters.find((f) => f.name === data)) {
-        clickupService.showToast('error', 'Invalid name');
+        clickupService.showToast("error", "Invalid name");
         return;
       }
-      if (!viewMode) {
+      if (!filters.viewMode) {
         filterToSave.selectedView = undefined;
       } else {
         filterToSave.selectedLists = [];
@@ -118,24 +110,27 @@
           ...configFilters.map((f) => ({ ...f, default: false })),
           filterToSave,
         ],
-        ganttMode,
       };
       const res = await clickupService.saveConfig(config, configName);
       if (res.ok) {
         filters = filterToSave;
         configFilters = config.filters;
-        clickupService.showToast('info', 'Configuration saved');
+        clickupService.showToast("info", "Configuration saved");
       }
     } else {
       const idx = configFilters.findIndex((e) => e.name === filters.name);
       if (idx >= 0) {
-        configFilters[idx] = { ...filters };
+        configFilters[idx] = {
+          ...filters,
+          selectedView: filters.viewMode ? filters.selectedView : undefined,
+          selectedLists: filters.viewMode ? [] : filters.selectedLists,
+        };
         const res = await clickupService.saveConfig(
-          { filters: configFilters, ganttMode },
+          { filters: configFilters },
           configName
         );
         if (res.ok) {
-          clickupService.showToast('info', 'Configuration saved');
+          clickupService.showToast("info", "Configuration saved");
         }
       }
     }
@@ -146,7 +141,7 @@
   on:click={() =>
     (showSaveOptions = showConfigurations = showTodayTrackEdit = false)}
   on:keydown={(e) =>
-    e.key === 'Escape' &&
+    e.key === "Escape" &&
     (showSaveOptions = showConfigurations = showTodayTrackEdit = false)}
 />
 <div>
@@ -201,13 +196,13 @@
           on:delete={({ detail }) => deleteTrack(detail)}
         />
       {/if}
-      {#if mode === 'kanban'}
+      {#if mode === "kanban"}
         <button
           class="w-9 px-2 text-xs flex-none flex items-center"
-          title={ganttMode ? 'Switch to kanban' : 'Switch to gantt'}
+          title={filters.ganttMode ? "Switch to kanban" : "Switch to gantt"}
           on:click={toggleChartMode}
         >
-          {#if ganttMode}
+          {#if filters.ganttMode}
             <Icon name="gantt" class="w-full" />
           {:else}
             <Icon name="board" class="w-full" />
@@ -245,17 +240,17 @@
       </button>
     </div>
   </div>
-  {#if mode === 'kanban'}
+  {#if mode === "kanban"}
     <div class="flex">
       <div
-        class="flex-1 text-center cursor-pointer hover:bg-gray-400 hover:bg-opacity-5 rounded {!viewMode &&
+        class="flex-1 text-center cursor-pointer hover:bg-gray-400 hover:bg-opacity-5 rounded {!filters.viewMode &&
           'bg-gray-500 bg-opacity-10'}"
         on:click={() => setViewMode(false)}
       >
         Tasks
       </div>
       <div
-        class="flex-1 text-center cursor-pointer hover:bg-gray-400 hover:bg-opacity-5 rounded {viewMode &&
+        class="flex-1 text-center cursor-pointer hover:bg-gray-400 hover:bg-opacity-5 rounded {filters.viewMode &&
           'bg-gray-500 bg-opacity-10'}"
         on:click={() => setViewMode(true)}
       >

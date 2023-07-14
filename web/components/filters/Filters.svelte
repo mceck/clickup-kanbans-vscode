@@ -1,17 +1,16 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import type { PageFilters } from '../../interfaces/clickup';
-  import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
-  import ListSelector from '../commons/list-selector/ListSelector.svelte';
-  import AdditionalFilters from './AdditionalFilters.svelte';
+  import { createEventDispatcher } from "svelte";
+  import type { PageFilters } from "../../interfaces/clickup";
+  import AssigneesSelector from "../commons/assignees-selector/AssigneesSelector.svelte";
+  import ListSelector from "../commons/list-selector/ListSelector.svelte";
+  import AdditionalFilters from "./AdditionalFilters.svelte";
 
   export let filters: PageFilters;
-  export let viewMode: boolean;
   export let term: string;
 
   const dispatch = createEventDispatcher();
   function search() {
-    dispatch('search');
+    dispatch("search");
   }
 </script>
 
@@ -20,8 +19,8 @@
     <div class="w-36 sm:w-72 flex-none">
       <AssigneesSelector
         bind:selectedAssignees={filters.selectedAssignees}
-        on:add={() => viewMode || search()}
-        on:remove={() => viewMode || search()}
+        on:add={() => filters.viewMode || search()}
+        on:remove={() => filters.viewMode || search()}
       />
     </div>
     <div class="w-36 sm:w-80 flex-none">
@@ -29,7 +28,7 @@
         bind:selectedLists={filters.selectedLists}
         bind:selectedView={filters.selectedView}
         right
-        {viewMode}
+        viewMode={filters.viewMode}
         on:selectView={() => search()}
         on:selectList={() => search()}
         on:removeList={() => search()}
@@ -46,9 +45,9 @@
       />
     </span>
     <AdditionalFilters
-      {viewMode}
+      viewMode={filters.viewMode}
       bind:filters
-      on:change={() => viewMode || search()}
+      on:change={() => filters.viewMode || search()}
     />
   </div>
 </div>
@@ -57,7 +56,7 @@
   .search-input {
     padding: 0.25rem 1rem !important;
 
-    background-color: theme('colors.screen') !important;
-    border: 1px solid theme('colors.neutral.700') !important;
+    background-color: theme("colors.screen") !important;
+    border: 1px solid theme("colors.neutral.700") !important;
   }
 </style>

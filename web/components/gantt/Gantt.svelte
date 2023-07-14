@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
-  import type { Task, User } from '../../interfaces/clickup';
-  import moment from 'moment';
-  import AssigneeBadge from '../commons/assignees-selector/AssigneeBadge.svelte';
+  import { createEventDispatcher, onMount } from "svelte";
+  import type { Task, User } from "../../interfaces/clickup";
+  import moment from "moment";
+  import AssigneeBadge from "../commons/assignees-selector/AssigneeBadge.svelte";
 
   export let tasks: Task[] = [];
   export let users: User[] = [];
   export let timeSpan: number = 24 * 60 * 60 * 1000;
   export let startDate: Date = moment()
-    .startOf('day')
-    .subtract(1, 'week')
+    .startOf("day")
+    .subtract(1, "week")
     .toDate();
-  export let endDate: Date = moment().startOf('day').add(1, 'week').toDate();
+  export let endDate: Date = moment().startOf("day").add(1, "week").toDate();
 
   const dispatch = createEventDispatcher();
 
@@ -52,13 +52,29 @@
   );
 
   onMount(() => {
-    calcTimeslots();
+    onResize();
   });
+
+  function onResize() {
+    const width = document.body.clientWidth;
+    if (width < 768) {
+      period = 1;
+      startDate = moment().startOf("day").subtract(3, "days").toDate();
+    } else if (width < 1024) {
+      period = 2;
+    } else if (width < 1440) {
+      period = 3;
+    } else {
+      period = 4;
+    }
+    endDate = moment(startDate).add(period, "week").toDate();
+    calcTimeslots();
+  }
 
   function formatSlot(slot: { start: number; end: number }) {
     let start = moment(slot.start);
     // let end = moment(slot.end);
-    return start.format('DD/MM');
+    return start.format("DD/MM");
   }
 
   function userTasks(user: User) {
@@ -115,16 +131,16 @@
     }
     const delta = e.deltaX;
     if (delta > 7) {
-      startDate = moment(startDate).add(1, 'day').toDate();
-      endDate = moment(endDate).add(1, 'day').toDate();
+      startDate = moment(startDate).add(1, "day").toDate();
+      endDate = moment(endDate).add(1, "day").toDate();
       calcTimeslots();
       debounceStop = 1;
       setTimeout(() => {
         debounceStop = 0;
       }, 100);
     } else if (delta < -7) {
-      startDate = moment(startDate).subtract(1, 'day').toDate();
-      endDate = moment(endDate).subtract(1, 'day').toDate();
+      startDate = moment(startDate).subtract(1, "day").toDate();
+      endDate = moment(endDate).subtract(1, "day").toDate();
       calcTimeslots();
       debounceStop = 1;
       setTimeout(() => {
@@ -136,11 +152,9 @@
   function onWeekChange(e: any) {
     const week = e.target.value;
     startDate = moment(week)
-      .subtract(Math.floor(period / 2.0), 'week')
+      .subtract(Math.floor(period / 2.0), "week")
       .toDate();
-    endDate = moment(week)
-      .add(Math.ceil(period / 2.0), 'week')
-      .toDate();
+    endDate = moment(startDate).add(Math.ceil(period), "week").toDate();
     calcTimeslots();
   }
 
@@ -149,13 +163,15 @@
     period = parseInt(e.target.value);
     const delta = period - oldPeriod;
     if (delta > 0) {
-      endDate = moment(endDate).add(delta, 'week').toDate();
+      endDate = moment(startDate).add(period, "week").toDate();
     } else if (delta < 0) {
-      startDate = moment(startDate).subtract(delta, 'week').toDate();
+      startDate = moment(startDate).subtract(delta, "week").toDate();
     }
     calcTimeslots();
   }
 </script>
+
+<svelte:window on:resize={onResize} />
 
 <div class="w-full min-h" on:wheel={onScroll}>
   <div class="flex justify-between pb-2">
@@ -165,8 +181,8 @@
         class="w-20"
         on:change={onWeekChange}
         value={moment(startDate)
-          .add(Math.floor(period / 2), 'week')
-          .format('YYYY-[W]WW')}
+          .add(Math.floor(period / 2), "week")
+          .format("YYYY-[W]WW")}
       />
     </div>
     <select
@@ -184,7 +200,12 @@
     <div class="w-10 flex-none p-1" />
     <div class="flex w-fill">
       {#each timeSlots as ts}
-        <div style={headerStyle()}>{formatSlot(ts)}</div>
+        <div
+          class={formatSlot(ts) === moment().format("DD/MM") && "text-blue-300"}
+          style={headerStyle()}
+        >
+          {formatSlot(ts)}
+        </div>
       {/each}
     </div>
   </div>

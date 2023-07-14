@@ -102,7 +102,7 @@ export interface Comment {
 
 export interface CommentDetail {
   text: string;
-  type?: 'tag' | 'frame' | 'attachment' | 'task_mention';
+  type?: "tag" | "frame" | "attachment" | "task_mention";
   frame?: {
     id: string;
     url: string;
@@ -156,7 +156,6 @@ export interface Interval {
 
 export interface WorkspaceConfig {
   filters: PageFilters[];
-  ganttMode: boolean;
 }
 
 export interface PageFilters {
@@ -172,6 +171,8 @@ export interface PageFilters {
   subtasks: boolean;
   include_closed: boolean;
   allTracking: boolean;
+  ganttMode: boolean;
+  viewMode: boolean;
 }
 
 export interface View {

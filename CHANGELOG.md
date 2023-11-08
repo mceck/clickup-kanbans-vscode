@@ -10,11 +10,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - drag and drop
 
-## [1.3.8]
+## [1.3.9]
 
 ### Added
 
 - tag editing
+
+## [1.3.8]
+
+### Fixed
+
+- audit fix
 
 ## [1.3.7]
 

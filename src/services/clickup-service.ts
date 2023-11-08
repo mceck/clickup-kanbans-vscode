@@ -115,6 +115,25 @@ class ClickupService extends BaseService {
   async createTaskComment(taskId: string, comment: any) {
     return this.doPost(`/v2/task/${taskId}/comment`, comment);
   }
+
+  async getSpaceTags(spaceId: string, params?: any) {
+    const { tags } = await this.doGet(
+      `/v2/space/${spaceId}/tag?${this.toQueryString(params)}`
+    );
+    return tags;
+  }
+
+  async addTagToTask(taskId: string, tag: string, params?: any) {
+    return this.doPost(
+      `/v2/task/${taskId}/tag/${tag}?${this.toQueryString(params)}`
+    );
+  }
+
+  async deleteTagFromTask(taskId: string, tag: string, params?: any) {
+    return this.doDelete(
+      `/v2/task/${taskId}/tag/${tag}?${this.toQueryString(params)}`
+    );
+  }
 }
 
 export default new ClickupService();

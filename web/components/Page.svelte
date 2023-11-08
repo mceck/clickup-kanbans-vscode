@@ -398,6 +398,24 @@
       clickupService.setCache('starred', []);
     }
   }
+
+  async function addTaskTag({ taskId, tag }) {
+    try {
+      await clickupService.addTagToTask(taskId, tag);
+      refreshTask(taskId);
+    } catch (error) {
+      clickupService.showToast('error', error.message);
+    }
+  }
+
+  async function deleteTaskTag({ taskId, tag }) {
+    try {
+      await clickupService.deleteTagFromTask(taskId, tag);
+      refreshTask(taskId);
+    } catch (error) {
+      clickupService.showToast('error', error.message);
+    }
+  }
 </script>
 
 <svelte:window on:keypress={handleForceRefresh} />
@@ -436,6 +454,8 @@
           addTrack(detail.task, moment().valueOf(), detail.time)}
         on:deleteTrack={(e) => deleteTrack(e.detail)}
         on:changeTrack={({ detail }) => updateTrack(detail.track, detail.time)}
+        on:addTag={({ detail }) => addTaskTag(detail)}
+        on:deleteTag={({ detail }) => deleteTaskTag(detail)}
       />
     {/if}
   {:else if mode === 'timesheet'}

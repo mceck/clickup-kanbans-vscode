@@ -182,6 +182,30 @@ export default class MessageService {
     );
   }
 
+  getSpaceTags(query: any) {
+    const { nonce, spaceId, ...params } = query;
+    this.sendResponse(
+      () => clickupService.getSpaceTags(spaceId, params),
+      nonce
+    );
+  }
+
+  addTagToTask(query: any) {
+    const { nonce, taskId, tag, ...params } = query;
+    this.sendResponse(
+      () => clickupService.addTagToTask(taskId, tag, params),
+      nonce
+    );
+  }
+
+  deleteTagFromTask(query: any) {
+    const { nonce, taskId, tag, ...params } = query;
+    this.sendResponse(
+      () => clickupService.deleteTagFromTask(taskId, tag, params),
+      nonce
+    );
+  }
+
   showInput(query: any) {
     const { nonce, options } = query;
     this.sendResponse(() => vscode.window.showInputBox(options), nonce);

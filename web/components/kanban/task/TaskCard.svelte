@@ -10,6 +10,7 @@
   import TaskDetail from './TaskDetail.svelte';
   import EditTracking from '../../commons/EditTracking.svelte';
   import { toHours } from '../../utils/formatters';
+  import { tagList } from '../../../store/tags';
 
   export let task: Task;
   export let statusKeys: string[];
@@ -20,6 +21,18 @@
   let expanded = false;
   let loadingIntervals = false;
   let showAddTrack = false;
+  let showAddTag = false;
+
+  let searchTag = '';
+  let loadingTags = false;
+
+  $: spaceTags = $tagList[task.space.id] ?? [];
+
+  $: filteredTags = spaceTags.filter(
+    (t) =>
+      !task.tags.map((e) => e.name).includes(t.name) &&
+      t.name.toLowerCase().includes(searchTag.toLowerCase())
+  );
 
   const dispatch = createEventDispatcher();
 
@@ -100,12 +113,42 @@
       .writeText(task.url)
       .then(() => clickupService.showStatusMessage('Copied'));
   }
+
+  async function toggleAddTag() {
+    showAddTag = !showAddTag;
+    if (showAddTag && !spaceTags.length) {
+      loadingTags = true;
+      const { data, ok } = await clickupService.getSpaceTags(task.space.id);
+      loadingTags = false;
+      if (ok) {
+        tagList.set({
+          ...$tagList,
+          [task.space.id]: data,
+        });
+      }
+    }
+  }
+
+  function addTag(tag: string) {
+    dispatch('addTag', {
+      taskId: task.id,
+      tag,
+    });
+  }
+
+  function deleteTag(tag: string) {
+    dispatch('deleteTag', {
+      taskId: task.id,
+      tag,
+    });
+  }
 </script>
 
 <svelte:window
   on:click={() => {
     showTracking = false;
     showAddTrack = false;
+    showAddTag = false;
   }}
 />
 <div
@@ -167,7 +210,7 @@
               <Icon name="copy" class="w-3 text-yellow-100 stroke-current" />
             </span>
             <small
-              class="text-xs  text-yellow-600 cursor-pointer whitespace-nowrap"
+              class="text-xs text-yellow-600 cursor-pointer whitespace-nowrap"
               on:click|stopPropagation={copyCustomId}
             >
               {task.custom_id}
@@ -189,14 +232,59 @@
     </div>
     <div class="h-full overflow-hidden group">
       <div class="text-xs text-neutral-500">{task.list.name}</div>
-      <div class="flex mt-1">
-        {#each task.tags as tag (tag.name)}
-          <span
-            class="w-12 px-1 rounded text-xs text-white shadow overflow-ellipsis whitespace-nowrap overflow-hidden"
-            style={`background-color: ${tag.tag_bg || '#1c1c1c'};`}
-            title={tag.name}>{tag.name}</span
+      <div class="flex mt-1 relative items-center">
+        <div class="flex overflow-x-auto overflow-invisible">
+          {#each task.tags as tag (tag.name)}
+            <span
+              class="w-12 px-1 rounded text-xs text-white shadow overflow-ellipsis whitespace-nowrap overflow-hidden cursor-pointer"
+              style={`background-color: ${tag.tag_bg || '#1c1c1c'};`}
+              title={tag.name}
+              on:dblclick={() => deleteTag(tag.name)}>{tag.name}</span
+            >
+          {/each}
+        </div>
+        {#if !task.tags.length}
+          <span class="rounded text-xs text-gray-500">tags:</span>
+        {/if}
+        <span
+          class="w-3 ml-1 cursor-pointer flex-none"
+          on:click|stopPropagation={toggleAddTag}
+        >
+          <Icon
+            name="plus"
+            class="text-green-400 hover:text-green-300 stroke-current"
+            title="Add tag"
+          />
+        </span>
+        {#if showAddTag}
+          <div
+            class="absolute top-full z-1000 bg-screen rounded-lg border border-gray-600 w-48 opacity-100"
+            on:click|stopPropagation
           >
-        {/each}
+            <div class="overflow-x-auto overflow-invisible flex mt-2">
+              {#if loadingTags}
+                <Icon name="cog" class="w-4 ml-2 animate-spin" />
+              {/if}
+              {#each filteredTags as tag}
+                <div
+                  class="cursor-pointer w-12 flex-none rounded text-xs text-white shadow overflow-ellipsis whitespace-nowrap overflow-hidden mx-2 px-1"
+                  on:click={() => addTag(tag.name)}
+                  style={`background-color: ${tag.tag_bg || '#1c1c1c'};`}
+                >
+                  {tag.name}
+                </div>
+              {/each}
+            </div>
+            <div class="flex items-center justify-between px-2 py-2">
+              <input
+                type="text"
+                class="w-full h-4 bg-transparent border-b border-gray-500 text-white text-xs"
+                placeholder="Search tag"
+                bind:value={searchTag}
+              />
+            </div>
+          </div>
+        {/if}
       </div>
       <p class="w-full">
         <span
@@ -237,7 +325,7 @@
     opacity: 1;
   }
 
-  .min-h-20 {
-    min-height: theme('spacing.20');
+  .overflow-invisible::-webkit-scrollbar {
+    display: none;
   }
 </style>

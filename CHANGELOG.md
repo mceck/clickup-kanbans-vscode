@@ -8,13 +8,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### TODO
 
-- support for space views and folder views in "view mode" (actually only list views can be selected from the picker)
-- try to merge filter and view mode in a single filter
-- task attachments list and download/preview
 - drag and drop
-- more cli commands
+
+## [1.3.7]
+
+### Added
+
 - tag editing
-- task creation from template
 
 ## [1.3.6]
 

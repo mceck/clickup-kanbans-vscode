@@ -116,6 +116,18 @@ class ClickupService {
     return this.sendMessage({ type: 'updateTask', taskId, ...task });
   }
 
+  getSpaceTags(spaceId: string) {
+    return this.sendMessage({ type: 'getSpaceTags', spaceId });
+  }
+
+  addTagToTask(taskId: string, tag: string) {
+    return this.sendMessage({ type: 'addTagToTask', taskId, tag });
+  }
+
+  deleteTagFromTask(taskId: string, tag: string) {
+    return this.sendMessage({ type: 'deleteTagFromTask', taskId, tag });
+  }
+
   async saveConfig(
     config: WorkspaceConfig,
     configName: string = 'vs-config',

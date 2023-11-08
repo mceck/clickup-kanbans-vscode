@@ -127,6 +127,8 @@
             on:addTrack={(e) => dispatch('addTrack', e.detail)}
             on:changeTrack={(e) => dispatch('changeTrack', e.detail)}
             on:deleteTrack={(e) => dispatch('deleteTrack', e.detail)}
+            on:addTag={(e) => dispatch('addTag', e.detail)}
+            on:deleteTag={(e) => dispatch('deleteTag', e.detail)}
           />
         {/each}
       {/if}

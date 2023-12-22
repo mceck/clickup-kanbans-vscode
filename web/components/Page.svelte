@@ -1,7 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import type { Interval, PageFilters, Task } from '../interfaces/clickup';
+  import type {
+    Interval,
+    PageFilters,
+    Space,
+    Task,
+    WorkspaceConfig,
+  } from '../interfaces/clickup';
   import clickupService from '../services/clickup-service';
   import { user, userList } from '../store/users';
   import Board from './kanban/Board.svelte';
@@ -132,6 +138,7 @@
         throw new Error();
       }
       await updateSelectorsCache();
+      await updateFollowedViews();
     } catch (error) {
       initErrors = true;
     }
@@ -182,6 +189,103 @@
       clickupService.setCache('users', $userList),
       clickupService.setCache('expiration', cacheExpiration),
     ]);
+  }
+
+  async function updateFollowedViews() {
+    const followed = configFilters.filter((f) => f.follow);
+    for (let follow of followed) {
+      const newList = getLastFollowed(follow, $spacesTree.spaces);
+      if (newList) {
+        const { data } = await clickupService.getListViews(newList.id);
+        if (data.length && data[0]?.id !== follow.selectedView?.id) {
+          data[0].list = newList;
+          const redoSearch =
+            filters.selectedView?.id === follow.selectedView?.id;
+          filters.selectedView = data[0];
+          follow.selectedView = data[0];
+          if (redoSearch) {
+            search();
+          }
+          saveFilters(follow);
+        }
+      }
+    }
+  }
+
+  function getLastFollowed(filter: PageFilters, spaces: Space[]) {
+    const space = spaces.find(
+      (s) => s.id === filter.selectedView.list.space.id
+    );
+    for (let folder of space.folders) {
+      if (folder.lists.find((l) => l.id === filter.selectedView.list.id)) {
+        const follow = [...folder.lists]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .findLast((l) => l.name.startsWith(filter.follow));
+        if (follow && follow.id !== filter.selectedView.list.id) {
+          return follow;
+        }
+      }
+    }
+    if (space.lists.find((l) => l.id === filter.selectedView.list.id)) {
+      const follow = [...space.lists]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .findLast((l) => l.name.startsWith(filter.follow));
+      if (follow) {
+        return follow;
+      }
+    }
+    return null;
+  }
+
+  $: configName = mode === 'timesheet' ? 'ts-config' : 'vs-config';
+
+  async function saveFilters(filters: PageFilters, isNew: boolean = false) {
+    if (!filters.name) {
+      isNew = true;
+    }
+    if (isNew) {
+      const filterToSave = { ...filters, default: true };
+      const { data } = await clickupService.showInput({
+        placeHolder: 'Configuration name',
+        prompt: 'Choose a name',
+        value: '',
+      });
+      filterToSave.name = data.trim();
+      if (!filterToSave.name || configFilters.find((f) => f.name === data)) {
+        clickupService.showToast('error', 'Invalid name');
+        return;
+      }
+      if (!viewMode) {
+        filterToSave.selectedView = undefined;
+      } else {
+        filterToSave.selectedLists = [];
+      }
+      const config: WorkspaceConfig = {
+        filters: [
+          ...configFilters.map((f) => ({ ...f, default: false })),
+          filterToSave,
+        ],
+        ganttMode,
+      };
+      const res = await clickupService.saveConfig(config, configName);
+      if (res.ok) {
+        filters = filterToSave;
+        configFilters = config.filters;
+        clickupService.showToast('info', 'Configuration saved');
+      }
+    } else {
+      const idx = configFilters.findIndex((e) => e.name === filters.name);
+      if (idx >= 0) {
+        configFilters[idx] = { ...filters };
+        const res = await clickupService.saveConfig(
+          { filters: configFilters, ganttMode },
+          configName
+        );
+        if (res.ok) {
+          clickupService.showToast('info', 'Configuration saved');
+        }
+      }
+    }
   }
 
   async function search(load = true) {
@@ -434,6 +538,7 @@
       on:search={() => search()}
       on:updateTrack={({ detail }) => updateTrack(detail.track, detail.time)}
       on:deleteTrack={(e) => deleteTrack(e.detail)}
+      on:saveFilters={({ detail }) => saveFilters(filters, detail)}
     />
     <Filters bind:filters bind:viewMode bind:term on:search={() => search()} />
   </div>

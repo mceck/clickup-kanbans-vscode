@@ -56,6 +56,14 @@
     <div class="flex items-center mt-2">
       <small class="w-10 flex-none">Tags:</small>
       <TagPicker bind:selected={filters.tags} on:change={onChange} />
+      {#if viewMode}
+        <input
+          class="ml-2 !w-14"
+          placeholder="Follow..."
+          bind:value={filters.follow}
+          on:change={onChange}
+        />
+      {/if}
     </div>
     <div class="flex items-center mt-2">
       <small class="w-10 flex-none">Statuses:</small>

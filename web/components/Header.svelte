@@ -93,52 +93,7 @@
   }
 
   async function saveFilters(isNew: boolean = false) {
-    if (!filters.name) {
-      isNew = true;
-    }
-    if (isNew) {
-      const filterToSave = { ...filters, default: true };
-      const { data } = await clickupService.showInput({
-        placeHolder: 'Configuration name',
-        prompt: 'Choose a name',
-        value: '',
-      });
-      filterToSave.name = data.trim();
-      if (!filterToSave.name || configFilters.find((f) => f.name === data)) {
-        clickupService.showToast('error', 'Invalid name');
-        return;
-      }
-      if (!viewMode) {
-        filterToSave.selectedView = undefined;
-      } else {
-        filterToSave.selectedLists = [];
-      }
-      const config: WorkspaceConfig = {
-        filters: [
-          ...configFilters.map((f) => ({ ...f, default: false })),
-          filterToSave,
-        ],
-        ganttMode,
-      };
-      const res = await clickupService.saveConfig(config, configName);
-      if (res.ok) {
-        filters = filterToSave;
-        configFilters = config.filters;
-        clickupService.showToast('info', 'Configuration saved');
-      }
-    } else {
-      const idx = configFilters.findIndex((e) => e.name === filters.name);
-      if (idx >= 0) {
-        configFilters[idx] = { ...filters };
-        const res = await clickupService.saveConfig(
-          { filters: configFilters, ganttMode },
-          configName
-        );
-        if (res.ok) {
-          clickupService.showToast('info', 'Configuration saved');
-        }
-      }
-    }
+    dispatch('saveFilters', isNew);
   }
 </script>
 

@@ -10,11 +10,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - drag and drop
 
-## [1.3.10]
+## [1.4.1]
 
 ### Changed
 
 - timesheet sortable by usage
+
+## [1.4.0]
+
+### Added
+
+- new release
 
 ## [1.3.9]
 

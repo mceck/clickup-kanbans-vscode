@@ -28,6 +28,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - audit fix
 
+## [1.3.7]
+
+### Changed
+
+- timesheet sortable by usage
+
 ## [1.3.6]
 
 ### Added

@@ -16,6 +16,7 @@ export default class BaseService {
   }
 
   private async doFetch(relativeUrl: string, options?: any): Promise<any> {
+    console.log('fetching', BASE_API + relativeUrl, options);
     const res = await fetch(BASE_API + relativeUrl, {
       headers: {
         Authorization: this.token,

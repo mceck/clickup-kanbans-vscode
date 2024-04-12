@@ -8,7 +8,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### TODO
 
+- refactor caching
+- refactor ui
 - drag and drop
+
+## [1.4.2]
+
+### Added
+
+- lazy load big workspaces lists
 
 ## [1.4.1]
 

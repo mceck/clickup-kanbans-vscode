@@ -172,9 +172,15 @@ class ClickupService {
     const spacesTree: SpacesTree = { spaces: [] };
     const { data: spaces } = await this.getSpaces();
     const promises: Promise<any>[] = [];
+
     spaces.forEach((space) => {
-      promises.push(this.getFolders(space.id));
-      promises.push(this.getFolderlessLists(space.id));
+      if (spaces.length <= 10) {
+        promises.push(this.getFolders(space.id));
+        promises.push(this.getFolderlessLists(space.id));
+      } else {
+        space.folders = [];
+        space.lists = [];
+      }
       spacesTree.spaces.push(space);
     });
     const results = await Promise.all(promises);

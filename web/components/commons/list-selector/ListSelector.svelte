@@ -24,34 +24,32 @@
   let showSelector = false;
   let selected = -1;
 
-  $: filteredSpaces = $spacesTree.spaces
-    .map((s) => {
-      if (!searchText) {
-        return s;
-      }
-      const ret = { ...s };
-      ret.folders =
-        ret.folders
-          ?.map((f) => {
-            const fret = { ...f };
-            fret.lists =
-              fret.lists?.filter((l) =>
-                l.name.toLowerCase().includes(searchText.toLowerCase())
-              ) ?? [];
-            return fret;
-          })
-          ?.filter(
-            (f) =>
-              f.lists?.length ||
-              f.name.toLowerCase().includes(searchText.toLowerCase())
-          ) ?? [];
-      ret.lists =
-        ret.lists?.filter((l) =>
-          l.name.toLowerCase().includes(searchText.toLowerCase())
+  $: filteredSpaces = $spacesTree.spaces.map((s) => {
+    if (!searchText) {
+      return s;
+    }
+    const ret = { ...s };
+    ret.folders =
+      ret.folders
+        ?.map((f) => {
+          const fret = { ...f };
+          fret.lists =
+            fret.lists?.filter((l) =>
+              l.name.toLowerCase().includes(searchText.toLowerCase())
+            ) ?? [];
+          return fret;
+        })
+        ?.filter(
+          (f) =>
+            f.lists?.length ||
+            f.name.toLowerCase().includes(searchText.toLowerCase())
         ) ?? [];
-      return ret;
-    })
-    .filter((s) => s.lists?.length || s.folders?.length);
+    ret.lists =
+      ret.lists?.filter((l) =>
+        l.name.toLowerCase().includes(searchText.toLowerCase())
+      ) ?? [];
+    return ret;
+  });
 
   function handleSearching() {
     if (searchText) {
@@ -187,7 +185,17 @@
     return undefined;
   }
 
-  function toggleSpace(spaceId: string) {
+  async function toggleSpace(spaceId: string) {
+    const space = $spacesTree.spaces.find((s) => s.id === spaceId);
+    if (!space.folders?.length && !space.lists?.length) {
+      const [{ data: folders }, { data: lists }] = await Promise.all([
+        clickupService.getFolders(space.id),
+        clickupService.getFolderlessLists(space.id),
+      ]);
+      space.folders = folders ?? [];
+      space.lists = lists ?? [];
+      clickupService.setCache('spaces', $spacesTree);
+    }
     showSpaces = { ...showSpaces, [spaceId]: !showSpaces[spaceId] };
     searchText = '';
   }
@@ -255,10 +263,10 @@
           ? `${selectedView.list?.name}: ${selectedView.name}`
           : 'Select view...'
         : selectedLists.length
-        ? `(${selectedLists.length} list${
-            selectedLists.length > 1 ? 's' : ''
-          } selected)`
-        : 'Select lists...'}
+          ? `(${selectedLists.length} list${
+              selectedLists.length > 1 ? 's' : ''
+            } selected)`
+          : 'Select lists...'}
     />
     {#if showSelector}
       <div

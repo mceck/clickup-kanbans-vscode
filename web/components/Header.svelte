@@ -120,10 +120,13 @@
               >
               <span
                 class="h-4 cursor-pointer {f.default && 'text-green-500'}"
-                on:click={() => defaultFilter(f)}><Icon name="check" /></span
+                on:click={() => defaultFilter(f)}
+                ><Icon class="h-4 w-4" name="check" /></span
               >
-              <span class="h-4 cursor-pointer" on:click={() => deleteFilter(f)}
-                ><Icon name="trash" /></span
+              <span
+                class="ml-1 h-4 cursor-pointer"
+                on:click={() => deleteFilter(f)}
+                ><Icon class="h-4 w-4" name="trash" /></span
               >
             </div>
           {/each}

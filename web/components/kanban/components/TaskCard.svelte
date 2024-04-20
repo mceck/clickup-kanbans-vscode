@@ -11,6 +11,7 @@
   import EditTracking from '../../commons/EditTracking.svelte';
   import { toHours } from '../../utils/formatters';
   import { tagList } from '../../../store/tags';
+  import { outsideClickable } from '../../utils/clickOutside';
 
   export let task: Task;
   export let statusKeys: string[];
@@ -88,7 +89,6 @@
   async function toggleTracks() {
     showTracking = !showTracking;
     if (showTracking && !intervals.length) {
-      showAddTrack = false;
       loadingIntervals = true;
       const res = await clickupService.findTimeTrack({ task_id: task.id });
       if (res.ok) {
@@ -144,13 +144,6 @@
   }
 </script>
 
-<svelte:window
-  on:click={() => {
-    showTracking = false;
-    showAddTrack = false;
-    showAddTag = false;
-  }}
-/>
 <div
   class="px-2 pt-6 border border-gray-600 hover:border-gray-500 rounded-lg my-1 relative"
 >
@@ -159,6 +152,10 @@
   >
     <div
       class="absolute left-0 top-0 px-2 pt-1 w-full flex items-center justify-between"
+      use:outsideClickable
+      on:clickOutside={() => {
+        showTracking = false;
+      }}
     >
       <div class="w-1/12 flex" title="Time estimated">
         {#if task.time_estimate}
@@ -172,7 +169,7 @@
           <small
             class="text-xs text-green-500 cursor-pointer"
             title="Time tracked"
-            on:click|stopPropagation={toggleTracks}
+            on:click={toggleTracks}
           >
             {toHours(task.time_spent)}
           </small>
@@ -180,8 +177,12 @@
       </div>
       <div
         class="max-w-1/12 cursor-pointer"
-        on:click|stopPropagation={startAddTrack}
         title="Add time track"
+        use:outsideClickable
+        on:clickOutside={() => {
+          showAddTrack = false;
+        }}
+        on:click={startAddTrack}
       >
         <Icon
           name="plus"
@@ -190,7 +191,6 @@
         {#if showAddTrack}
           <div
             class="absolute top-full z-10 bg-screen rounded-lg border border-gray-600 w-36 opacity-100"
-            on:click|stopPropagation
           >
             <TimeTrackInput
               bind:timeTrackInput={addTimeTrackInput}
@@ -205,13 +205,13 @@
           <div class="-ml-1 flex items-center copy-hover">
             <span
               class="opacity-0 transition-opacity cursor-pointer"
-              on:click|stopPropagation={copyCustomId}
+              on:click={copyCustomId}
             >
               <Icon name="copy" class="w-3 text-yellow-100 stroke-current" />
             </span>
             <small
               class="text-xs text-yellow-600 cursor-pointer whitespace-nowrap"
-              on:click|stopPropagation={copyCustomId}
+              on:click={copyCustomId}
             >
               {task.custom_id}
             </small>
@@ -232,7 +232,11 @@
     </div>
     <div class="h-full overflow-hidden group">
       <div class="text-xs text-neutral-500">{task.list.name}</div>
-      <div class="flex mt-1 relative items-center">
+      <div
+        class="flex mt-1 relative items-center"
+        use:outsideClickable
+        on:clickOutside={() => (showAddTag = false)}
+      >
         <div class="flex overflow-x-auto overflow-invisible">
           {#each task.tags as tag (tag.name)}
             <span
@@ -246,20 +250,16 @@
         {#if !task.tags.length}
           <span class="rounded text-xs text-gray-500">tags:</span>
         {/if}
-        <span
-          class="w-3 ml-1 cursor-pointer flex-none"
-          on:click|stopPropagation={toggleAddTag}
-        >
+        <span class="w-3 ml-1 cursor-pointer flex-none" on:click={toggleAddTag}>
           <Icon
             name="plus"
-            class="text-green-400 hover:text-green-300 stroke-current"
+            class="text-highlight hover:text-blue-300 stroke-current"
             title="Add tag"
           />
         </span>
         {#if showAddTag}
           <div
             class="absolute top-full z-1000 bg-screen rounded-lg border border-gray-600 w-48 opacity-100"
-            on:click|stopPropagation
           >
             <div class="overflow-x-auto overflow-invisible flex mt-2">
               {#if loadingTags}

@@ -1,15 +1,12 @@
 <script lang="ts">
   import moment from 'moment';
   import { createEventDispatcher } from 'svelte';
-  import type {
-    Interval,
-    PageFilters,
-    WorkspaceConfig,
-  } from '../interfaces/clickup';
+  import type { Interval, PageFilters } from '../interfaces/clickup';
   import clickupService from '../services/clickup-service';
   import Icon from './commons/Icon.svelte';
   import EditTracking from './commons/EditTracking.svelte';
   import { toHours } from './utils/formatters';
+  import { outsideClickable } from './utils/clickOutside';
 
   export let filters: PageFilters;
   export let configFilters: PageFilters[];
@@ -61,22 +58,23 @@
   }
 
   function selectFilter(f: PageFilters) {
+    showConfigurations = false;
     filters = f ?? filters;
     viewMode = !!filters.selectedView;
     search();
-    showConfigurations = false;
   }
 
   async function defaultFilter(f: PageFilters) {
+    showConfigurations = false;
     configFilters = configFilters.map((e) => ({ ...e, default: e === f }));
     await clickupService.saveConfig(
       { filters: configFilters, ganttMode },
       configName
     );
-    showConfigurations = false;
   }
 
   function deleteFilter(f: PageFilters) {
+    showConfigurations = false;
     configFilters = configFilters.filter((e) => e !== f);
     filters = configFilters.find((e) => e.default);
     if (!filters) {
@@ -87,7 +85,6 @@
       { filters: configFilters, ganttMode },
       configName
     );
-    showConfigurations = false;
     viewMode = !!filters.selectedView;
     search();
   }
@@ -98,27 +95,23 @@
 </script>
 
 <svelte:window
-  on:click={() =>
-    (showSaveOptions = showConfigurations = showTodayTrackEdit = false)}
   on:keydown={(e) =>
     e.key === 'Escape' &&
     (showSaveOptions = showConfigurations = showTodayTrackEdit = false)}
 />
 <div>
   <div class="flex justify-between w-full">
-    <div>
+    <div aria-label="configuration">
       <small
         class="cursor-pointer"
-        on:click|stopPropagation={() => {
+        use:outsideClickable={'[aria-label="configuration"]'}
+        on:clickOutside={() => (showConfigurations = false)}
+        on:click={() => {
           showConfigurations = !showConfigurations;
-          showTodayTrackEdit = showSaveOptions = false;
         }}>{filters.name}</small
       >
       {#if showConfigurations}
-        <div
-          class="absolute p-2 bg-screen border rounded border-gray-600 z-10"
-          on:click|stopPropagation
-        >
+        <div class="absolute p-2 bg-screen border rounded border-gray-600 z-10">
           {#each configFilters as f}
             <div class="flex items-center py-1">
               <span class="w-24 cursor-pointer" on:click={() => selectFilter(f)}
@@ -136,13 +129,15 @@
         </div>
       {/if}
     </div>
-    <div class="flex justify-end items-center w-full mb-2">
+    <div class="flex justify-end items-center w-full mb-2" aria-label="actions">
       <div
         class="flex w-10 items-center text-xs text-green-400 mr-3 cursor-pointer"
         title="Time tracked today"
-        on:click|stopPropagation={() => {
+        use:outsideClickable={'[aria-label="actions"]'}
+        on:clickOutside={() => (showTodayTrackEdit = false)}
+        on:click={() => {
           showTodayTrackEdit = !showTodayTrackEdit;
-          showConfigurations = showSaveOptions = false;
+          showSaveOptions = false;
         }}
       >
         <Icon name="clock" class="w-3 mr-1 flex-none stroke-current" />
@@ -178,9 +173,11 @@
       </button>
       <button
         class="w-4 flex-none ml-1 flex items-center relative"
-        on:click|stopPropagation={() => {
+        use:outsideClickable={'[aria-label="actions"]'}
+        on:clickOutside={() => (showSaveOptions = false)}
+        on:click={() => {
           showSaveOptions = !showSaveOptions;
-          showConfigurations = showTodayTrackEdit = false;
+          showTodayTrackEdit = false;
         }}
       >
         <Icon name="ellipsis" class="flex-none" />

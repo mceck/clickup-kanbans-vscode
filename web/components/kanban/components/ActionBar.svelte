@@ -55,8 +55,7 @@
     <button
       class="flex justify-center items-center"
       title="Checkout or create branch for this task in working directory"
-      on:click|stopPropagation={gitCheckout}
-      ><Icon class="h-6" name="git" /></button
+      on:click={gitCheckout}><Icon class="h-6" name="git" /></button
     >
     <button
       class="flex justify-center items-center"

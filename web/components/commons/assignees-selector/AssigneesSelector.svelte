@@ -4,6 +4,7 @@
   import AssigneeBadge from './AssigneeBadge.svelte';
   import { createEventDispatcher } from 'svelte';
   import Icon from '../Icon.svelte';
+  import { outsideClickable } from '../../utils/clickOutside';
 
   export let selectedAssignees: User[];
   export let editable = true;
@@ -100,17 +101,19 @@
   }
 </script>
 
-<svelte:window on:click={() => (showSelector = false)} />
-
 <div class:animate-pulse={$userList.users.length === 0}>
-  <div class="relative select-none">
+  <div
+    class="relative select-none"
+    use:outsideClickable
+    on:clickOutside={() => (showSelector = false)}
+  >
     <div class="flex flex-row-reverse justify-end pl-3">
       {#if editable}
         <div
           class={`${
             small ? 'w-5 h-5 -ml-2' : 'w-8 h-8 -ml-2'
-          } cursor-pointer add-assignee`}
-          on:click|stopPropagation={toggleSelector}
+          } cursor-pointer stroke-highlight fill-highlight hover:stroke-blue-300 hover:fill-blue-300`}
+          on:click={toggleSelector}
         >
           <Icon name="add-assignee" />
         </div>
@@ -120,7 +123,7 @@
           class={`cursor-pointer flex justify-center items-center ${
             small ? 'w-5 h-5 -ml-2 text-xs' : 'w-8 h-8 -ml-3'
           } text-white bg-gray-500 rounded-full`}
-          on:click|stopPropagation={toggleSelector}
+          on:click={toggleSelector}
         >
           <span>+{selectedAssignees.length - maxShown + 1}</span>
         </div>
@@ -129,7 +132,7 @@
         <div
           class={`${small ? 'w-5 h-5 -ml-2' : 'w-8 h-8 -ml-3'} cursor-pointer`}
         >
-          <span on:click|stopPropagation={() => toggleAssignee(user)}>
+          <span on:click={() => toggleAssignee(user)}>
             <AssigneeBadge {user} {small} />
           </span>
         </div>
@@ -137,12 +140,12 @@
     </div>
     {#if showSelector}
       <div
-        class="absolute top-125 rounded-lg shadow border border-gray-500 overflow-hidden bg-screen z-10 {anchor ===
+        class="absolute top-[125%] rounded-lg shadow border border-gray-500 overflow-hidden bg-screen z-10 {anchor ===
           'right' && 'right-1'}"
-        on:click|stopPropagation
+        on:click
       >
         <input
-          class="w-full search"
+          class="w-full !outline-none"
           placeholder="Search..."
           bind:this={searchInput}
           bind:value={searchText}
@@ -170,25 +173,7 @@
 </div>
 
 <style>
-  .search {
-    outline: none;
-  }
-
-  .add-assignee {
-    stroke: theme('colors.highlight');
-    fill: theme('colors.highlight');
-  }
-
-  .add-assignee:hover {
-    stroke: theme('colors.blue.300');
-    fill: theme('colors.blue.300');
-  }
-
   .add-assignee :global(circle) {
     stroke-dasharray: 3;
-  }
-
-  .top-125 {
-    top: 125%;
   }
 </style>

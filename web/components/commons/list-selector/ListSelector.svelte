@@ -5,6 +5,7 @@
   import clickupService from '../../../services/clickup-service';
   import { createEventDispatcher } from 'svelte';
   import Icon from '../Icon.svelte';
+  import { outsideClickable } from '../../utils/clickOutside';
 
   export let selectedLists: List[] = [];
   export let right: boolean = false;
@@ -247,10 +248,12 @@
   }
 </script>
 
-<svelte:window on:click={() => (showSelector = false)} />
-
 <div class:animate-pulse={$spacesTree.spaces.length === 0}>
-  <div class="relative select-none" on:click|stopPropagation>
+  <div
+    class="relative select-none"
+    use:outsideClickable
+    on:clickOutside={() => (showSelector = false)}
+  >
     <input
       class="rounded-2xl p-input cursor-pointer"
       bind:this={searchInput}
@@ -291,11 +294,12 @@
               {#if showSpaces[space.id]}
                 <div on:click|stopPropagation>
                   {#each space.folders ?? [] as folder (folder.id)}
-                    <div class="ml-4" on:click={() => toggleFolder(folder.id)}>
+                    <div class="ml-4">
                       <div
                         class="flex items-center"
                         class:bg-gray-700={getIdx('folder', folder) ===
                           selected}
+                        on:click={() => toggleFolder(folder.id)}
                       >
                         {#if showFolder[folder.id]}
                           <Icon class="w-4 h-4 flex-none" name="folder-open" />
@@ -313,7 +317,7 @@
                               selected}
                             class:text-blue-300={!viewMode &&
                               selectedLists.find((l) => l.id === list.id)}
-                            on:click|stopPropagation={() => toggleList(list)}
+                            on:click={() => toggleList(list)}
                           >
                             <span class="list-icon" />
                             <span>
@@ -328,16 +332,14 @@
                               />
                             {/if}
                             {#if views[list.id] !== null && views[list.id]?.length === 0}
-                              <small
-                                class="ml-8 text-gray-400"
-                                on:click|stopPropagation>Empty</small
+                              <small class="ml-8 text-gray-400" on:click
+                                >Empty</small
                               >
                             {/if}
                             {#each views[list.id] ?? [] as view (view.id)}
                               <div
                                 class="ml-8 flex items-center"
-                                on:click|stopPropagation={() =>
-                                  selectView(view)}
+                                on:click={() => selectView(view)}
                               >
                                 <span class="view-icon" />
                                 <span
@@ -372,15 +374,12 @@
                         />
                       {/if}
                       {#if views[list.id] !== null && views[list.id]?.length === 0}
-                        <small
-                          class="ml-8 text-gray-400"
-                          on:click|stopPropagation>Empty</small
-                        >
+                        <small class="ml-8 text-gray-400" on:click>Empty</small>
                       {/if}
                       {#each views[list.id] ?? [] as view (view.id)}
                         <div
                           class="ml-8 flex items-center"
-                          on:click|stopPropagation={() => selectView(view)}
+                          on:click={() => selectView(view)}
                         >
                           <span class="view-icon" />
                           <span

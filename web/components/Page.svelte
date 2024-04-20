@@ -524,10 +524,7 @@
 
 <svelte:window on:keypress={handleForceRefresh} />
 <div>
-  <div
-    class="fixed top-0 left-0 w-full bg-screen z-20 px-4 pt-1"
-    on:click|stopPropagation
-  >
+  <div class="fixed top-0 left-0 w-full bg-screen z-20 px-4 pt-1">
     <Header
       bind:filters
       bind:configFilters

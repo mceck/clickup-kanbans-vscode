@@ -4,6 +4,7 @@
   import Icon from './Icon.svelte';
   import TimeTrackInput from './TimeTrackInput.svelte';
   import { toDate, toTime, toTimeInput } from '../utils/formatters';
+  import { outsideClickable } from '../utils/clickOutside';
 
   export let intervals: Interval[];
   export let loading: boolean = false;
@@ -29,11 +30,8 @@
   }
 </script>
 
-<svelte:window on:click={() => (editTrack = undefined)} />
-
 <div
   class="absolute w-4/5 max-h-24 top-7 z-10 p-1 bg-screen rounded border border-gray-700 overflow-auto {$$props.class}"
-  on:click|stopPropagation={() => (editTrack = undefined)}
 >
   {#if loading}
     <span class="animate-pulse">Loading...</span>
@@ -41,7 +39,11 @@
     <span>Empty</span>
   {/if}
   {#each intervals as track (track.id)}
-    <div class="flex items-center">
+    <div
+      class="flex items-center"
+      use:outsideClickable
+      on:clickOutside={() => (editTrack = undefined)}
+    >
       <p class="text-xs text-gray-300 pr-2 {showTask ? 'w-20' : 'flex-auto'}">
         {toDate(track.start)}
       </p>
@@ -54,9 +56,7 @@
           href={track.task.url}>{track.task.name}</a
         >
       {/if}
-      <button
-        class="flex-none w-8"
-        on:click|stopPropagation={() => showEditTrack(track)}
+      <button class="flex-none w-8" on:click={() => showEditTrack(track)}
         ><Icon name="edit" /></button
       >
       <button class="flex-none w-8" on:click={() => dispatch('delete', track)}
@@ -65,7 +65,6 @@
       {#if editTrack && editTrack.id === track.id}
         <div
           class="absolute left-20 text-xs z-10 bg-screen rounded-lg border border-gray-600 w-16 opacity-100"
-          on:click|stopPropagation
         >
           <TimeTrackInput
             bind:timeTrackInput

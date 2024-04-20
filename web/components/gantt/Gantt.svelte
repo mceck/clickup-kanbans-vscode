@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import type { Task, User } from '../../interfaces/clickup';
   import moment from 'moment';
   import AssigneeBadge from '../commons/assignees-selector/AssigneeBadge.svelte';
@@ -13,13 +13,8 @@
     .toDate();
   export let endDate: Date = moment().startOf('day').add(1, 'week').toDate();
 
-  const dispatch = createEventDispatcher();
-
   let timeSlots: { start: number; end: number }[] = [];
   let period = 4;
-  let selectedTask: Task = null;
-  let isDragging: boolean = false;
-  let isResizing: boolean = false;
 
   $: filteredTasks = tasks
     .map((t) => ({

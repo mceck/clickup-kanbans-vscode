@@ -13,4 +13,9 @@ declare global {
   };
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const __vs_svelte_view: string;
+  declare namespace svelteHTML {
+    interface HTMLAttributes<T> {
+      'on:clickOutside'?: CompositionEventHandler;
+    }
+  }
 }

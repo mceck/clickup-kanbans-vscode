@@ -38,6 +38,10 @@ You can save current configuration clicking on the icon or saving with a new nam
 
 Select saved configurations from the selector that can be opened by clicking on the configuration name on the top left of the screen
 
+#### intl
+
+You can change language and date formatting in the settings
+
 ## dev
 
 Build the webview in watch mode

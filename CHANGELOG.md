@@ -4,13 +4,11 @@ All notable changes to the "clickup-kanbans" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.5.0]
 
-### TODO
+### Added
 
-- refactor caching
-- refactor ui
-- drag and drop
+- intl
 
 ## [1.4.2]
 

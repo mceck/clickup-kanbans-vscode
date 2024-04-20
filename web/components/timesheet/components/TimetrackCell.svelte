@@ -25,10 +25,6 @@
     edit = false;
     dispatch('updateTrack', time);
   }
-
-  function onCancel() {
-    dispatch('cancel');
-  }
 </script>
 
 <p
@@ -42,7 +38,7 @@
       class="!py-0"
       timeTrackText={toTimeInput(totalForDay)}
       on:submit={({ detail: time }) => updateTrack(time)}
-      on:cancel={onCancel}
+      on:cancel={() => (edit = false)}
     />
   {:else}
     <span on:click={toggleEdit} class:text-neutral-600={totalForDay === 0}>

@@ -3,6 +3,7 @@
   import type { Task, User } from '../../interfaces/clickup';
   import moment from 'moment';
   import AssigneeBadge from '../commons/assignees-selector/AssigneeBadge.svelte';
+  import { toWeek } from '../utils/formatters';
 
   export let tasks: Task[] = [];
   export let users: User[] = [];
@@ -159,9 +160,7 @@
         type="week"
         class="w-20"
         on:change={onWeekChange}
-        value={moment(startDate)
-          .add(Math.floor(period / 2), 'week')
-          .format('YYYY-[W]WW')}
+        value={toWeek(moment(startDate).add(Math.floor(period / 2), 'week'))}
       />
     </div>
     <select

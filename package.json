@@ -72,6 +72,34 @@
           "type": "string",
           "markdownDescription": "Clickup teamId"
         },
+        "clickup-kanban.config.locale": {
+          "type": "string",
+          "markdownDescription": "Language",
+          "default": "en",
+          "enum": [
+            "it",
+            "en"
+          ],
+          "enumDescriptions": [
+            "Italiano",
+            "Inglese"
+          ]
+        },
+        "clickup-kanban.config.dateFormat": {
+          "type": "string",
+          "markdownDescription": "Date format es: 'DD/MM/YYYY'",
+          "default": "YYYY-MM-DD",
+          "enum": [
+            "DD/MM/YYYY",
+            "MM/DD/YYYY",
+            "YYYY-MM-DD"
+          ],
+          "enumDescriptions": [
+            "DD/MM/YYYY",
+            "MM/DD/YYYY",
+            "YYYY-MM-DD"
+          ]
+        },
         "clickup-kanban.config.vs-config": {
           "type": "object",
           "markdownDescription": "Default filters configuration"

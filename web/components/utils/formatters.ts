@@ -1,7 +1,11 @@
 import moment from 'moment';
 
-export function toDate(time: number) {
-  return moment(+time).format('DD/MM/YYYY');
+export function toDate(time: number, format) {
+  return moment(+time).format(format);
+}
+
+export function toWeek(date: moment.Moment) {
+  return moment(date).format('YYYY-[W]WW');
 }
 
 export function toTime(time: number) {

@@ -2,15 +2,14 @@
   import moment from 'moment';
   import { createEventDispatcher } from 'svelte';
   import Icon from '../../commons/Icon.svelte';
+  import { toWeek } from '../../utils/formatters';
 
   export let trackedWeek: string;
 
   const dispatch = createEventDispatcher();
 
   function goWeek(add: number) {
-    trackedWeek = moment(trackedWeek)
-      .add(7 * add, 'days')
-      .format('YYYY-[W]WW');
+    trackedWeek = toWeek(moment(trackedWeek).add(7 * add, 'days'));
     changeWeek();
   }
 

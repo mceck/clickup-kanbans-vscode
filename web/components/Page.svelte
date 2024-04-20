@@ -19,6 +19,8 @@
   import Timesheet from './timesheet/Timesheet.svelte';
   import { suspend } from '../store/suspender';
   import Gantt from './gantt/Gantt.svelte';
+  import { toWeek } from './utils/formatters';
+  import { dateFormat, locale } from '../store/i18n';
 
   export let mode: 'kanban' | 'timesheet' = 'kanban';
 
@@ -30,7 +32,7 @@
   let configFilters: PageFilters[] = [];
   let term = '';
   let trackings: Interval[] = [];
-  let trackedWeek: string = moment().format('YYYY-[W]WW');
+  let trackedWeek: string = toWeek(moment());
   let cacheExpiration: number;
 
   let filters: PageFilters = {
@@ -89,8 +91,20 @@
     : prefilteredTask;
 
   onMount(() => {
+    loadLocalization();
     loadPage();
   });
+
+  async function loadLocalization() {
+    const { data: loc } = await clickupService.getConfig('locale');
+    const { data: dateFmt } = await clickupService.getConfig('dateFormat');
+    if (loc) {
+      locale.set(loc);
+    }
+    if (dateFmt) {
+      dateFormat.set(dateFmt);
+    }
+  }
 
   async function loadPage() {
     initErrors = false;

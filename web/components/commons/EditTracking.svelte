@@ -5,6 +5,7 @@
   import TimeTrackInput from './TimeTrackInput.svelte';
   import { toDate, toTime, toTimeInput } from '../utils/formatters';
   import { outsideClickable } from '../utils/clickOutside';
+  import { dateFormat } from '../../store/i18n';
 
   export let intervals: Interval[];
   export let loading: boolean = false;
@@ -45,7 +46,7 @@
       on:clickOutside={() => (editTrack = undefined)}
     >
       <p class="text-xs text-gray-300 pr-2 {showTask ? 'w-20' : 'flex-auto'}">
-        {toDate(track.start)}
+        {toDate(track.start, $dateFormat)}
       </p>
       <p class="text-xs text-gray-300 px-2 {showTask ? 'w-12' : 'flex-auto'}">
         {toTime(track.duration)}

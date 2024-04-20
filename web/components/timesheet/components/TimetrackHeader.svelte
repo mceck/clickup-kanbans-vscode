@@ -7,6 +7,7 @@
   import { toHours } from '../../utils/formatters';
   import DayTotal from './DayTotal.svelte';
   import { FERIAL_DAYS } from '../tracking-utils';
+  import { dateFormat } from '../../../store/i18n';
 
   export let trackedWeek: string;
   export let trackings: Interval[] = [];
@@ -62,14 +63,17 @@
         >{filterMode === 'usage' ? 'by usage' : ''}</span
       >
       <span class="font-normal text-sm italic float-right pt-1 mr-8"
-        >{moment(trackedWeek).format('DD/MM/yyyy')} - {moment(trackedWeek)
+        >{moment(trackedWeek).format($dateFormat)} - {moment(trackedWeek)
           .add(4, 'days')
-          .format('DD/MM/yyyy')}</span
+          .format($dateFormat)}</span
       >
     </p>
     {#each FERIAL_DAYS as day}
       <p class="w-1/12">
         {moment(trackedWeek).add(day, 'days').format('ddd')}
+        <span class="text-gray-500 text-sm font-normal italic ml-1"
+          >{moment(trackedWeek).add(day, 'days').format('DD')}</span
+        >
       </p>
     {/each}
   </div>

@@ -7,6 +7,7 @@
   import EditTracking from './commons/EditTracking.svelte';
   import { toHours } from './utils/formatters';
   import { outsideClickable } from './utils/clickOutside';
+  import { t } from '../store/i18n';
 
   export let filters: PageFilters;
   export let configFilters: PageFilters[];
@@ -132,7 +133,7 @@
     <div class="flex justify-end items-center w-full mb-2" aria-label="actions">
       <div
         class="flex w-10 items-center text-xs text-green-400 mr-3 cursor-pointer"
-        title="Time tracked today"
+        title={$t('time-tracked-today')}
         use:outsideClickable={'[aria-label="actions"]'}
         on:clickOutside={() => (showTodayTrackEdit = false)}
         on:click={() => {
@@ -154,7 +155,7 @@
       {#if mode === 'kanban'}
         <button
           class="w-9 px-2 text-xs flex-none flex items-center"
-          title={ganttMode ? 'Switch to kanban' : 'Switch to gantt'}
+          title={ganttMode ? $t('switch-kanban') : $t('switch-gantt')}
           on:click={toggleChartMode}
         >
           {#if ganttMode}
@@ -166,7 +167,7 @@
       {/if}
       <button
         class="w-5 flex-none ml-4 flex items-center"
-        title="Save filters"
+        title={$t('global.save-filters')}
         on:click={() => saveFilters()}
       >
         <Icon name="save" />
@@ -185,7 +186,9 @@
           <ul
             class="absolute p-2 w-24 top-6 right-full bg-screen rounded-lg border border-gray-600 shadow overflow-hidden z-10"
           >
-            <button on:click={() => saveFilters(true)}>Save as...</button>
+            <button on:click={() => saveFilters(true)}
+              >{$t('global.save-as')}</button
+            >
           </ul>
         {/if}
       </button>
@@ -193,7 +196,7 @@
         class="w-9 px-2 flex-none ml-2 flex items-center"
         on:click={() => search()}
       >
-        <Icon name="refresh" class="w-full" title="Reload" />
+        <Icon name="refresh" class="w-full" title={$t('global.reload')} />
       </button>
     </div>
   </div>

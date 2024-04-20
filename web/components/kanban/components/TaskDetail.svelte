@@ -5,6 +5,7 @@
   import AssigneeBadge from '../../commons/assignees-selector/AssigneeBadge.svelte';
   import Icon from '../../commons/Icon.svelte';
   import CommentText from './CommentText.svelte';
+  import { t } from '../../../store/i18n';
 
   export let task: Task;
   let fullTask: Task;
@@ -61,7 +62,7 @@
         class="cursor-pointer text-sm w-full my-2 flex items-center"
         on:click={() => (collapseComments = !collapseComments)}
       >
-        <span>Comments</span>
+        <span>{$t('kanban.comments')}</span>
         <Icon
           class="w-4 ml-2 {!collapseComments && 'rotate-180'}"
           name="chevron"
@@ -81,7 +82,7 @@
         <div>
           <textarea
             class="p-2 mb-2 rounded"
-            placeholder="Add comment"
+            placeholder={$t('global.add-comment')}
             bind:value={newComment}
             on:keydown={sendComment}
           />

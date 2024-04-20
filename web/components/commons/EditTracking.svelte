@@ -5,7 +5,7 @@
   import TimeTrackInput from './TimeTrackInput.svelte';
   import { toDate, toTime, toTimeInput } from '../utils/formatters';
   import { outsideClickable } from '../utils/clickOutside';
-  import { dateFormat } from '../../store/i18n';
+  import { dateFormat, t } from '../../store/i18n';
 
   export let intervals: Interval[];
   export let loading: boolean = false;
@@ -33,11 +33,12 @@
 
 <div
   class="absolute w-4/5 max-h-24 top-7 z-10 p-1 bg-screen rounded border border-gray-700 overflow-auto {$$props.class}"
+  on:click|stopPropagation
 >
   {#if loading}
-    <span class="animate-pulse">Loading...</span>
+    <span class="animate-pulse">{$t('global.loading')}</span>
   {:else if intervals.length === 0}
-    <span>Empty</span>
+    <span>{$t('global.empty')}</span>
   {/if}
   {#each intervals as track (track.id)}
     <div

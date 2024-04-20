@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import { t } from '../../store/i18n';
 
   export let timeTrackText: string = '';
   export let timeTrackInput: HTMLInputElement = null;
@@ -46,7 +47,7 @@
 
 <input
   class={$$props.class}
-  placeholder="es. 1h 30m"
+  placeholder={$t('global.time-track-info')}
   bind:value={timeTrackText}
   bind:this={timeTrackInput}
   on:keyup={handleInputs}

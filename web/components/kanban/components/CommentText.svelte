@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Comment, CommentDetail } from '../../../interfaces/clickup';
+  import { t } from '../../../store/i18n';
   import Icon from '../../commons/Icon.svelte';
 
   export let comment: Comment;
@@ -55,7 +56,7 @@
       class="cursor-pointer text-sm w-full my-2 text-gray-500 flex items-center"
       on:click={() => (showPreviews = !showPreviews)}
     >
-      <span>Attachments preview</span>
+      <span>{$t('kanban.attachments-preview')}</span>
       <Icon class="w-4 ml-2 {showPreviews && 'rotate-180'}" name="chevron" />
     </div>
   {/if}

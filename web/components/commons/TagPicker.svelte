@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
+  import { t } from '../../store/i18n';
 
   export let selected: string[];
 
@@ -23,7 +24,7 @@
 <div class="w-full">
   <input
     {value}
-    placeholder="tag1, tag2, ..."
+    placeholder={$t('global.tags-info')}
     on:blur={addTag}
     on:input={onChange}
   />

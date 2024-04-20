@@ -3,6 +3,7 @@
   import { createEventDispatcher } from 'svelte';
   import Icon from '../../commons/Icon.svelte';
   import { toWeek } from '../../utils/formatters';
+  import { t } from '../../../store/i18n';
 
   export let trackedWeek: string;
 
@@ -19,7 +20,7 @@
 </script>
 
 <div class="flex items-center mt-2 mb-4">
-  <p>Week:</p>
+  <p>{$t('global.week')}:</p>
   <span class="cursor-pointer" on:click={() => goWeek(-1)}
     ><Icon name="chevron" class="w-6 rotate-90 ml-2" /></span
   >

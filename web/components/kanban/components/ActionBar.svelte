@@ -4,6 +4,7 @@
   import clickupService from '../../../services/clickup-service';
 
   import Icon from '../../commons/Icon.svelte';
+  import { t } from '../../../store/i18n';
 
   export let task: Task;
   export let statuses: string[];
@@ -17,10 +18,7 @@
   function shiftState(n: number) {
     const idx = currentStatusIdx + n;
     if (!statuses[idx]) {
-      clickupService.showToast(
-        'error',
-        'Cannot calculate next status, try to refresh the page'
-      );
+      clickupService.showToast('error', $t('errors.next-status'));
     }
     return statuses[idx];
   }
@@ -48,29 +46,31 @@
   <div class="grid grid-cols-5 rounded overflow-hidden">
     <button
       class="flex justify-center items-center"
-      title="Previous status"
+      title={$t('kanban.previous-status')}
       disabled={!canPrev}
       on:click={actionPrev}><Icon class="h-6" name="left" /></button
     >
     <button
       class="flex justify-center items-center"
-      title="Checkout or create branch for this task in working directory"
+      title={$t('kanban.checkout-git')}
       on:click={gitCheckout}><Icon class="h-6" name="git" /></button
     >
     <button
       class="flex justify-center items-center"
-      title="Expand"
+      title={$t('kanban.expand')}
       on:click={actionExpand}
       ><Icon class="h-6" name={expanded ? 'collapse' : 'expand'} /></button
     >
     <a href={task.url}
-      ><button class="flex justify-center items-center" title="Go to Clickup"
+      ><button
+        class="flex justify-center items-center"
+        title={$t('global.go-to-clickup')}
         ><Icon class="h-6" name="clickup" /></button
       ></a
     >
     <button
       class="flex justify-center items-center"
-      title="Next status"
+      title={$t('kanban.next-status')}
       disabled={!canNext}
       on:click={actionNext}
       ><Icon class="h-6 rotate-180 transform" name="left" /></button

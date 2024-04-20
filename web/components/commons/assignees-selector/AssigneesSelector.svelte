@@ -5,6 +5,7 @@
   import { createEventDispatcher } from 'svelte';
   import Icon from '../Icon.svelte';
   import { outsideClickable } from '../../utils/clickOutside';
+  import { t } from '../../../store/i18n';
 
   export let selectedAssignees: User[];
   export let editable = true;
@@ -146,7 +147,7 @@
       >
         <input
           class="w-full !outline-none"
-          placeholder="Search..."
+          placeholder={$t('global.search')}
           bind:this={searchInput}
           bind:value={searchText}
           on:keydown={handleKeyboard}

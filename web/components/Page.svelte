@@ -20,7 +20,7 @@
   import { suspend } from '../store/suspender';
   import Gantt from './gantt/Gantt.svelte';
   import { toWeek } from './utils/formatters';
-  import { dateFormat, locale } from '../store/i18n';
+  import { dateFormat, locale, t } from '../store/i18n';
 
   export let mode: 'kanban' | 'timesheet' = 'kanban';
 
@@ -260,13 +260,13 @@
     if (isNew) {
       const filterToSave = { ...filters, default: true };
       const { data } = await clickupService.showInput({
-        placeHolder: 'Configuration name',
-        prompt: 'Choose a name',
+        placeHolder: $t('global.configuration-name'),
+        prompt: $t('global.choose-name'),
         value: '',
       });
       filterToSave.name = data.trim();
       if (!filterToSave.name || configFilters.find((f) => f.name === data)) {
-        clickupService.showToast('error', 'Invalid name');
+        clickupService.showToast('error', $t('global.invalid-name'));
         return;
       }
       if (!viewMode) {
@@ -285,7 +285,7 @@
       if (res.ok) {
         filters = filterToSave;
         configFilters = config.filters;
-        clickupService.showToast('info', 'Configuration saved');
+        clickupService.showToast('info', $t('global.configuration-saved'));
       }
     } else {
       const idx = configFilters.findIndex((e) => e.name === filters.name);
@@ -296,7 +296,7 @@
           configName
         );
         if (res.ok) {
-          clickupService.showToast('info', 'Configuration saved');
+          clickupService.showToast('info', $t('global.configuration-saved'));
         }
       }
     }

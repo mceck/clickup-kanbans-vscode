@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
+  import { t } from '../../store/i18n';
 
   export let selected: string[];
 
@@ -23,7 +24,7 @@
 <div class="w-full">
   <input
     {value}
-    placeholder="in progress, done, ..."
+    placeholder={$t('global.statuses-info')}
     on:blur={addStates}
     on:input={onChange}
   />

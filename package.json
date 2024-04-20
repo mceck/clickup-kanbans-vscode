@@ -77,12 +77,20 @@
           "markdownDescription": "Language",
           "default": "en",
           "enum": [
+            "en",
             "it",
-            "en"
+            "fr",
+            "de",
+            "es",
+            "pt"
           ],
           "enumDescriptions": [
+            "English",
             "Italiano",
-            "Inglese"
+            "Français",
+            "Deutsch",
+            "Español",
+            "Português"
           ]
         },
         "clickup-kanban.config.dateFormat": {

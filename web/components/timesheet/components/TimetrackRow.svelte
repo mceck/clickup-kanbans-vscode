@@ -11,14 +11,10 @@
   export let trackings: Interval[];
 
   const dispatch = createEventDispatcher();
-
-  function star() {
-    dispatch('star');
-  }
 </script>
 
 <div class="flex w-full items-center py-4 border-b border-neutral-800">
-  <p class="w-1/12" on:click={star}>
+  <p class="w-1/12" on:click={() => dispatch('star')}>
     <Icon
       name={starred.includes(task.id) ? 'star' : 'star-empty'}
       class="w-6"
@@ -28,7 +24,8 @@
   {#each FERIAL_DAYS as day}
     <TimetrackCell
       totalForDay={totalForTaskDay(trackings, task.id, day, trackedWeek)}
-      on:updateTrack
+      on:updateTrack={(e) =>
+        dispatch('updateTrack', { task, day, time: e.detail })}
       on:deleteTrack
     />
   {/each}

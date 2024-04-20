@@ -7,7 +7,7 @@
   import { toHours } from '../../utils/formatters';
   import DayTotal from './DayTotal.svelte';
   import { FERIAL_DAYS } from '../tracking-utils';
-  import { dateFormat } from '../../../store/i18n';
+  import { dateFormat, locale, t } from '../../../store/i18n';
 
   export let trackedWeek: string;
   export let trackings: Interval[] = [];
@@ -60,7 +60,7 @@
     <p class="w-6/12 cursor-pointer" on:click={toggleFilterMode}>
       Task
       <span class="text-gray-500 text-sm font-normal italic ml-4"
-        >{filterMode === 'usage' ? 'by usage' : ''}</span
+        >{filterMode === 'usage' ? $t('timesheet.task-by-usage') : ''}</span
       >
       <span class="font-normal text-sm italic float-right pt-1 mr-8"
         >{moment(trackedWeek).format($dateFormat)} - {moment(trackedWeek)
@@ -70,7 +70,7 @@
     </p>
     {#each FERIAL_DAYS as day}
       <p class="w-1/12">
-        {moment(trackedWeek).add(day, 'days').format('ddd')}
+        {$t('days.' + moment(trackedWeek).add(day, 'days').day())}
         <span class="text-gray-500 text-sm font-normal italic ml-1"
           >{moment(trackedWeek).add(day, 'days').format('DD')}</span
         >
@@ -82,9 +82,11 @@
     <p class="w-6/12">
       <span
         class="mr-8 float-right"
-        title="Show total tracked time only for filtered tasks"
+        title={$t('timesheet.total-time-filtered')}
       >
-        <span class="mr-2 text-neutral-400">Totals filtered: </span>
+        <span class="mr-2 text-neutral-400"
+          >{$t('timesheet.totals-filtered')}:
+        </span>
         <Switch
           value={onlyFilteredTasks}
           on:change={(e) => updateOnlyFiltered(e.detail)}

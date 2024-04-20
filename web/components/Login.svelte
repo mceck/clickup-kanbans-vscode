@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import clickupService from '../services/clickup-service';
+  import { t } from '../store/i18n';
 
   const dispatch = createEventDispatcher();
   let personalToken = '';
@@ -18,20 +19,22 @@
   }
 </script>
 
-<h1 class="text-lg mb-4">Please enter ClickUp personal token</h1>
+<h1 class="text-lg mb-4">{$t('login.token-info')}</h1>
 <div class="flex mb-8">
   <input
     id="token"
     name="token"
-    placeholder="Personal token"
+    placeholder={$t('login.personal-token')}
     bind:value={personalToken}
   />
-  <button class="w-2/5 bg-primary" on:click={setToken}>Set token</button>
+  <button class="w-2/5 bg-primary" on:click={setToken}
+    >{$t('login.set-token')}</button
+  >
 </div>
 <p>
-  Follow the <a
+  {$t('login.info-pre')}<a
     class="text-primary"
     href="https://clickup.com/api/developer-portal/authentication/"
-    >OFFICIAL GUIDE</a
-  > to obtain a Personal token
+    >{$t('login.info-link')}</a
+  >{$t('login.info-post')}
 </p>

@@ -12,6 +12,7 @@
   import { toHours } from '../../utils/formatters';
   import { tagList } from '../../../store/tags';
   import { outsideClickable } from '../../utils/clickOutside';
+  import { t } from '../../../store/i18n';
 
   export let task: Task;
   export let statusKeys: string[];
@@ -157,18 +158,21 @@
         showTracking = false;
       }}
     >
-      <div class="w-1/12 flex" title="Time estimated">
+      <div class="w-1/12 flex" title={$t('global.time-estimated')}>
         {#if task.time_estimate}
-          <small class="text-xs text-gray-400" title="Time estimated">
+          <small
+            class="text-xs text-gray-400"
+            title={$t('global.time-estimated')}
+          >
             {toHours(task.time_estimate, 0)}
           </small>
         {/if}
       </div>
-      <div class="w-2/12 ml-1 flex" title="Time tracked">
+      <div class="w-2/12 ml-1 flex" title={$t('global.time-tracked')}>
         {#if task.time_spent}
           <small
             class="text-xs text-green-500 cursor-pointer"
-            title="Time tracked"
+            title={$t('global.time-tracked')}
             on:click={toggleTracks}
           >
             {toHours(task.time_spent)}
@@ -177,7 +181,7 @@
       </div>
       <div
         class="max-w-1/12 cursor-pointer"
-        title="Add time track"
+        title={$t('global.add-time-track')}
         use:outsideClickable
         on:clickOutside={() => {
           showAddTrack = false;
@@ -229,6 +233,14 @@
           manual
         />
       </div>
+      {#if showTracking}
+        <EditTracking
+          {intervals}
+          loading={loadingIntervals}
+          on:update={({ detail }) => updateTrack(detail.track, detail.time)}
+          on:delete={({ detail }) => deleteTrack(detail)}
+        />
+      {/if}
     </div>
     <div class="h-full overflow-hidden group">
       <div class="text-xs text-neutral-500">{task.list.name}</div>
@@ -248,13 +260,15 @@
           {/each}
         </div>
         {#if !task.tags.length}
-          <span class="rounded text-xs text-gray-500">tags:</span>
+          <span class="rounded text-xs text-gray-500"
+            >{$t('global.tags').toLowerCase()}:</span
+          >
         {/if}
         <span class="w-3 ml-1 cursor-pointer flex-none" on:click={toggleAddTag}>
           <Icon
             name="plus"
             class="text-highlight hover:text-blue-300 stroke-current"
-            title="Add tag"
+            title={$t('global.add-tag')}
           />
         </span>
         {#if showAddTag}
@@ -279,7 +293,7 @@
               <input
                 type="text"
                 class="w-full h-4 bg-transparent border-b border-gray-500 text-white text-xs"
-                placeholder="Search tag"
+                placeholder={$t('global.search-tag')}
                 bind:value={searchTag}
               />
             </div>
@@ -289,7 +303,7 @@
       <p class="w-full">
         <span
           class="float-right cursor-pointer p-1 opacity-0 group-hover:opacity-100"
-          title="Copy task link"
+          title={$t('global.copy-task-link')}
           on:click={copyTaskLink}><Icon name="link" class="w-3" /></span
         >
         {task.name}
@@ -310,14 +324,6 @@
       on:expand={(e) => (expanded = !!e.detail)}
     />
   </div>
-  {#if showTracking}
-    <EditTracking
-      {intervals}
-      loading={loadingIntervals}
-      on:update={({ detail }) => updateTrack(detail.track, detail.time)}
-      on:delete={({ detail }) => deleteTrack(detail)}
-    />
-  {/if}
 </div>
 
 <style>

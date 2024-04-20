@@ -19,7 +19,7 @@ function translate(locale: string, key: string, vars: any) {
   let text: string = translations[locale][key];
 
   if (!text) {
-    throw new Error(`no translation found for ${locale}.${key}`);
+    return key;
   }
 
   // Replace any passed in variables in the translation string.

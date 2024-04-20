@@ -6,6 +6,7 @@
   import { createEventDispatcher } from 'svelte';
   import Icon from '../Icon.svelte';
   import { outsideClickable } from '../../utils/clickOutside';
+  import { t } from '../../../store/i18n';
 
   export let selectedLists: List[] = [];
   export let right: boolean = false;
@@ -264,12 +265,12 @@
       placeholder={viewMode
         ? selectedView
           ? `${selectedView.list?.name}: ${selectedView.name}`
-          : 'Select view...'
+          : $t('global.select-view')
         : selectedLists.length
           ? `(${selectedLists.length} list${
               selectedLists.length > 1 ? 's' : ''
             } selected)`
-          : 'Select lists...'}
+          : $t('global.select-list')}
     />
     {#if showSelector}
       <div
@@ -333,7 +334,7 @@
                             {/if}
                             {#if views[list.id] !== null && views[list.id]?.length === 0}
                               <small class="ml-8 text-gray-400" on:click
-                                >Empty</small
+                                >{$t('global.empty')}</small
                               >
                             {/if}
                             {#each views[list.id] ?? [] as view (view.id)}
@@ -374,7 +375,9 @@
                         />
                       {/if}
                       {#if views[list.id] !== null && views[list.id]?.length === 0}
-                        <small class="ml-8 text-gray-400" on:click>Empty</small>
+                        <small class="ml-8 text-gray-400" on:click
+                          >{$t('global.empty')}</small
+                        >
                       {/if}
                       {#each views[list.id] ?? [] as view (view.id)}
                         <div

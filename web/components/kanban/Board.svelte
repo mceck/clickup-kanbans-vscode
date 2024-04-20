@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-
-  import type { Status, Task } from '../../interfaces/clickup';
+  import type { Task } from '../../interfaces/clickup';
   import TaskCard from './components/TaskCard.svelte';
 
   import { spacesTree } from '../../store/spaces-tree';
@@ -9,7 +7,6 @@
   import { getAllStatusKeys, getAllStatuses } from './kanban-utils';
 
   export let tasks: Task[];
-  const dispatch = createEventDispatcher();
   let toggleStatus = {};
 
   $: statuses = getAllStatuses(tasks);
@@ -41,12 +38,12 @@
           <TaskCard
             bind:task
             statusKeys={statusKeys[task.id] || []}
-            on:updateTask={(e) => dispatch('updateTask', e.detail)}
-            on:addTrack={(e) => dispatch('addTrack', e.detail)}
-            on:changeTrack={(e) => dispatch('changeTrack', e.detail)}
-            on:deleteTrack={(e) => dispatch('deleteTrack', e.detail)}
-            on:addTag={(e) => dispatch('addTag', e.detail)}
-            on:deleteTag={(e) => dispatch('deleteTag', e.detail)}
+            on:updateTask
+            on:addTrack
+            on:changeTrack
+            on:deleteTrack
+            on:addTag
+            on:deleteTag
           />
         {/each}
       {/if}

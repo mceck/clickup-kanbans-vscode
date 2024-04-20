@@ -4,6 +4,7 @@
   import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
   import ListSelector from '../commons/list-selector/ListSelector.svelte';
   import AdditionalFilters from './AdditionalFilters.svelte';
+  import { t } from '../../store/i18n';
 
   export let filters: PageFilters;
   export let viewMode: boolean;
@@ -41,7 +42,7 @@
     <span class="w-36 absolute right-0">
       <input
         class="rounded-2xl search-input border"
-        placeholder="Search"
+        placeholder={$t('global.search')}
         bind:value={term}
       />
     </span>

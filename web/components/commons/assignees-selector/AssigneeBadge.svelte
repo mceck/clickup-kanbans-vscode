@@ -14,8 +14,8 @@
   {:else}
     <div
       class="flex justify-center items-center w-full h-full text-white"
-      class:text-xs={small}
-      style={`background-color: ${user.color}`}
+      class:text-[7px]={small}
+      style={`background-color: ${user.color || '#6932bc'}`}
     >
       <span>{user.initials}</span>
     </div>

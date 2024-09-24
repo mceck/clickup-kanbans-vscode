@@ -1,24 +1,24 @@
-import moment from 'moment';
+import moment from "moment";
 
 export function toDate(time: number, format) {
   return moment(+time).format(format);
 }
 
 export function toWeek(date: moment.Moment) {
-  return moment(date).format('YYYY-[W]WW');
+  return moment(date).format("YYYY-[W]WW");
 }
 
 export function toTime(time: number) {
-  return moment(+time).add(-1, 'hour').format('HH:mm');
+  return moment(+time).utc().format("HH:mm");
 }
 
 export function toTimeInput(time: number) {
   if (+time === 0) {
-    return '00h';
+    return "00h";
   }
   return moment(+time)
-    .add(-1, 'hour')
-    .format(+time >= 3600000 ? 'H[h] m[m]' : 'm[m]');
+    .utc()
+    .format(+time >= 3600000 ? "H[h] m[m]" : "m[m]");
 }
 
 export function toHours(time, fixed = 1) {

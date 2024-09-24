@@ -234,7 +234,8 @@
       if (folder.lists.find((l) => l.id === filter.selectedView.list.id)) {
         const follow = [...folder.lists]
           .sort((a, b) => a.name.localeCompare(b.name))
-          .findLast((l) => l.name.startsWith(filter.follow));
+          .reverse()
+          .find((l) => l.name.startsWith(filter.follow));
         if (follow && follow.id !== filter.selectedView.list.id) {
           return follow;
         }
@@ -243,7 +244,8 @@
     if (space.lists.find((l) => l.id === filter.selectedView.list.id)) {
       const follow = [...space.lists]
         .sort((a, b) => a.name.localeCompare(b.name))
-        .findLast((l) => l.name.startsWith(filter.follow));
+        .reverse()
+        .find((l) => l.name.startsWith(filter.follow));
       if (follow) {
         return follow;
       }

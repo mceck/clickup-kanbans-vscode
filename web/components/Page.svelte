@@ -154,6 +154,7 @@
       await updateSelectorsCache();
       await updateFollowedViews();
     } catch (error) {
+      console.error(error);
       initErrors = true;
     }
   }
@@ -230,6 +231,9 @@
     const space = spaces.find(
       (s) => s.id === filter.selectedView.list.space.id
     );
+    if (!space) {
+      return null;
+    }
     for (let folder of space.folders) {
       if (folder.lists.find((l) => l.id === filter.selectedView.list.id)) {
         const follow = [...folder.lists]
@@ -241,7 +245,7 @@
         }
       }
     }
-    if (space.lists.find((l) => l.id === filter.selectedView.list.id)) {
+    if (space.lists?.find((l) => l.id === filter.selectedView.list.id)) {
       const follow = [...space.lists]
         .sort((a, b) => a.name.localeCompare(b.name))
         .reverse()

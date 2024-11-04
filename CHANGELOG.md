@@ -4,6 +4,12 @@ All notable changes to the "clickup-kanbans" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.5.5]
+
+### Added
+
+- feat: gzip settings
+
 ## [1.5.4]
 
 ### Fixed

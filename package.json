@@ -109,11 +109,11 @@
           ]
         },
         "clickup-kanban.config.vs-config": {
-          "type": "object",
+          "type": "string",
           "markdownDescription": "Default filters configuration"
         },
         "clickup-kanban.config.ts-config": {
-          "type": "object",
+          "type": "string",
           "markdownDescription": "Default filters configuration for timesheets"
         }
       }

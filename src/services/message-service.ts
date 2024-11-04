@@ -3,6 +3,7 @@ import { CacheProvider } from '../providers/cache-provider';
 import clickupService from './clickup-service';
 import loginService from './login-service';
 import taskService from './task-service';
+import { gzip, unzip } from 'zlib';
 
 export default class MessageService {
   constructor(private webview: vscode.Webview) {}
@@ -102,7 +103,20 @@ export default class MessageService {
     const { nonce, global, configName, ...configuration } = query;
     this.sendResponse(async () => {
       const config = vscode.workspace.getConfiguration('clickup-kanban.config');
-      await config.update(configName ?? 'vs-config', configuration, global);
+      let value = configuration;
+      if (['vs-config', 'ts-config'].includes(configName)) {
+        const buffer = Buffer.from(JSON.stringify(configuration));
+        value = await new Promise((res, rej) =>
+          gzip(buffer, (err, zip) => {
+            if (err) {
+              rej(err);
+              return;
+            }
+            res(zip.toString('base64'));
+          })
+        );
+      }
+      await config.update(configName ?? 'vs-config', value, global);
       return configuration;
     }, nonce);
   }
@@ -110,8 +124,26 @@ export default class MessageService {
   getConfig(query: any) {
     const { nonce, configName } = query;
     this.sendResponse(async () => {
-      const config = vscode.workspace.getConfiguration('clickup-kanban.config');
-      return config.get(configName ?? 'vs-config');
+      const config = vscode.workspace
+        .getConfiguration('clickup-kanban.config')
+        .get(configName ?? 'vs-config');
+      if (
+        ['vs-config', 'ts-config'].includes(configName) &&
+        typeof config === 'string'
+      ) {
+        const buffer = Buffer.from(config, 'base64');
+        const unzipped: string = await new Promise((res, rej) =>
+          unzip(buffer, (err, r) => {
+            if (err) {
+              rej(err);
+              return;
+            }
+            res(r.toString());
+          })
+        );
+        return JSON.parse(unzipped);
+      }
+      return config;
     }, nonce);
   }
   getViewTasks(query: any) {

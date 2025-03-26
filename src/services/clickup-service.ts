@@ -1,6 +1,24 @@
 import BaseService from './base-service';
 
 class ClickupService extends BaseService {
+  private async getAllPaginated(path: string, params?: any) {
+    let ret: any[] = [];
+    let lastPage = false;
+    let page = 0;
+    const sep = path.includes('?') ? '&' : '?';
+    while (!lastPage) {
+      const batch = [];
+      for (let i = 0; i < 3; i++) {
+        batch.push(this.doGet(`${path}${sep}page=${page}`));
+        page++;
+      }
+      const data = await Promise.all(batch);
+      lastPage = data.some((d) => d.last_page);
+      ret = [...ret, ...data];
+    }
+    return ret;
+  }
+
   async getUser() {
     const { user } = await this.doGet('/v2/user');
     return user;
@@ -14,17 +32,17 @@ class ClickupService extends BaseService {
   }
 
   async getTasks(listId: string, params?: any) {
-    const { tasks } = await this.doGet(
+    const responses = await this.getAllPaginated(
       `/v2/list/${listId}/task?${this.toQueryString(params)}`
     );
-    return tasks;
+    return responses.map((r) => r.tasks).flat();
   }
 
   async findTasks(params?: any) {
-    const { tasks } = await this.doGet(
+    const responses = await this.getAllPaginated(
       `/v2/team/${this.teamId}/task?${this.toQueryString(params)}`
     );
-    return tasks;
+    return responses.map((r) => r.tasks).flat();
   }
 
   async getSpaces() {
@@ -83,9 +101,9 @@ class ClickupService extends BaseService {
     return resp;
   }
 
-  async getViewTasks(viewId: string) {
-    const { tasks } = await this.doGet(`/v2/view/${viewId}/task`);
-    return tasks;
+  async getViewTasks(viewId: string): Promise<any[]> {
+    const responses = await this.getAllPaginated(`/v2/view/${viewId}/task`);
+    return responses.map((r) => r.tasks).flat();
   }
 
   async getListViews(listId: string) {

@@ -11,7 +11,7 @@
   let { totalForDay }: Props = $props();
 
   let edit: boolean = $state(false);
-  let inputRef: HTMLInputElement = $state();
+  let inputRef: HTMLInputElement = $state()!;
 
   const dispatch = createEventDispatcher();
 

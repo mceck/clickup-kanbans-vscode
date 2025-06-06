@@ -237,27 +237,27 @@
 
   function getLastFollowed(filter: PageFilters, spaces: Space[]) {
     const space = spaces.find(
-      (s) => s.id === filter.selectedView.list.space.id
+      (s) => s.id === filter.selectedView?.list?.space.id
     );
     if (!space) {
       return null;
     }
-    for (let folder of space.folders) {
-      if (folder.lists.find((l) => l.id === filter.selectedView.list.id)) {
+    for (let folder of space.folders ?? []) {
+      if (folder.lists?.find((l) => l.id === filter.selectedView?.list?.id)) {
         const follow = [...folder.lists]
           .sort((a, b) => a.name.localeCompare(b.name))
           .reverse()
-          .find((l) => l.name.startsWith(filter.follow));
-        if (follow && follow.id !== filter.selectedView.list.id) {
+          .find((l) => l.name.startsWith(filter.follow ?? ''));
+        if (follow && follow.id !== filter.selectedView?.list?.id) {
           return follow;
         }
       }
     }
-    if (space.lists?.find((l) => l.id === filter.selectedView.list.id)) {
+    if (space.lists?.find((l) => l.id === filter.selectedView?.list?.id)) {
       const follow = [...space.lists]
         .sort((a, b) => a.name.localeCompare(b.name))
         .reverse()
-        .find((l) => l.name.startsWith(filter.follow));
+        .find((l) => l.name.startsWith(filter.follow ?? ''));
       if (follow) {
         return follow;
       }
@@ -284,7 +284,7 @@
         return;
       }
       if (!viewMode) {
-        filterToSave.selectedView = undefined;
+        filterToSave.selectedView = null;
       } else {
         filterToSave.selectedLists = [];
       }
@@ -426,7 +426,7 @@
 
     if (res.ok) {
       trackings =
-        res.data.map((v) => ({
+        res.data.map((v: any) => ({
           ...v,
           duration: parseInt(v.duration || 0),
         })) ?? [];
@@ -531,20 +531,26 @@
     }
   }
 
-  async function addTaskTag({ taskId, tag }) {
+  async function addTaskTag({ taskId, tag }: { taskId: string; tag: string }) {
     try {
       await clickupService.addTagToTask(taskId, tag);
       refreshTask(taskId);
-    } catch (error) {
+    } catch (error: any) {
       clickupService.showToast('error', error.message);
     }
   }
 
-  async function deleteTaskTag({ taskId, tag }) {
+  async function deleteTaskTag({
+    taskId,
+    tag,
+  }: {
+    taskId: string;
+    tag: string;
+  }) {
     try {
       await clickupService.deleteTagFromTask(taskId, tag);
       refreshTask(taskId);
-    } catch (error) {
+    } catch (error: any) {
       clickupService.showToast('error', error.message);
     }
   }

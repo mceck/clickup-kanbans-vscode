@@ -1,7 +1,7 @@
 <script lang="ts">
   import moment from 'moment';
   import { createEventDispatcher } from 'svelte';
-  import type { Interval, PageFilters } from '../src/interfaces/clickup';
+  import type { Interval, PageFilters } from '../interfaces/clickup';
   import clickupService from '../services/clickup-service';
   import Icon from './commons/Icon.svelte';
   import EditTracking from './commons/EditTracking.svelte';

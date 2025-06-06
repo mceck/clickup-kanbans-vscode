@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Comment, CommentDetail } from '../../../src/interfaces/clickup';
+  import type { Comment, CommentDetail } from '../../../interfaces/clickup';
   import { t } from '../../../store/i18n';
   import Icon from '../../commons/Icon.svelte';
 

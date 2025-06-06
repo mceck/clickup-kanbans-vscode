@@ -1,5 +1,5 @@
 import moment from 'moment';
-import type { Interval, Task } from '../../../interfaces/clickup';
+import type { Interval, Task } from '../../interfaces/clickup';
 
 export function tracksForTask(trackings: Interval[], taskId: string) {
   return trackings.filter((t) => {

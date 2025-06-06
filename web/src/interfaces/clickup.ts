@@ -166,7 +166,7 @@ export interface PageFilters {
   default: boolean;
   selectedLists: List[];
   selectedAssignees: User[];
-  selectedView: View;
+  selectedView: View | null;
   tags: string[];
   statuses: string[];
   due_date_gt?: number;

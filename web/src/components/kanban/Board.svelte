@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Task } from '../../src/interfaces/clickup';
+  import type { Task } from '../../interfaces/clickup';
   import TaskCard from './components/TaskCard.svelte';
 
   import { spacesTree } from '../../store/spaces-tree';

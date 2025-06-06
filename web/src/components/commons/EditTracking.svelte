@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import type { Interval } from '../../src/interfaces/clickup';
+  import type { Interval } from '../../interfaces/clickup';
   import Icon from './Icon.svelte';
   import TimeTrackInput from './TimeTrackInput.svelte';
   import { toDate, toTime, toTimeInput } from '../utils/formatters';

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  import type { Interval, Task, User } from '../../../src/interfaces/clickup';
+  import type { Interval, Task, User } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
   import ActionBar from './ActionBar.svelte';
   import AssigneesSelector from '../../commons/assignees-selector/AssigneesSelector.svelte';
@@ -32,7 +32,7 @@
   let searchTag = $state('');
   let loadingTags = $state(false);
 
-  let spaceTags = $derived($tagList[task.space.id] ?? []);
+  let spaceTags = $derived($tagList[task.space!.id] ?? []);
 
   let filteredTags = $derived(
     spaceTags.filter(
@@ -90,7 +90,7 @@
     showAddTrack = true;
     showTracking = false;
 
-    setTimeout(() => addTimeTrackInput.focus(), 0);
+    setTimeout(() => addTimeTrackInput?.focus(), 0);
   }
 
   async function toggleTracks() {
@@ -106,10 +106,16 @@
   }
 
   function gitCheckout(task: Task) {
+    if (!task.custom_id) {
+      return;
+    }
     clickupService.gitCheckout(task.custom_id);
   }
 
   function copyCustomId() {
+    if (!task.custom_id) {
+      return;
+    }
     navigator.clipboard
       .writeText(task.custom_id)
       .then(() => clickupService.showStatusMessage('Copied'));
@@ -125,12 +131,12 @@
     showAddTag = !showAddTag;
     if (showAddTag && !spaceTags.length) {
       loadingTags = true;
-      const { data, ok } = await clickupService.getSpaceTags(task.space.id);
+      const { data, ok } = await clickupService.getSpaceTags(task.space!.id);
       loadingTags = false;
       if (ok) {
         tagList.set({
           ...$tagList,
-          [task.space.id]: data,
+          [task.space!.id]: data,
         });
       }
     }
@@ -249,7 +255,7 @@
       {/if}
     </div>
     <div class="h-full overflow-hidden group">
-      <div class="text-xs text-neutral-500">{task.list.name}</div>
+      <div class="text-xs text-neutral-500">{task.list?.name}</div>
       <div
         class="flex mt-1 relative items-center"
         use:outsideClickable
@@ -273,7 +279,7 @@
         <span class="w-3 ml-1 cursor-pointer flex-none" onclick={toggleAddTag}>
           <Icon
             name="plus"
-            class="text-highlight hover:text-blue-300 stroke-current"
+            class="w-3 text-highlight hover:text-blue-300 stroke-current"
             title={$t('global.add-tag')}
           />
         </span>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
-  import type { Task } from '../../../src/interfaces/clickup';
+  import type { Task } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
 
   import Icon from '../../commons/Icon.svelte';
@@ -71,7 +71,7 @@
     >
     <a href={task.url}
       ><button
-        class="flex justify-center items-center !w-full"
+        class="flex justify-center items-center !w-full !text-[#cccccc] hover:!text-white"
         title={$t('global.go-to-clickup')}
         ><Icon class="h-6" name="clickup" /></button
       ></a

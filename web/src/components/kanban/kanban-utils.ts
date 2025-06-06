@@ -4,7 +4,7 @@ import type {
   Space,
   Status,
   Task,
-} from '../../../interfaces/clickup';
+} from '../../interfaces/clickup';
 
 export function getAllStatuses(tasks: Task[]) {
   return (

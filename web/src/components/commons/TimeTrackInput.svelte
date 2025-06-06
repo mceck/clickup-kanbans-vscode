@@ -11,12 +11,12 @@
   const dispatch = createEventDispatcher();
   const regex = /((\d?\d(.\d)?)\s?(h))|((\d?\d)\s?(m))/gi;
 
-  function handleInputs(e) {
+  function handleInputs(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       dispatch('cancel');
       return;
     }
-    const match = timeTrackText.match(regex)?.filter((m) => m.trim());
+    const match = timeTrackText.match(regex)?.filter((m: any) => m.trim());
     if (!match) {
       const t = timeTrackText.replace(',', '.');
       if (t.match(/^[\d.]+$/) && e.key === 'Enter') {

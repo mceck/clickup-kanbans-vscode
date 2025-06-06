@@ -51,6 +51,7 @@
       />
     </span>
     <AdditionalFilters
+      class=""
       {viewMode}
       bind:filters
       on:change={() => viewMode || search()}

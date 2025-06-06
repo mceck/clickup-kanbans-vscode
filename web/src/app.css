@@ -11,7 +11,7 @@ button {
   width: unset;
   background: transparent;
   padding: unset;
-  color: unset;
+  color: inherit;
 }
 
 button:hover {

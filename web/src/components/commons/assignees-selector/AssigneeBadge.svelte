@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { User } from '../../../src/interfaces/clickup';
+  import type { User } from '../../../interfaces/clickup';
 
   interface Props {
     user: User;

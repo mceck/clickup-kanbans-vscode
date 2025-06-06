@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { User } from '../../../src/interfaces/clickup';
+  import type { User } from '../../../interfaces/clickup';
   import { userList } from '../../../store/users';
   import AssigneeBadge from './AssigneeBadge.svelte';
   import { createEventDispatcher } from 'svelte';
@@ -131,7 +131,7 @@
           } cursor-pointer stroke-highlight fill-highlight hover:stroke-blue-300 hover:fill-blue-300`}
           onclick={toggleSelector}
         >
-          <Icon name="add-assignee" />
+          <Icon class="w-full" name="add-assignee" />
         </div>
       {/if}
       {#if selectedAssignees.length > maxShown}

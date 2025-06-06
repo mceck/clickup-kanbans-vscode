@@ -38,13 +38,25 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
     );
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'kanban.js')
+      vscode.Uri.joinPath(
+        this._extensionUri,
+        'web',
+        'dist',
+        'compiled',
+        'kanban.js'
+      )
     );
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
     );
     const cssUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'kanban.css')
+      vscode.Uri.joinPath(
+        this._extensionUri,
+        'web',
+        'dist',
+        'compiled',
+        'kanban.css'
+      )
     );
 
     // Use a nonce to only allow a specific script to be run.
@@ -60,8 +72,8 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
         -->
         <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
+				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${cssUri}" rel="stylesheet">
         <script nonce="${nonce}">
             function initVsCode() {

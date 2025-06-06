@@ -118,7 +118,13 @@ export class FullscreenPanel {
     let scriptUri;
     if (this.js) {
       scriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', this.js)
+        vscode.Uri.joinPath(
+          this._extensionUri,
+          'web',
+          'dist',
+          'compiled',
+          this.js
+        )
       );
     }
     const styleVSCodeUri = webview.asWebviewUri(
@@ -127,7 +133,13 @@ export class FullscreenPanel {
     let cssUri;
     if (this.css) {
       cssUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', this.css)
+        vscode.Uri.joinPath(
+          this._extensionUri,
+          'web',
+          'dist',
+          'compiled',
+          this.css
+        )
       );
     }
 

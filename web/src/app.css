@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #0e639c;
+  --color-highlight: #3794ff;
+  --color-screen: #1e1e1e;
+}
+
+button {
+  outline: none !important;
+  width: unset;
+  background: transparent;
+  padding: unset;
+  color: unset;
+}
+
+button:hover {
+  background-color: #2e2e2e;
+  color: white;
+}
+
+button:disabled {
+  color: var(--color-neutral-500);
+  cursor: not-allowed;
+}
+/* button:hover:disabled {
+    @apply bg-screen;
+  } */
+input[type='checkbox'] {
+  accent-color: #2e2e2e !important;
+  outline: none !important;
+}
+
+.link {
+  color: var(--color-sky-600);
+}

@@ -32,7 +32,7 @@
     <span>({tasksCount})</span>
   {/if}
   <button
-    class="w-5 cursor-pointer float-right transform {open && 'rotate-180'}"
+    class="w-5 h-5 cursor-pointer float-right transform {open && 'rotate-180'}"
     onclick={onToggle}
   >
     <Icon name="chevron" />

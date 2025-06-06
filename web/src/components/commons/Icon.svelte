@@ -65,6 +65,6 @@
   const SvelteComponent = $derived((icons as any)[props.name]);
 </script>
 
-<span {...props} style="display: inline-flex; transform-origin: center;">
+<span {...props} style="display: inline-flex;">
   <SvelteComponent />
 </span>

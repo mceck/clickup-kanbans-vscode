@@ -89,7 +89,7 @@
     showConfigurations = false;
     configFilters = configFilters.map((e) => ({ ...e, default: e === f }));
     await clickupService.saveConfig(
-      { filters: configFilters, ganttMode },
+      JSON.parse(JSON.stringify({ filters: configFilters, ganttMode })),
       configName
     );
   }
@@ -103,7 +103,7 @@
       filters.default = true;
     }
     clickupService.saveConfig(
-      { filters: configFilters, ganttMode },
+      JSON.parse(JSON.stringify({ filters: configFilters, ganttMode })),
       configName
     );
     viewMode = !!filters.selectedView;
@@ -176,8 +176,8 @@
         />
       {/if}
       {#if mode === 'kanban'}
-        <button
-          class="w-9 px-2 text-xs flex-none flex items-center"
+        <div
+          class="w-9 px-2 text-xs flex-none flex items-center cursor-pointer text-[#cccccc] hover:text-white"
           title={ganttMode ? $t('switch-kanban') : $t('switch-gantt')}
           onclick={toggleChartMode}
         >
@@ -186,17 +186,17 @@
           {:else}
             <Icon name="board" class="w-full" />
           {/if}
-        </button>
+        </div>
       {/if}
-      <button
-        class="w-5 flex-none ml-4 flex items-center"
+      <div
+        class="w-5 flex-none ml-4 flex items-center cursor-pointer text-[#cccccc] hover:text-white"
         title={$t('global.save-filters')}
         onclick={() => saveFilters()}
       >
         <Icon name="save" />
-      </button>
-      <button
-        class="w-4 flex-none ml-1 flex items-center relative"
+      </div>
+      <div
+        class="w-4 flex-none ml-1 flex items-center relative cursor-pointer text-[#cccccc] hover:text-white"
         use:outsideClickable={'[aria-label="actions"]'}
         onclickOutside={() => (showSaveOptions = false)}
         onclick={() => {
@@ -215,26 +215,26 @@
             >
           </ul>
         {/if}
-      </button>
-      <button
-        class="w-9 px-2 flex-none ml-2 flex items-center"
+      </div>
+      <div
+        class="w-9 px-2 flex-none ml-2 flex items-center cursor-pointer text-[#cccccc] hover:text-white"
         onclick={() => search()}
       >
         <Icon name="refresh" class="w-full" title={$t('global.reload')} />
-      </button>
+      </div>
     </div>
   </div>
   {#if mode === 'kanban'}
     <div class="flex">
       <div
-        class="flex-1 text-center cursor-pointer hover:bg-gray-400 hover:bg-opacity-5 rounded {!viewMode &&
+        class="flex-1 text-center cursor-pointer text-[#cccccc] hover:text-white rounded {!viewMode &&
           'bg-gray-500 bg-opacity-10'}"
         onclick={() => setViewMode(false)}
       >
         Tasks
       </div>
       <div
-        class="flex-1 text-center cursor-pointer hover:bg-gray-400 hover:bg-opacity-5 rounded {viewMode &&
+        class="flex-1 text-center cursor-pointer text-[#cccccc] hover:text-white rounded {viewMode &&
           'bg-gray-500 bg-opacity-10'}"
         onclick={() => setViewMode(true)}
       >

@@ -8,7 +8,7 @@
 
 button {
   outline: none !important;
-  width: unset;
+  width: inherit;
   background: transparent;
   padding: unset;
   color: inherit;

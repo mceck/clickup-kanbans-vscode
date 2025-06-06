@@ -25,7 +25,9 @@
     onAddTag,
     onDeleteTag 
   }: Props = $props();
-  let toggleStatus: any = $state({});
+  let toggleStatus: any = $state({
+    complete: true,
+  });
 
   let statuses = $derived(getAllStatuses(tasks));
 

@@ -42,7 +42,7 @@
     }
     return detail.text;
   }
-  let previews = props.$derived(
+  let previews = $derived(
     props.comment.comment.filter((e) => isImage(e.attachment))
   );
 </script>
@@ -70,7 +70,7 @@
     {#each previews as detail}
       <img
         class="min-w-6 max-w-full max-h-20 my-3 mr-3 inline"
-        src={detail.attachment.url_w_query ?? detail.attachment.url}
+        src={detail.attachment?.url_w_query ?? detail.attachment?.url}
         alt={detail.text}
       />
     {/each}

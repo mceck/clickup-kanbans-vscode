@@ -27,12 +27,12 @@
 </script>
 
 <div class="flex w-full items-center py-4 border-b border-neutral-800">
-  <button class="w-1/12 bg-transparent border-none p-0 cursor-pointer focus:outline-none" onclick={() => onStar?.()}>
+  <div class="w-1/12 bg-transparent border-none p-0 cursor-pointer focus:outline-none" onclick={() => onStar?.()}>
     <Icon
       name={starred.includes(task.id) ? 'star' : 'star-empty'}
       class="w-6"
     />
-  </button>
+  </div>
   <a class="w-6/12" href={task.url}>{task.name}</a>
   {#each FERIAL_DAYS as day}
     <TimetrackCell

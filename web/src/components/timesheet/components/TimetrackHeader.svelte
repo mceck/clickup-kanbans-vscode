@@ -72,8 +72,7 @@
 <div class="flex flex-wrap w-full">
   <div class="flex w-full items-center mb-3 text-lg font-bold">
     <p class="w-1/12"><Icon class="w-6 h-6" name="star" /></p>
-    <button
-      type="button"
+    <div
       class="w-6/12 cursor-pointer text-left bg-transparent border-none p-0 font-inherit text-inherit"
       onclick={toggleFilterMode}
     >
@@ -86,7 +85,7 @@
           .add(4, 'days')
           .format($dateFormat)}</span
       >
-    </button>
+    </div>
     {#each FERIAL_DAYS as day}
       <p class="w-1/12">
         {$t('days.' + moment(trackedWeek).add(day, 'days').day())}

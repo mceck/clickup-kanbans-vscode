@@ -303,7 +303,7 @@
         ],
         ganttMode,
       };
-      const res = await clickupService.saveConfig(config, configName);
+      const res = await clickupService.saveConfig(JSON.parse(JSON.stringify(config)), configName);
       if (res.ok) {
         filters = filterToSave;
         configFilters = config.filters;
@@ -314,7 +314,7 @@
       if (idx >= 0) {
         configFilters[idx] = { ...filters };
         const res = await clickupService.saveConfig(
-          { filters: configFilters, ganttMode },
+          JSON.parse(JSON.stringify({ filters: configFilters, ganttMode })),
           configName
         );
         if (res.ok) {

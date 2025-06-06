@@ -1,6 +1,6 @@
 <script lang="ts">
   import moment from 'moment';
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import type { Interval, Task } from '../../interfaces/clickup';
   import clickupService from '../../services/clickup-service';
   import WeekFilter from './components/WeekFilter.svelte';
@@ -13,17 +13,25 @@
     tasks: Task[];
     trackings: Interval[];
     trackedWeek: string;
+    onAddTrack?: (detail: { task: Task; time: number; day: number }) => void;
+    onUpdateTrack?: (detail: { track: Interval; time: number }) => void;
+    onDeleteTrack?: (interval: Interval) => void;
   }
 
-  let { tasks, trackings, trackedWeek = $bindable() }: Props = $props();
+  let {
+    tasks,
+    trackings,
+    trackedWeek = $bindable(),
+    onAddTrack,
+    onUpdateTrack,
+    onDeleteTrack,
+  }: Props = $props();
 
   let onlyFilteredTasks: boolean = $state(false);
 
   let starred: string[] = $state([]);
 
   let filterMode: 'task' | 'usage' = $state('usage');
-
-  const dispatch = createEventDispatcher();
 
   let sortedTasks = $derived(sortTasks(tasks, starred, trackings, filterMode));
 
@@ -38,7 +46,7 @@
     const time =
       newTime - totalForTaskDay(trackings, task.id, day, trackedWeek);
     const date = moment(trackedWeek).add(day, 'days').startOf('day').valueOf();
-    dispatch('addTrack', { task, time, day: date });
+    onAddTrack?.({ task, time, day: date });
   }
 
   async function star(taskId: string) {
@@ -60,27 +68,27 @@
   }
 
   function editTrack(track: Interval, time: number) {
-    dispatch('updateTrack', { track, time });
+    onUpdateTrack?.({ track, time });
   }
 
   function deleteTrack(interval: Interval) {
-    dispatch('deleteTrack', interval);
+    onDeleteTrack?.(interval);
   }
 </script>
 
 <div class="timesheet">
   <div class="fixed top-28 left-0 w-full z-10 bg-screen px-5 pt-4">
-    <WeekFilter bind:trackedWeek on:changeWeek />
+    <WeekFilter bind:trackedWeek />
     <TimetrackHeader
       {trackedWeek}
       {trackings}
       {filterMode}
       {onlyFilteredTasks}
       taskIds={tasks.map((t) => t.id)}
-      on:toggleFilterMode={toggleFilterMode}
-      on:updateOnlyFiltered={(e) => updateOnlyFiltered(e.detail)}
-      on:update={(e) => editTrack(e.detail.track, e.detail.time)}
-      on:delete={(e) => deleteTrack(e.detail)}
+      onToggleFilterMode={toggleFilterMode}
+      onUpdateOnlyFiltered={updateOnlyFiltered}
+      onUpdate={(event) => editTrack(event.track, event.time)}
+      onDelete={deleteTrack}
     />
   </div>
   <div class="h-28"></div>
@@ -91,10 +99,9 @@
         {trackings}
         {task}
         {starred}
-        on:star={() => star(task.id)}
-        on:updateTrack={(e) =>
-          updateTrack(e.detail.task, e.detail.day, e.detail.time)}
-        on:deleteTrack={(e) => deleteTrack(e.detail)}
+        onStar={() => star(task.id)}
+        onUpdateTrack={(event) =>
+          updateTrack(event.task, event.day, event.time)}
       />
     {/each}
   </div>

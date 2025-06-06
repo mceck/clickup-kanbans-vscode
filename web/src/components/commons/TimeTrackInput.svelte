@@ -1,19 +1,29 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  
   import { t } from '../../store/i18n';
 
+  interface Props {
+    timeTrackText?: string;
+    timeTrackInput?: HTMLInputElement;
+    class?: string;
+    onCancel?: () => void;
+    onInput?: (millis: number) => void;
+    onSubmit?: (millis: number) => void;
+  }
+
   let {
-    timeTrackText = $bindable(),
+    timeTrackText = $bindable(''),
     timeTrackInput = $bindable(),
     class: className = '',
-  } = $props();
-
-  const dispatch = createEventDispatcher();
+    onCancel: propsOnCancel,
+    onInput: propsOnInput,
+    onSubmit: propsOnSubmit,
+  }: Props = $props();
   const regex = /((\d?\d(.\d)?)\s?(h))|((\d?\d)\s?(m))/gi;
 
   function handleInputs(e: KeyboardEvent) {
     if (e.key === 'Escape') {
-      dispatch('cancel');
+      propsOnCancel?.();
       return;
     }
     const match = timeTrackText.match(regex)?.filter((m: any) => m.trim());
@@ -21,7 +31,7 @@
       const t = timeTrackText.replace(',', '.');
       if (t.match(/^[\d.]+$/) && e.key === 'Enter') {
         const millis = parseFloat(t) * 3600000;
-        dispatch('submit', millis);
+        propsOnSubmit?.(millis);
       }
       return;
     }
@@ -41,9 +51,9 @@
       return;
     }
     const millis = mins * 60000 + hours * 3600000;
-    dispatch('input', millis);
+    propsOnInput?.(millis);
     if (e.key === 'Enter') {
-      dispatch('submit', millis);
+      propsOnSubmit?.(millis);
     }
   }
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  // import { createEventDispatcher } from 'svelte'; // Removed
   import Icon from '../commons/Icon.svelte';
   import StatusPicker from '../commons/StatusPicker.svelte';
   import TagPicker from '../commons/TagPicker.svelte';
@@ -9,14 +9,20 @@
     viewMode = $bindable(),
     filters = $bindable(),
     class: className,
+    onChangeFilters, // Added callback prop
+  }: { 
+    viewMode?: boolean, 
+    filters?: any, 
+    class?: string, 
+    onChangeFilters?: (filters: any) => void 
   } = $props();
 
   let collapsed = $state(true);
 
-  const dispatch = createEventDispatcher();
+  // const dispatch = createEventDispatcher(); // Removed
 
   function onChange() {
-    dispatch('change', filters);
+    onChangeFilters?.(filters);
   }
 </script>
 
@@ -60,8 +66,9 @@
     {/if}
     <div class="flex items-center mt-2">
       <small class="w-10 flex-none">{$t('global.tags')}:</small>
-      <TagPicker bind:selected={filters.tags} on:change={onChange} />
-      {#if viewMode}
+      <TagPicker bind:selected={filters.tags} onChange={onChange} />
+    </div>
+    {#if viewMode}
         <input
           class="ml-2 w-14!"
           placeholder={$t('global.follow')}
@@ -69,7 +76,6 @@
           onchange={onChange}
         />
       {/if}
-    </div>
     <div class="flex items-center mt-2">
       <small class="w-10 flex-none">{$t('global.statuses')}:</small>
       <StatusPicker bind:selected={filters.statuses} on:change={onChange} />

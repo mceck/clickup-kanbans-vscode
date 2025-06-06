@@ -2,7 +2,6 @@
   import type { User } from '../../../interfaces/clickup';
   import { userList } from '../../../store/users';
   import AssigneeBadge from './AssigneeBadge.svelte';
-  import { createEventDispatcher } from 'svelte';
   import Icon from '../Icon.svelte';
   import { outsideClickable } from '../../utils/clickOutside';
   import { t } from '../../../store/i18n';
@@ -14,6 +13,8 @@
     small?: boolean;
     manual?: boolean;
     anchor?: 'left' | 'right';
+    onRemove?: (user: User) => void;
+    onAdd?: (user: User) => void;
   }
 
   let {
@@ -23,14 +24,14 @@
     small = false,
     manual = false,
     anchor = 'left',
+    onRemove,
+    onAdd,
   }: Props = $props();
-
-  const dispatcher = createEventDispatcher();
 
   let showSelector = $state(false);
   let searchText = $state('');
-  let searchInput: HTMLInputElement = $state()!;
-  let scroller: HTMLElement = $state()!;
+  let searchInput: HTMLInputElement | null = $state(null);
+  let scroller: HTMLElement | null = $state(null);
 
   let selected = $state(-1);
 
@@ -67,12 +68,12 @@
       if (!manual) {
         selectedAssignees = selectedAssignees.filter((u) => u.id !== user.id);
       }
-      dispatcher('remove', user);
+      onRemove?.(user);
     } else {
       if (!manual) {
         selectedAssignees = [...selectedAssignees, user];
       }
-      dispatcher('add', user);
+      onAdd?.(user);
     }
   }
 
@@ -82,7 +83,7 @@
     }
     showSelector = !showSelector;
     if (showSelector) {
-      setTimeout(() => searchInput.focus(), 0);
+      setTimeout(() => searchInput?.focus(), 0);
       searchText = '';
       selected = -1;
     }
@@ -102,7 +103,9 @@
         break;
       case 'ArrowDown':
         selected = (selected + 1) % filteredUsers.length;
-        scroller.scrollTop = selected * 40 - 80;
+        if (scroller) {
+          scroller.scrollTop = selected * 40 - 80;
+        }
         event.preventDefault();
         break;
       case 'ArrowUp':
@@ -110,7 +113,9 @@
         if (selected < 0) {
           selected = filteredUsers.length - 1;
         }
-        scroller.scrollTop = selected * 40 - 80;
+        if (scroller) {
+          scroller.scrollTop = selected * 40 - 80;
+        }
         event.preventDefault();
         break;
     }

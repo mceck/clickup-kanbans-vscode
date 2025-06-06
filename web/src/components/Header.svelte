@@ -1,6 +1,5 @@
 <script lang="ts">
   import moment from 'moment';
-  import { createEventDispatcher } from 'svelte';
   import type { Interval, PageFilters } from '../interfaces/clickup';
   import clickupService from '../services/clickup-service';
   import Icon from './commons/Icon.svelte';
@@ -16,6 +15,10 @@
     ganttMode: boolean;
     trackings: Interval[];
     mode: 'kanban' | 'timesheet';
+    onSearch?: () => void;
+    onUpdateTrack?: (detail: { track: Interval; time: number }) => void;
+    onDeleteTrack?: (track: Interval) => void;
+    onSaveFilters?: (isNew: boolean) => void;
   }
 
   let {
@@ -25,13 +28,15 @@
     ganttMode = $bindable(),
     trackings,
     mode,
+    onSearch,
+    onUpdateTrack,
+    onDeleteTrack,
+    onSaveFilters,
   }: Props = $props();
 
   let showConfigurations = $state(false);
   let showTodayTrackEdit = $state(false);
   let showSaveOptions = $state(false);
-
-  const dispatch = createEventDispatcher();
 
   let trackingToday = $derived(
     trackings.filter(
@@ -60,17 +65,17 @@
   }
 
   function search() {
-    dispatch('search');
+    onSearch?.();
   }
 
   function updateTrack(track: Interval, time: number) {
     showTodayTrackEdit = false;
-    dispatch('updateTrack', { track, time });
+    onUpdateTrack?.({ track, time });
   }
 
   function deleteTrack(track: Interval) {
     showTodayTrackEdit = false;
-    dispatch('deleteTrack', track);
+    onDeleteTrack?.(track);
   }
 
   function selectFilter(f: PageFilters) {
@@ -106,7 +111,7 @@
   }
 
   async function saveFilters(isNew: boolean = false) {
-    dispatch('saveFilters', isNew);
+    onSaveFilters?.(isNew);
   }
 </script>
 
@@ -166,8 +171,8 @@
         <EditTracking
           showTask={true}
           intervals={trackingToday}
-          on:update={({ detail }) => updateTrack(detail.track, detail.time)}
-          on:delete={({ detail }) => deleteTrack(detail)}
+          onUpdate={(event) => updateTrack(event.track, event.time)}
+          onDelete={(track) => deleteTrack(track)}
         />
       {/if}
       {#if mode === 'kanban'}

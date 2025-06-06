@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Task } from '../../interfaces/clickup';
+  import type { Task, Interval } from '../../interfaces/clickup';
   import TaskCard from './components/TaskCard.svelte';
 
   import { spacesTree } from '../../store/spaces-tree';
@@ -8,9 +8,23 @@
 
   interface Props {
     tasks: Task[];
+    onUpdateTask?: (detail: { id: string; assignees?: { add?: string[]; rem?: string[] }; status?: string; refresh?: boolean }) => void;
+    onAddTrack?: (detail: { task: Task; time: number }) => void;
+    onChangeTrack?: (detail: { track: Interval; time: number }) => void;
+    onDeleteTrack?: (track: Interval) => void;
+    onAddTag?: (detail: { taskId: string; tag: string }) => void;
+    onDeleteTag?: (detail: { taskId: string; tag: string }) => void;
   }
 
-  let { tasks }: Props = $props();
+  let { 
+    tasks,
+    onUpdateTask,
+    onAddTrack,
+    onChangeTrack,
+    onDeleteTrack,
+    onAddTag,
+    onDeleteTag 
+  }: Props = $props();
   let toggleStatus: any = $state({});
 
   let statuses = $derived(getAllStatuses(tasks));
@@ -34,7 +48,7 @@
         status={val.status}
         tasksCount={getTasksByStatus(val.status).length}
         open={toggleStatus[id]}
-        on:toggle={() => toggleStatusList(id)}
+        onToggleCallback={() => toggleStatusList(id)}
       />
 
       {#if !toggleStatus[id]}
@@ -42,12 +56,12 @@
           <TaskCard
             {task}
             statusKeys={(statusKeys as any)[task.id] || []}
-            on:updateTask
-            on:addTrack
-            on:changeTrack
-            on:deleteTrack
-            on:addTag
-            on:deleteTag
+            onUpdateTask={onUpdateTask}
+            onAddTrack={onAddTrack}
+            onChangeTrack={onChangeTrack}
+            onDeleteTrack={onDeleteTrack}
+            onAddTag={onAddTag}
+            onDeleteTag={onDeleteTag}
           />
         {/each}
       {/if}

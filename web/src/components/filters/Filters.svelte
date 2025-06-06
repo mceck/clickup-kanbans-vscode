@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import type { PageFilters } from '../../interfaces/clickup';
   import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
   import ListSelector from '../commons/list-selector/ListSelector.svelte';
@@ -10,13 +9,13 @@
     filters: PageFilters;
     viewMode: boolean;
     term: string;
+    onSearch?: () => void;
   }
 
-  let { filters = $bindable(), viewMode, term = $bindable() }: Props = $props();
+  let { filters = $bindable(), viewMode, term = $bindable(), onSearch }: Props = $props();
 
-  const dispatch = createEventDispatcher();
   function search() {
-    dispatch('search');
+    onSearch?.();
   }
 </script>
 
@@ -25,8 +24,8 @@
     <div class="w-36 sm:w-72 flex-none">
       <AssigneesSelector
         bind:selectedAssignees={filters.selectedAssignees}
-        on:add={() => viewMode || search()}
-        on:remove={() => viewMode || search()}
+        onAdd={() => viewMode || search()}
+        onRemove={() => viewMode || search()}
       />
     </div>
     <div class="w-36 sm:w-80 flex-none">
@@ -35,9 +34,9 @@
         bind:selectedView={filters.selectedView}
         right
         {viewMode}
-        on:selectView={() => search()}
-        on:selectList={() => search()}
-        on:removeList={() => search()}
+        onSelectView={search}
+        onSelectList={search}
+        onRemoveList={search}
       />
     </div>
   </div>
@@ -54,7 +53,7 @@
       class=""
       {viewMode}
       bind:filters
-      on:change={() => viewMode || search()}
+      onChangeFilters={() => viewMode || search()}
     />
   </div>
 </div>

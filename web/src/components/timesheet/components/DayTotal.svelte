@@ -1,5 +1,6 @@
 <script lang="ts">
   import EditTracking from '../../commons/EditTracking.svelte';
+  import type { Interval } from '../../../interfaces/clickup';
   import { outsideClickable } from '../../utils/clickOutside';
 
   interface Props {
@@ -7,9 +8,11 @@
     onlyFilteredTasks: boolean;
     hours: string;
     intervals: any;
+    onUpdate?: (event: { track: Interval; time: number }) => void;
+    onDelete?: (track: Interval) => void;
   }
 
-  let { hasAtLeastEightHours, onlyFilteredTasks, hours, intervals }: Props =
+  let { hasAtLeastEightHours, onlyFilteredTasks, hours, intervals, onUpdate, onDelete }: Props =
     $props();
   let edit: boolean = $state(false);
 </script>
@@ -28,8 +31,8 @@
       class="w-[450px] right-1/2 max-h-56 text-white"
       showTask={true}
       {intervals}
-      on:update
-      on:delete
+      onUpdate={onUpdate}
+      onDelete={onDelete}
     />
   {/if}
 </p>

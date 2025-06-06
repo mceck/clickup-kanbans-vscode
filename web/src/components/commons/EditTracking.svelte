@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  // import { createEventDispatcher } from 'svelte';
   import type { Interval } from '../../interfaces/clickup';
   import Icon from './Icon.svelte';
   import TimeTrackInput from './TimeTrackInput.svelte';
@@ -12,15 +12,17 @@
     loading?: boolean;
     showTask?: boolean;
     class?: string;
+    onDelete?: (track: Interval) => void;
+    onUpdate?: (event: { track: Interval; time: number }) => void;
   }
 
-  let { intervals, loading, showTask, ...rest }: Props = $props();
+  let { intervals, loading, showTask, onDelete, onUpdate, ...rest }: Props = $props();
 
   let editTrack: Interval | undefined = $state(undefined);
   let timeTrackInput: HTMLInputElement = $state()!;
   let timeTrackText: string = $state('');
 
-  const dispatch = createEventDispatcher();
+  // const dispatch = createEventDispatcher();
 
   function showEditTrack(track: Interval) {
     if (editTrack) {
@@ -66,7 +68,7 @@
       <button class="flex-none w-8" onclick={() => showEditTrack(track)}
         ><Icon name="edit" /></button
       >
-      <button class="flex-none w-8" onclick={() => dispatch('delete', track)}
+      <button class="flex-none w-8" onclick={() => onDelete?.(track)}
         ><Icon name="trash" /></button
       >
       {#if editTrack && editTrack.id === track.id}
@@ -76,11 +78,11 @@
           <TimeTrackInput
             bind:timeTrackInput
             bind:timeTrackText
-            on:submit={({ detail: time }) => {
-              dispatch('update', { track, time });
+            onSubmit={(time) => {
+              onUpdate?.({ track, time });
               editTrack = undefined;
             }}
-            on:cancel={() => (editTrack = undefined)}
+            onCancel={() => (editTrack = undefined)}
           />
         </div>
       {/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  // import { createEventDispatcher } from 'svelte'; // Removed
 
   import type { Interval, Task, User } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
@@ -17,9 +17,24 @@
   interface Props {
     task: Task;
     statusKeys: string[];
+    onAddTrack?: (detail: { task: Task; time: number }) => void;
+    onDeleteTrack?: (track: Interval) => void;
+    onChangeTrack?: (detail: { track: Interval; time: number }) => void;
+    onUpdateTask?: (detail: { id: string; assignees?: { add?: string[]; rem?: string[] }; status?: string; refresh?: boolean }) => void;
+    onAddTag?: (detail: { taskId: string; tag: string }) => void;
+    onDeleteTag?: (detail: { taskId: string; tag: string }) => void;
   }
 
-  let { task, statusKeys }: Props = $props();
+  let {
+    task,
+    statusKeys,
+    onAddTrack: propsOnAddTrack,
+    onDeleteTrack: propsOnDeleteTrack,
+    onChangeTrack: propsOnChangeTrack,
+    onUpdateTask: propsOnUpdateTask,
+    onAddTag: propsOnAddTag,
+    onDeleteTag: propsOnDeleteTag,
+  }: Props = $props();
 
   let addTimeTrackInput: HTMLInputElement | undefined = $state();
   let showTracking = $state(false);
@@ -42,44 +57,44 @@
     )
   );
 
-  const dispatch = createEventDispatcher();
+  // const dispatch = createEventDispatcher(); // Removed
 
   async function trackTaskTime(task: Task, time: number) {
-    dispatch('addTrack', { task, time });
+    propsOnAddTrack?.({ task, time });
     showAddTrack = false;
     intervals = [];
   }
 
   async function deleteTrack(track: Interval) {
-    dispatch('deleteTrack', track);
+    propsOnDeleteTrack?.(track);
     showTracking = false;
     intervals = [];
   }
 
   async function updateTrack(track: Interval, time: number) {
-    dispatch('changeTrack', { track, time });
+    propsOnChangeTrack?.({ track, time });
     showTracking = false;
     intervals = [];
   }
 
   async function addAssignee(assignee: User) {
-    dispatch('updateTask', {
+    propsOnUpdateTask?.({
       id: task.id,
-      assignees: { add: [assignee.id] },
+      assignees: { add: [String(assignee.id)] },
     });
     // close picker
     document.body.click();
   }
 
   async function removeAssignee(assignee: User) {
-    dispatch('updateTask', {
+    propsOnUpdateTask?.({
       id: task.id,
-      assignees: { rem: [assignee.id] },
+      assignees: { rem: [String(assignee.id)] },
     });
   }
 
   async function setTaskState(task: Task, state: string) {
-    dispatch('updateTask', {
+    propsOnUpdateTask?.({
       id: task.id,
       status: state,
       refresh: true,
@@ -143,14 +158,14 @@
   }
 
   function addTag(tag: string) {
-    dispatch('addTag', {
+    propsOnAddTag?.({
       taskId: task.id,
       tag,
     });
   }
 
   function deleteTag(tag: string) {
-    dispatch('deleteTag', {
+    propsOnDeleteTag?.({
       taskId: task.id,
       tag,
     });
@@ -210,8 +225,8 @@
           >
             <TimeTrackInput
               bind:timeTrackInput={addTimeTrackInput}
-              on:submit={({ detail }) => trackTaskTime(task, detail)}
-              on:cancel={() => (showAddTrack = false)}
+              onSubmit={(millis) => trackTaskTime(task, millis)}
+              onCancel={() => (showAddTrack = false)}
             />
           </div>
         {/if}
@@ -238,8 +253,8 @@
         <AssigneesSelector
           anchor="right"
           selectedAssignees={task.assignees}
-          on:add={(e) => addAssignee(e.detail)}
-          on:remove={(e) => removeAssignee(e.detail)}
+          onAdd={(user) => addAssignee(user)}
+          onRemove={(user) => removeAssignee(user)}
           maxShown={4}
           small
           manual
@@ -249,8 +264,8 @@
         <EditTracking
           {intervals}
           loading={loadingIntervals}
-          on:update={({ detail }) => updateTrack(detail.track, detail.time)}
-          on:delete={({ detail }) => deleteTrack(detail)}
+          onUpdate={(event) => updateTrack(event.track, event.time)}
+          onDelete={(track) => deleteTrack(track)}
         />
       {/if}
     </div>
@@ -330,10 +345,10 @@
       {task}
       statuses={statusKeys}
       {expanded}
-      on:next={(e) => setTaskState(task, e.detail)}
-      on:prev={(e) => setTaskState(task, e.detail)}
-      on:checkout={(e) => gitCheckout(task)}
-      on:expand={(e) => (expanded = !!e.detail)}
+      onNext={(nextStatus) => setTaskState(task, nextStatus)}
+      onPrev={(nextStatus) => setTaskState(task, nextStatus)}
+      onCheckout={() => gitCheckout(task)}
+      onExpand={(isExpanded) => (expanded = isExpanded)}
     />
   </div>
 </div>

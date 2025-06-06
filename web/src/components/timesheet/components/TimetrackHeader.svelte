@@ -1,6 +1,5 @@
 <script lang="ts">
   import moment from 'moment';
-  import { createEventDispatcher } from 'svelte';
   import Icon from '../../commons/Icon.svelte';
   import Switch from '../../commons/Switch.svelte';
   import type { Interval } from '../../../interfaces/clickup';
@@ -15,6 +14,10 @@
     onlyFilteredTasks?: boolean;
     taskIds?: string[];
     filterMode?: string;
+    onUpdateOnlyFiltered?: (value: boolean) => void;
+    onToggleFilterMode?: () => void;
+    onUpdate?: (event: { track: Interval; time: number }) => void;
+    onDelete?: (track: Interval) => void;
   }
 
   let {
@@ -23,9 +26,11 @@
     onlyFilteredTasks = false,
     taskIds = [],
     filterMode = 'task',
+    onUpdateOnlyFiltered,
+    onToggleFilterMode,
+    onUpdate,
+    onDelete,
   }: Props = $props();
-
-  const dispatch = createEventDispatcher();
 
   function trackingsForDay(trackings: Interval[], day: number) {
     return trackings.filter((t) => {
@@ -48,11 +53,11 @@
   }
 
   function updateOnlyFiltered(value: boolean) {
-    dispatch('updateOnlyFiltered', value);
+    onUpdateOnlyFiltered?.(value);
   }
 
   function toggleFilterMode() {
-    dispatch('toggleFilterMode');
+    onToggleFilterMode?.();
   }
 
   function hasAtLeastEightHours(
@@ -67,7 +72,11 @@
 <div class="flex flex-wrap w-full">
   <div class="flex w-full items-center mb-3 text-lg font-bold">
     <p class="w-1/12"><Icon class="w-6 h-6" name="star" /></p>
-    <p class="w-6/12 cursor-pointer" onclick={toggleFilterMode}>
+    <button
+      type="button"
+      class="w-6/12 cursor-pointer text-left bg-transparent border-none p-0 font-inherit text-inherit"
+      onclick={toggleFilterMode}
+    >
       Task
       <span class="text-gray-500 text-sm font-normal italic ml-4"
         >{filterMode === 'usage' ? $t('timesheet.task-by-usage') : ''}</span
@@ -77,7 +86,7 @@
           .add(4, 'days')
           .format($dateFormat)}</span
       >
-    </p>
+    </button>
     {#each FERIAL_DAYS as day}
       <p class="w-1/12">
         {$t('days.' + moment(trackedWeek).add(day, 'days').day())}
@@ -99,7 +108,7 @@
         </span>
         <Switch
           value={onlyFilteredTasks}
-          on:change={(e) => updateOnlyFiltered(e.detail)}
+          onChange={updateOnlyFiltered}
         />
       </span>
     </p>
@@ -113,8 +122,8 @@
         {onlyFilteredTasks}
         hours={toHours(totalForDay(trackings, day, onlyFilteredTasks))}
         intervals={trackingsForDay(trackings, day)}
-        on:update
-        on:delete
+        onUpdate={onUpdate}
+        onDelete={onDelete}
       />
     {/each}
   </div>

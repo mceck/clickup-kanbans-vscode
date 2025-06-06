@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import Icon from '../../commons/Icon.svelte';
 
   interface Props {
@@ -7,18 +6,20 @@
     status: string;
     tasksCount: number;
     open: boolean;
+    onToggleCallback?: () => void;
   }
 
   let {
     color,
     status,
     tasksCount,
-    open
+    open,
+    onToggleCallback
   }: Props = $props();
-  const dispatch = createEventDispatcher();
+  // const dispatch = createEventDispatcher();
 
   function onToggle() {
-    dispatch('toggle');
+    onToggleCallback?.();
   }
 </script>
 

@@ -1,9 +1,12 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import clickupService from '../services/clickup-service';
   import { t } from '../store/i18n';
 
-  const dispatch = createEventDispatcher();
+  interface Props {
+    onLoggedIn?: (userData: any) => void;
+  }
+  let { onLoggedIn }: Props = $props();
+
   let personalToken = $state('');
 
   async function setToken() {
@@ -12,7 +15,7 @@
     }
     const res = await clickupService.login(personalToken);
     if (res.ok) {
-      dispatch('loggedIn', res.data);
+      onLoggedIn?.(res.data);
     } else {
       personalToken = '';
     }

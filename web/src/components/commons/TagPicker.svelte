@@ -1,16 +1,16 @@
 <script lang="ts">
   import { run } from 'svelte/legacy';
 
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte'; // createEventDispatcher removed
   import { t } from '../../store/i18n';
 
   interface Props {
     selected: string[];
+    onChange?: (value: string) => void;
   }
 
-  let { selected = $bindable() }: Props = $props();
+  let { selected = $bindable(), onChange: propsOnChange }: Props = $props(); // Renamed onChange prop to avoid conflict
 
-  const dispatch = createEventDispatcher();
   let value = $state('');
 
   run(() => {
@@ -19,10 +19,10 @@
 
   function addTag() {
     selected = value ? value.split(',').map((e) => e.trim()) : [];
-    dispatch('change', value);
+    propsOnChange?.(value);
   }
 
-  function onChange(e: any) {
+  function handleInput(e: any) { // Renamed internal onChange to handleInput
     value = e.target.value;
   }
 </script>
@@ -32,6 +32,6 @@
     {value}
     placeholder={$t('global.tags-info')}
     onblur={addTag}
-    oninput={onChange}
+    oninput={handleInput}
   />
 </div>

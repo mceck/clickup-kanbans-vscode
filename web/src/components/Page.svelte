@@ -177,6 +177,14 @@
     );
   }
 
+  $effect(() => {
+    // Refresh time tracked data when the week changes and we are in timesheet mode.
+    // Ensure trackedWeek is initialized before reacting.
+    if (trackedWeek && mode === 'timesheet') {
+      refreshTimeTracked();
+    }
+  });
+
   async function loadCache() {
     const results = await Promise.all([
       mode === 'timesheet'
@@ -566,12 +574,12 @@
       bind:ganttMode
       {mode}
       {trackings}
-      on:search={() => search()}
-      on:updateTrack={({ detail }) => updateTrack(detail.track, detail.time)}
-      on:deleteTrack={(e) => deleteTrack(e.detail)}
-      on:saveFilters={({ detail }) => saveFilters(filters, detail)}
+      onSearch={search}
+      onUpdateTrack={({ track, time }) => updateTrack(track, time)}
+      onDeleteTrack={deleteTrack}
+      onSaveFilters={(isNew) => saveFilters(filters, isNew)}
     />
-    <Filters bind:filters bind:term {viewMode} on:search={() => search()} />
+    <Filters bind:filters bind:term {viewMode} onSearch={search} />
   </div>
   <div class="h-40"></div>
   {#if initErrors}
@@ -585,13 +593,12 @@
     {:else}
       <Board
         tasks={filteredTasks}
-        on:updateTask={(e) => updateTask(e.detail)}
-        on:addTrack={({ detail }) =>
-          addTrack(detail.task, moment().valueOf(), detail.time)}
-        on:deleteTrack={(e) => deleteTrack(e.detail)}
-        on:changeTrack={({ detail }) => updateTrack(detail.track, detail.time)}
-        on:addTag={({ detail }) => addTaskTag(detail)}
-        on:deleteTag={({ detail }) => deleteTaskTag(detail)}
+        onUpdateTask={updateTask}
+        onAddTrack={({ task, time }) => addTrack(task, moment().valueOf(), time)}
+        onDeleteTrack={deleteTrack}
+        onChangeTrack={({ track, time }) => updateTrack(track, time)}
+        onAddTag={addTaskTag}
+        onDeleteTag={deleteTaskTag}
       />
     {/if}
   {:else if mode === 'timesheet'}
@@ -599,14 +606,13 @@
       bind:trackedWeek
       tasks={filteredTasks}
       {trackings}
-      on:updateTrack={({ detail }) => updateTrack(detail.track, detail.time)}
-      on:deleteTrack={(e) => deleteTrack(e.detail)}
-      on:addTrack={({ detail }) =>
-        addTrack(detail.task, detail.day, detail.time)}
-      on:changeWeek={() => refreshTimeTracked()}
+      onUpdateTrack={({ track, time }) => updateTrack(track, time)}
+      onDeleteTrack={deleteTrack}
+      onAddTrack={({ task, day, time }) =>
+        addTrack(task, day, time)}
     />
   {/if}
   {#if !loggedIn}
-    <Login on:loggedIn={onLogin} />
+    <Login onLoggedIn={onLogin} />
   {/if}
 </div>

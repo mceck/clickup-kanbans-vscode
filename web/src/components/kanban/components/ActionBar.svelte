@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  
   import type { Task } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
 
@@ -10,11 +10,13 @@
     task: Task;
     statuses: string[];
     expanded: boolean;
+    onNext?: (nextStatus: string) => void;
+    onPrev?: (nextStatus: string) => void;
+    onCheckout?: () => void;
+    onExpand?: (expanded: boolean) => void;
   }
 
-  let { task, statuses, expanded }: Props = $props();
-
-  const dispatch = createEventDispatcher();
+  let { task, statuses, expanded, onNext: propsOnNext, onPrev: propsOnPrev, onCheckout: propsOnCheckout, onExpand: propsOnExpand }: Props = $props();
   let currentStatusIdx = $derived(
     statuses.findIndex((s) => task.status.status === s)
   );
@@ -33,20 +35,20 @@
 
   async function actionNext() {
     const nextStatus = shiftState(1);
-    dispatch('next', nextStatus);
+    propsOnNext?.(nextStatus);
   }
 
   async function actionPrev() {
     const nextStatus = shiftState(-1);
-    dispatch('prev', nextStatus);
+    propsOnPrev?.(nextStatus);
   }
 
   function gitCheckout() {
-    dispatch('checkout');
+    propsOnCheckout?.();
   }
 
   function actionExpand() {
-    dispatch('expand', !expanded);
+    propsOnExpand?.(!expanded);
   }
 </script>
 

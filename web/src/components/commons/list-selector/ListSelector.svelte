@@ -3,7 +3,6 @@
   import { spacesTree } from '../../../store/spaces-tree';
   import SpaceBadge from './SpaceBadge.svelte';
   import clickupService from '../../../services/clickup-service';
-  import { createEventDispatcher } from 'svelte';
   import Icon from '../Icon.svelte';
   import { outsideClickable } from '../../utils/clickOutside';
   import { t } from '../../../store/i18n';
@@ -13,6 +12,9 @@
     right?: boolean;
     selectedView: View | null;
     viewMode?: boolean;
+    onRemoveList?: (list: List) => void;
+    onSelectList?: (list: List) => void;
+    onSelectView?: (view: View) => void;
   }
 
   let {
@@ -20,44 +22,45 @@
     right = false,
     selectedView = $bindable(null),
     viewMode = false,
+    onRemoveList,
+    onSelectList,
+    onSelectView,
   }: Props = $props();
 
-  const dispatch = createEventDispatcher();
-
   let showSpaces: any = $state({});
-  let showFolder: any = $state({});
-  let views: { [listId: string]: View[] } = $state({});
-  let viewCache: { [listId: string]: View[] } = {};
+  let showFolder: Record<string, boolean> = $state({});
+  let views: Record<string, View[] | null | undefined> = $state({});
+  let viewCache: Record<string, View[]> = {}; // Assuming viewCache only stores actual views
 
-  let scroller: HTMLElement = $state()!;
-  let searchInput: HTMLInputElement = $state()!;
+  let scroller: HTMLElement | null = $state(null);
+  let searchInput: HTMLInputElement | null = $state(null);
   let searchText = $state('');
   let showSelector = $state(false);
   let selected = $state(-1);
 
   let filteredSpaces = $derived(
-    $spacesTree.spaces.map((s) => {
+    ($spacesTree.spaces as Space[]).map((s: Space) => {
       if (!searchText) {
         return s;
       }
       const ret = { ...s };
       ret.folders =
         ret.folders
-          ?.map((f) => {
+          ?.map((f: Folder) => {
             const fret = { ...f };
             fret.lists =
-              fret.lists?.filter((l) =>
+              fret.lists?.filter((l: List) =>
                 l.name.toLowerCase().includes(searchText.toLowerCase())
               ) ?? [];
             return fret;
           })
           ?.filter(
-            (f) =>
+            (f: Folder) =>
               f.lists?.length ||
               f.name.toLowerCase().includes(searchText.toLowerCase())
           ) ?? [];
       ret.lists =
-        ret.lists?.filter((l) =>
+        ret.lists?.filter((l: List) =>
           l.name.toLowerCase().includes(searchText.toLowerCase())
         ) ?? [];
       return ret;
@@ -113,14 +116,18 @@
         break;
       case 'ArrowDown':
         selected = (selected + 1) % recNumber;
-        scroller.scrollTop = selected * 20 - 40;
+        if (scroller) {
+          scroller.scrollTop = selected * 20 - 40;
+        }
         break;
       case 'ArrowUp':
         selected--;
         if (selected < 0) {
           selected = recNumber - 1;
         }
-        scroller.scrollTop = selected * 20 - 40;
+        if (scroller) {
+          scroller.scrollTop = selected * 20 - 40;
+        }
         break;
     }
   }
@@ -223,7 +230,7 @@
     if (idx >= 0) {
       selectedLists = selectedLists.filter((l) => l.id !== list.id);
       views = { ...views, [list.id]: undefined } as any;
-      dispatch('removeList', list);
+      onRemoveList?.(list);
     } else {
       selectedLists = [...selectedLists, list];
       if (viewMode && !views[list.id]) {
@@ -238,7 +245,7 @@
           });
         }
       } else {
-        dispatch('selectList', list);
+        onSelectList?.(list);
       }
     }
     searchText = '';
@@ -247,13 +254,13 @@
   function selectView(view: View) {
     selectedView = view;
     toggleSelector();
-    dispatch('selectView', view);
+    onSelectView?.(view);
   }
 
   function toggleSelector() {
     showSelector = !showSelector;
     if (showSelector) {
-      setTimeout(() => searchInput.focus(), 0);
+      setTimeout(() => searchInput?.focus(), 0);
       searchText = '';
       selected = -1;
     }

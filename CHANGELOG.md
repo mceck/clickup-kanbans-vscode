@@ -4,6 +4,12 @@ All notable changes to the "clickup-kanbans" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.0.0]
+
+### Added
+
+- upgrade to Svelte 5
+
 ## [1.5.7]
 
 ### Fix

@@ -40,8 +40,7 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this._extensionUri,
-        'web',
-        'dist',
+        'out',
         'compiled',
         'kanban.js'
       )
@@ -52,8 +51,7 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
     const cssUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this._extensionUri,
-        'web',
-        'dist',
+        'out',
         'compiled',
         'kanban.css'
       )

@@ -10,7 +10,7 @@ export default defineConfig({
       output: {
         format: 'iife',
         name: 'app',
-        dir: 'dist/compiled',
+        dir: '../out/compiled',
         entryFileNames: 'kanban.js',
         assetFileNames: 'kanban.css',
       },

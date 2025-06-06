@@ -120,8 +120,7 @@ export class FullscreenPanel {
       scriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(
           this._extensionUri,
-          'web',
-          'dist',
+          'out',
           'compiled',
           this.js
         )
@@ -135,8 +134,7 @@ export class FullscreenPanel {
       cssUri = webview.asWebviewUri(
         vscode.Uri.joinPath(
           this._extensionUri,
-          'web',
-          'dist',
+          'out',
           'compiled',
           this.css
         )

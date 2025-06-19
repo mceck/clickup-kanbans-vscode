@@ -4,6 +4,12 @@ All notable changes to the "clickup-kanbans" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.0.1]
+
+### Fixed
+
+- unexpected end of file on missing saved configuration
+
 ## [2.0.0]
 
 ### Added

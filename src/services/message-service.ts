@@ -128,6 +128,7 @@ export default class MessageService {
         .getConfiguration('clickup-kanban.config')
         .get(configName ?? 'vs-config');
       if (
+        config &&
         ['vs-config', 'ts-config'].includes(configName) &&
         typeof config === 'string'
       ) {

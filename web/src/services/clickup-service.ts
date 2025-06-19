@@ -32,7 +32,6 @@ class ClickupService {
       }, timeout);
       const message = { ...obj, nonce };
       window.addEventListener('message', fn);
-      console.log(message);
       webVscode.postMessage(message);
     });
   }

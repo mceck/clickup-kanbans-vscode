@@ -45,11 +45,9 @@ export const hasFilters = derived(
 export const initializeFilters = async () => {
   const cfgName = get(configName);
   const { data } = await clickupService.getConfig(cfgName);
-
   const config: WorkspaceConfig = data ?? { filters: [] };
-  savedFilters.set(config.filters);
-
-  const defFilters = config.filters.find((e) => e.default);
+  savedFilters.set(config.filters || []);
+  const defFilters = config.filters?.find((e) => e.default);
   if (defFilters) {
     activeFilters.set({ ...defaultFilters, ...defFilters });
     tableMode.set(defFilters.tableMode);
@@ -58,7 +56,7 @@ export const initializeFilters = async () => {
 };
 
 export const saveActiveFilter = async (isNew: boolean = false) => {
-  let currentFilters = get(activeFilters);
+  let currentFilters = { ...get(activeFilters) };
   if (!currentFilters.name) {
     isNew = true;
   }

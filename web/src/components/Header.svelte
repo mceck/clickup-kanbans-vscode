@@ -81,8 +81,8 @@
   function selectFilter(f: PageFilters) {
     showConfigurations = false;
     filters = f ?? filters;
-    viewMode = !!filters.selectedView;
-    tableMode = !!filters.tableMode;
+    viewMode = filters.viewMode;
+    tableMode = filters.tableMode;
     search();
   }
 
@@ -97,7 +97,11 @@
 
   function deleteFilter(f: PageFilters) {
     showConfigurations = false;
+    const isCurrent = filters?.name === f.name;
     configFilters = configFilters.filter((e) => e !== f);
+    if (f.default && configFilters.length) {
+      configFilters[0].default = true;
+    }
     filters = configFilters.find((e) => e.default)!;
     if (!filters) {
       filters = configFilters[0] ?? { ...f, name: '' };
@@ -107,8 +111,10 @@
       JSON.parse(JSON.stringify({ filters: configFilters, tableMode })),
       configName
     );
-    viewMode = !!filters.selectedView;
-    search();
+    viewMode = filters.viewMode;
+    if (isCurrent) {
+      search();
+    }
   }
 
   async function saveFilters(isNew: boolean = false) {
@@ -123,7 +129,10 @@
 />
 <div>
   <div class="flex justify-between w-full">
-    <div aria-label="configuration">
+    <div
+      class="flex-none max-w-20 overflow-hidden text-ellipsis text-nowrap"
+      aria-label="configuration"
+    >
       <small
         class="cursor-pointer"
         use:outsideClickable={'[aria-label="configuration"]'}
@@ -136,8 +145,9 @@
         <div class="absolute p-2 bg-screen border rounded border-gray-600 z-10">
           {#each configFilters as f}
             <div class="flex items-center py-1">
-              <span class="w-24 cursor-pointer" onclick={() => selectFilter(f)}
-                >{f.name}</span
+              <span
+                class="w-32 cursor-pointer overflow-hidden text-ellipsis"
+                onclick={() => selectFilter(f)}>{f.name}</span
               >
               <span
                 class="h-4 cursor-pointer {f.default && 'text-green-500'}"

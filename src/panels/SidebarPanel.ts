@@ -38,23 +38,13 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css')
     );
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        'out',
-        'compiled',
-        'kanban.js'
-      )
+      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'kanban.js')
     );
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css')
     );
     const cssUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        'out',
-        'compiled',
-        'kanban.css'
-      )
+      vscode.Uri.joinPath(this._extensionUri, 'out', 'compiled', 'kanban.css')
     );
 
     // Use a nonce to only allow a specific script to be run.
@@ -80,6 +70,7 @@ export class SidebarPanel implements vscode.WebviewViewProvider {
             }
             const webVscode = initVsCode();
             const __vs_svelte_view = 'kanban';
+            const __vs_svelte_fullscreen = false;
         </script>
 			</head>
       <body style="overflow: scroll">

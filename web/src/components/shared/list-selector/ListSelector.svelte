@@ -241,12 +241,13 @@
     } else if (idx >= 0) {
       selectedLists = selectedLists.filter((l) => l.id !== list.id);
       views = { ...views, [list.id]: undefined } as any;
+      searchText = '';
       onRemoveList?.(list);
     } else {
       selectedLists = [...selectedLists, list];
+      searchText = '';
       onSelectList?.(list);
     }
-    searchText = '';
   }
 
   function selectView(view: View) {
@@ -290,10 +291,10 @@
     />
     {#if showSelector}
       <div
-        class="absolute top-12 overflow-hidden rounded-lg shadow border border-gray-400 bg-screen z-10"
+        class="absolute top-12 py-1 overflow-hidden rounded-lg shadow border border-gray-400 bg-screen z-10"
         class:right-1={right}
       >
-        <div class="overflow-auto w-72 h-80" bind:this={scroller}>
+        <div class="overflow-auto w-72 min-h-20 max-h-80" bind:this={scroller}>
           {#each filteredSpaces as space (space.id)}
             <div
               class="cursor-pointer px-2 py-1"

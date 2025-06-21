@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as _vscode from 'vscode';
 
 interface VsCodePostMessage {
@@ -11,6 +12,6 @@ declare global {
     getState: () => any;
     setState: (s: any) => void;
   };
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const __vs_svelte_view: 'kanban' | 'timesheet';
+  const __vs_svelte_fullscreen: boolean;
 }

@@ -97,63 +97,64 @@
 
 <svelte:window onkeypress={handleForceRefresh} />
 <div>
-  <div class="fixed top-0 left-0 w-full bg-screen z-20 px-4 pt-1">
-    <Header
-      bind:filters={$activeFilters}
-      bind:configFilters={$savedFilters}
-      bind:viewMode={$viewMode}
-      bind:tableMode={$tableMode}
-      mode={$mode}
-      trackings={$trackings}
-      onSearch={search}
-      onUpdateTrack={({ track, time }) => updateTrack(track, time)}
-      onDeleteTrack={deleteTrack}
-      onSaveFilters={saveActiveFilter}
-    />
-    <Filters
-      bind:filters={$activeFilters}
-      bind:term={$term}
-      viewMode={$viewMode}
-      onSearch={search}
-    />
-  </div>
-  <div class="h-40"></div>
-  {#if $initErrors}
-    <h1 class="text-red-600 text-lg">
-      Connection error, try to reload the extension
-    </h1>
-  {/if}
-  {#if $mode === 'kanban'}
-    {#if $tableMode}
-      <Table
-        tasks={$filteredTasks}
-        onUpdateTask={updateTask}
-        onAddTag={addTaskTag}
-        onDeleteTag={deleteTaskTag}
-      />
-    {:else}
-      <Board
-        tasks={$filteredTasks}
-        onUpdateTask={updateTask}
-        onAddTrack={({ task, time }) =>
-          addTrack(task, moment().valueOf(), time)}
+  {#if !$loggedIn}
+    <Login onLoggedIn={loadPage} />
+  {:else}
+    <div class="fixed top-0 left-0 w-full bg-screen z-20 px-4 pt-1">
+      <Header
+        bind:filters={$activeFilters}
+        bind:configFilters={$savedFilters}
+        bind:viewMode={$viewMode}
+        bind:tableMode={$tableMode}
+        mode={$mode}
+        trackings={$trackings}
+        onSearch={search}
+        onUpdateTrack={({ track, time }) => updateTrack(track, time)}
         onDeleteTrack={deleteTrack}
-        onChangeTrack={({ track, time }) => updateTrack(track, time)}
-        onAddTag={addTaskTag}
-        onDeleteTag={deleteTaskTag}
+        onSaveFilters={saveActiveFilter}
+      />
+      <Filters
+        bind:filters={$activeFilters}
+        bind:term={$term}
+        viewMode={$viewMode}
+        onSearch={search}
+      />
+    </div>
+    <div class="h-40"></div>
+    {#if $initErrors}
+      <h1 class="text-red-600 text-lg">
+        Connection error, try to reload the extension
+      </h1>
+    {/if}
+    {#if $mode === 'kanban'}
+      {#if $tableMode}
+        <Table
+          tasks={$filteredTasks}
+          onUpdateTask={updateTask}
+          onAddTag={addTaskTag}
+          onDeleteTag={deleteTaskTag}
+        />
+      {:else}
+        <Board
+          tasks={$filteredTasks}
+          onUpdateTask={updateTask}
+          onAddTrack={({ task, time }) =>
+            addTrack(task, moment().valueOf(), time)}
+          onDeleteTrack={deleteTrack}
+          onChangeTrack={({ track, time }) => updateTrack(track, time)}
+          onAddTag={addTaskTag}
+          onDeleteTag={deleteTaskTag}
+        />
+      {/if}
+    {:else if $mode === 'timesheet'}
+      <Timesheet
+        bind:trackedWeek={$trackedWeek}
+        tasks={$filteredTasks}
+        trackings={$trackings}
+        onUpdateTrack={({ track, time }) => updateTrack(track, time)}
+        onDeleteTrack={deleteTrack}
+        onAddTrack={({ task, day, time }) => addTrack(task, day, time)}
       />
     {/if}
-  {:else if $mode === 'timesheet'}
-    <Timesheet
-      bind:trackedWeek={$trackedWeek}
-      tasks={$filteredTasks}
-      trackings={$trackings}
-      onUpdateTrack={({ track, time }) => updateTrack(track, time)}
-      onDeleteTrack={deleteTrack}
-      onAddTrack={({ task, day, time }) => addTrack(task, day, time)}
-    />
-  {/if}
-  {#if !loggedIn}
-    <Login onLoggedIn={loadPage} />
   {/if}
 </div>

@@ -159,7 +159,6 @@ export interface Interval {
 
 export interface WorkspaceConfig {
   filters: PageFilters[];
-  tableMode: boolean;
 }
 
 export interface PageFilters {
@@ -175,6 +174,8 @@ export interface PageFilters {
   subtasks: boolean;
   include_closed: boolean;
   allTracking: boolean;
+  tableMode: boolean;
+  viewMode: boolean;
 }
 
 export interface View {

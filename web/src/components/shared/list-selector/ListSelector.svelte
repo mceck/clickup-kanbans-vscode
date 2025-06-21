@@ -227,26 +227,24 @@
 
   function toggleList(list: List) {
     const idx = selectedLists.findIndex((l) => l.id === list.id);
-    if (idx >= 0) {
+    if (viewMode) {
+      if (viewCache[list.id]) {
+        views = { ...views, [list.id]: viewCache[list.id] };
+      } else {
+        views = { ...views, [list.id]: null } as any;
+        clickupService.getListViews(list.id).then(({ data }) => {
+          const viewList = data.map((v: any) => ({ ...v, list }));
+          views = { ...views, [list.id]: viewList };
+          viewCache[list.id] = viewList;
+        });
+      }
+    } else if (idx >= 0) {
       selectedLists = selectedLists.filter((l) => l.id !== list.id);
       views = { ...views, [list.id]: undefined } as any;
       onRemoveList?.(list);
     } else {
       selectedLists = [...selectedLists, list];
-      if (viewMode && !views[list.id]) {
-        if (viewCache[list.id]) {
-          views = { ...views, [list.id]: viewCache[list.id] };
-        } else {
-          views = { ...views, [list.id]: null } as any;
-          clickupService.getListViews(list.id).then(({ data }) => {
-            const viewList = data.map((v: any) => ({ ...v, list }));
-            views = { ...views, [list.id]: viewList };
-            viewCache[list.id] = viewList;
-          });
-        }
-      } else {
-        onSelectList?.(list);
-      }
+      onSelectList?.(list);
     }
     searchText = '';
   }
@@ -302,7 +300,7 @@
               onclick={() => toggleSpace(space.id)}
             >
               <div
-                class="flex items-center"
+                class="flex items-center hover:text-white"
                 class:bg-gray-700={getIdx('space', space) === selected}
               >
                 <span class="w-6 h-6 mr-2"><SpaceBadge {space} /></span>
@@ -315,7 +313,7 @@
                   {#each space.folders ?? [] as folder (folder.id)}
                     <div class="ml-4">
                       <div
-                        class="flex items-center"
+                        class="flex items-center hover:text-white"
                         class:bg-gray-700={getIdx('folder', folder) ===
                           selected}
                         onclick={() => toggleFolder(folder.id)}
@@ -331,7 +329,7 @@
                       {#if showFolder[folder.id]}
                         {#each folder.lists || [] as list}
                           <div
-                            class="ml-4 flex items-center"
+                            class="ml-4 flex items-center hover:text-white"
                             class:bg-gray-700={getIdx('list', list) ===
                               selected}
                             class:text-blue-300={!viewMode &&
@@ -366,7 +364,8 @@
                                   class=" w-2 h-2 mr-2 rounded-full border border-dotted border-gray-400"
                                 ></span>
                                 <span
-                                  class:text-blue-300={view.id ===
+                                  class="hover:text-blue-50"
+                                  class:text-blue-200={view.id ===
                                     selectedView?.id}
                                 >
                                   {view.name}
@@ -380,7 +379,7 @@
                   {/each}
                   {#each space.lists ?? [] as list (list.id)}
                     <div
-                      class="ml-4 flex items-center"
+                      class="ml-4 flex items-center hover:text-white"
                       class:bg-gray-700={getIdx('list', list) === selected}
                       class:text-blue-300={!viewMode &&
                         !!selectedLists.find((l) => l.id === list.id)}
@@ -408,7 +407,7 @@
                       {/if}
                       {#each views[list.id] ?? [] as view (view.id)}
                         <div
-                          class="ml-8 flex items-center"
+                          class="ml-8 flex items-center hover:text-white"
                           onclick={() => selectView(view)}
                         >
                           <span

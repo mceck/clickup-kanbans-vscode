@@ -46,16 +46,14 @@ export const initializeFilters = async () => {
   const cfgName = get(configName);
   const { data } = await clickupService.getConfig(cfgName);
 
-  const config: WorkspaceConfig = data ?? { filters: [], tableMode: false };
+  const config: WorkspaceConfig = data ?? { filters: [] };
   savedFilters.set(config.filters);
-  tableMode.set(config.tableMode);
 
   const defFilters = config.filters.find((e) => e.default);
   if (defFilters) {
     activeFilters.set({ ...defaultFilters, ...defFilters });
-    if (defFilters.selectedView) {
-      viewMode.set(true);
-    }
+    tableMode.set(defFilters.tableMode);
+    viewMode.set(defFilters.viewMode);
   }
 };
 
@@ -90,14 +88,23 @@ export const saveActiveFilter = async (isNew: boolean = false) => {
     (f) => f.name === currentFilters.name
   );
   if (existingIndex >= 0) {
-    newSavedFilters[existingIndex] = { ...currentFilters, default: true };
+    newSavedFilters[existingIndex] = {
+      ...currentFilters,
+      default: true,
+      tableMode: get(tableMode),
+      viewMode: get(viewMode),
+    };
   } else {
-    newSavedFilters.push({ ...currentFilters, default: true });
+    newSavedFilters.push({
+      ...currentFilters,
+      default: true,
+      tableMode: get(tableMode),
+      viewMode: get(viewMode),
+    });
   }
 
   const newConfig: WorkspaceConfig = {
     filters: newSavedFilters,
-    tableMode: get(tableMode),
   };
 
   const res = await clickupService.saveConfig(

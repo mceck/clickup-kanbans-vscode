@@ -82,6 +82,7 @@
     showConfigurations = false;
     filters = f ?? filters;
     viewMode = !!filters.selectedView;
+    tableMode = !!filters.tableMode;
     search();
   }
 

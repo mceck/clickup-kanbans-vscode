@@ -17,7 +17,7 @@
 </script>
 
 <div
-  class="rounded-t-lg border uppercase text-lg px-2 py-1 flex justify-between items-center"
+  class="uppercase text-lg px-2 py-1 flex justify-between items-center"
   style={`color: ${color}; border-color: ${color};`}
 >
   <div class="flex items-center gap-2">

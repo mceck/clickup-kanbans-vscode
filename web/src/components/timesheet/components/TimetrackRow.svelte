@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { createEventDispatcher } from 'svelte';
   import Icon from '../../shared/Icon.svelte';
   import type { Interval, Task } from '../../../interfaces/clickup';
   import TimetrackCell from './TimetrackCell.svelte';
@@ -16,8 +15,6 @@
 
   let { trackedWeek, task, starred, trackings, onStar, onUpdateTrack }: Props =
     $props();
-
-  // const dispatch = createEventDispatcher();
 </script>
 
 <div class="flex w-full items-center py-4 border-b border-neutral-800">

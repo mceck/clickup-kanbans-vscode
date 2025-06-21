@@ -1,7 +1,6 @@
 <script lang="ts">
   import { run } from 'svelte/legacy';
 
-  import { onMount } from 'svelte'; // createEventDispatcher removed
   import { t } from '../../store/i18n';
 
   interface Props {
@@ -9,7 +8,7 @@
     onChange?: (value: string) => void;
   }
 
-  let { selected = $bindable(), onChange: propsOnChange }: Props = $props(); // Renamed onChange prop to avoid conflict
+  let { selected = $bindable(), onChange: propsOnChange }: Props = $props();
 
   let value = $state('');
 
@@ -22,7 +21,7 @@
     propsOnChange?.(value);
   }
 
-  function handleInput(e: any) { // Renamed internal onChange to handleInput
+  function handleInput(e: any) {
     value = e.target.value;
   }
 </script>

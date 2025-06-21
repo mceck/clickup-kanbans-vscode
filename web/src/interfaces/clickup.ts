@@ -88,6 +88,7 @@ export interface Task {
   space?: Space;
   override_statuses?: boolean;
   statuses: Status[];
+  subtasks?: Task[];
 }
 
 export interface Comment {
@@ -158,7 +159,7 @@ export interface Interval {
 
 export interface WorkspaceConfig {
   filters: PageFilters[];
-  ganttMode: boolean;
+  tableMode: boolean;
 }
 
 export interface PageFilters {

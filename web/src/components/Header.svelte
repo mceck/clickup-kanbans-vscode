@@ -12,7 +12,7 @@
     filters: PageFilters;
     configFilters: PageFilters[];
     viewMode: boolean;
-    ganttMode: boolean;
+    tableMode: boolean;
     trackings: Interval[];
     mode: 'kanban' | 'timesheet';
     onSearch?: () => void;
@@ -25,7 +25,7 @@
     filters = $bindable(),
     configFilters = $bindable(),
     viewMode = $bindable(),
-    ganttMode = $bindable(),
+    tableMode = $bindable(),
     trackings,
     mode,
     onSearch,
@@ -61,7 +61,7 @@
   }
 
   function toggleChartMode() {
-    ganttMode = !ganttMode;
+    tableMode = !tableMode;
   }
 
   function search() {
@@ -89,7 +89,7 @@
     showConfigurations = false;
     configFilters = configFilters.map((e) => ({ ...e, default: e === f }));
     await clickupService.saveConfig(
-      JSON.parse(JSON.stringify({ filters: configFilters, ganttMode })),
+      JSON.parse(JSON.stringify({ filters: configFilters, tableMode })),
       configName
     );
   }
@@ -103,7 +103,7 @@
       filters.default = true;
     }
     clickupService.saveConfig(
-      JSON.parse(JSON.stringify({ filters: configFilters, ganttMode })),
+      JSON.parse(JSON.stringify({ filters: configFilters, tableMode })),
       configName
     );
     viewMode = !!filters.selectedView;
@@ -178,13 +178,13 @@
       {#if mode === 'kanban'}
         <div
           class="w-9 px-2 text-xs flex-none flex items-center cursor-pointer text-[#cccccc] hover:text-white"
-          title={ganttMode ? $t('switch-kanban') : $t('switch-gantt')}
+          title={tableMode ? $t('switch-kanban') : $t('switch-table')}
           onclick={toggleChartMode}
         >
-          {#if ganttMode}
-            <Icon name="gantt" class="w-full" />
-          {:else}
+          {#if tableMode}
             <Icon name="board" class="w-full" />
+          {:else}
+            <Icon name="table" class="w-full" />
           {/if}
         </div>
       {/if}

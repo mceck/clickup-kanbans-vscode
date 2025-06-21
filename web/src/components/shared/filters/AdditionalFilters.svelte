@@ -69,7 +69,7 @@
       <small class="w-12 pr-1 text-end flex-none"
         >{$t('global.statuses')}:</small
       >
-      <StatusPicker bind:selected={filters.statuses} on:change={onChange} />
+      <StatusPicker bind:selected={filters.statuses} onchange={onChange} />
     </div>
     <div class="flex max-[350px]:flex-col">
       <div class="flex items-center mt-2">

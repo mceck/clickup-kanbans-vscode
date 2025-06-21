@@ -1,28 +1,21 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
-  import { createEventDispatcher, onMount } from 'svelte';
   import { t } from '../../store/i18n';
 
   interface Props {
     selected: string[];
+    onchange?: (value: string) => void;
   }
 
-  let { selected = $bindable() }: Props = $props();
+  let { selected = $bindable(), onchange }: Props = $props();
 
-  const dispatch = createEventDispatcher();
-  let value = $state('');
-
-  run(() => {
-    value = selected.join(', ');
-  });
+  let value = $state(selected.join(', ') || '');
 
   function addStates() {
     selected = value ? value.split(',').map((e) => e.trim()) : [];
-    dispatch('change', value);
+    onchange?.(value);
   }
 
-  function onChange(e: any) {
+  function handleChange(e: any) {
     value = e.target.value;
   }
 </script>
@@ -32,6 +25,6 @@
     {value}
     placeholder={$t('global.statuses-info')}
     onblur={addStates}
-    oninput={onChange}
+    oninput={handleChange}
   />
 </div>

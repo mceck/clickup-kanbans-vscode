@@ -24,7 +24,7 @@
   import star from '../../assets/star.svelte';
   import starEmpty from '../../assets/star-empty.svelte';
   import link from '../../assets/link.svelte';
-  import gantt from '../../assets/gantt.svelte';
+  import table from '../../assets/table.svelte';
 
   interface Props {
     name: keyof typeof icons;
@@ -58,7 +58,7 @@
     plus,
     link,
     star,
-    gantt,
+    table,
     'star-empty': starEmpty,
   };
 

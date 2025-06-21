@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { createEventDispatcher } from 'svelte';
   import TimeTrackInput from '../../shared/TimeTrackInput.svelte';
   import { toTime, toTimeInput } from '../../utils/formatters';
   import { outsideClickable } from '../../utils/clickOutside';
@@ -13,8 +12,6 @@
 
   let edit: boolean = $state(false);
   let inputRef: HTMLInputElement = $state()!;
-
-  // const dispatch = createEventDispatcher();
 
   function toggleEdit() {
     edit = !edit;

@@ -1,6 +1,5 @@
 <script lang="ts">
   import moment from 'moment';
-  // import { createEventDispatcher } from 'svelte'; // Removed
   import Icon from '../../shared/Icon.svelte';
   import { toWeek } from '../../utils/formatters';
   import { t } from '../../../store/i18n';
@@ -13,15 +12,12 @@
   let { trackedWeek = $bindable(), onChangeWeek: propsOnChangeWeek }: Props =
     $props();
 
-  // const dispatch = createEventDispatcher(); // Removed
-
   function goWeek(add: number) {
     trackedWeek = toWeek(moment(trackedWeek).add(7 * add, 'days'));
     changeWeek();
   }
 
   const changeWeek = (e?: any) => {
-    // trackedWeek is updated by bind:value or in goWeek function
     propsOnChangeWeek?.(e?.target?.value);
   };
 </script>

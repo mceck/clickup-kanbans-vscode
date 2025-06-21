@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { createEventDispatcher } from 'svelte';
   import type { Interval } from '../../interfaces/clickup';
   import Icon from './Icon.svelte';
   import TimeTrackInput from './TimeTrackInput.svelte';
@@ -16,13 +15,12 @@
     onUpdate?: (event: { track: Interval; time: number }) => void;
   }
 
-  let { intervals, loading, showTask, onDelete, onUpdate, ...rest }: Props = $props();
+  let { intervals, loading, showTask, onDelete, onUpdate, ...rest }: Props =
+    $props();
 
   let editTrack: Interval | undefined = $state(undefined);
   let timeTrackInput: HTMLInputElement = $state()!;
   let timeTrackText: string = $state('');
-
-  // const dispatch = createEventDispatcher();
 
   function showEditTrack(track: Interval) {
     if (editTrack) {

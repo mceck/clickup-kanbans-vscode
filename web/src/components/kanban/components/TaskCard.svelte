@@ -1,6 +1,4 @@
 <script lang="ts">
-  // import { createEventDispatcher } from 'svelte'; // Removed
-
   import type { Interval, Task, User } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
   import ActionBar from './ActionBar.svelte';
@@ -61,8 +59,6 @@
         t.name.toLowerCase().includes(searchTag.toLowerCase())
     )
   );
-
-  // const dispatch = createEventDispatcher(); // Removed
 
   async function trackTaskTime(task: Task, time: number) {
     propsOnAddTrack?.({ task, time });

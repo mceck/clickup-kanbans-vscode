@@ -7,7 +7,7 @@ export default {
   'login.info-post': ' para obter um token pessoal',
   'time-tracked-today': 'Tempo rastreado hoje',
   'switch-kanban': 'Trocar para Kanban',
-  'switch-gantt': 'Trocar para Gantt',
+  'switch-table': 'Trocar para table',
   'save-fitlers': 'Salvar filtros',
   'kanban.previous-status': 'Status anterior',
   'kanban.next-status': 'Próximo status',

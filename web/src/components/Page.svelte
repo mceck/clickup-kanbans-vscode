@@ -9,7 +9,7 @@
   import Header from './Header.svelte';
   import Timesheet from './timesheet/Timesheet.svelte';
   import { suspend } from '../store/suspender';
-  import Gantt from './gantt/Gantt.svelte';
+  import Table from './table/Table.svelte';
   import { loadLocalization, t } from '../store/i18n';
   import { loggedIn, login } from '../store/auth';
   import {
@@ -21,7 +21,7 @@
   } from '../store/workspace';
   import {
     activeFilters,
-    ganttMode,
+    tableMode,
     initializeFilters,
     mode,
     saveActiveFilter,
@@ -102,7 +102,7 @@
       bind:filters={$activeFilters}
       bind:configFilters={$savedFilters}
       bind:viewMode={$viewMode}
-      bind:ganttMode={$ganttMode}
+      bind:tableMode={$tableMode}
       mode={$mode}
       trackings={$trackings}
       onSearch={search}
@@ -124,8 +124,13 @@
     </h1>
   {/if}
   {#if $mode === 'kanban'}
-    {#if $ganttMode}
-      <Gantt tasks={$filteredTasks} users={$userList.users} />
+    {#if $tableMode}
+      <Table
+        tasks={$filteredTasks}
+        onUpdateTask={updateTask}
+        onAddTag={addTaskTag}
+        onDeleteTag={deleteTaskTag}
+      />
     {:else}
       <Board
         tasks={$filteredTasks}

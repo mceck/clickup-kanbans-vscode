@@ -25,7 +25,7 @@ export const mode = writable<'kanban' | 'timesheet'>(
 export const activeFilters = writable<PageFilters>(defaultFilters);
 export const savedFilters = writable<PageFilters[]>([]);
 export const viewMode = writable<boolean>(false);
-export const ganttMode = writable<boolean>(false);
+export const tableMode = writable<boolean>(false);
 export const term = writable<string>('');
 
 export const configName = derived(mode, ($mode) =>
@@ -46,9 +46,9 @@ export const initializeFilters = async () => {
   const cfgName = get(configName);
   const { data } = await clickupService.getConfig(cfgName);
 
-  const config: WorkspaceConfig = data ?? { filters: [], ganttMode: false };
+  const config: WorkspaceConfig = data ?? { filters: [], tableMode: false };
   savedFilters.set(config.filters);
-  ganttMode.set(config.ganttMode);
+  tableMode.set(config.tableMode);
 
   const defFilters = config.filters.find((e) => e.default);
   if (defFilters) {
@@ -97,7 +97,7 @@ export const saveActiveFilter = async (isNew: boolean = false) => {
 
   const newConfig: WorkspaceConfig = {
     filters: newSavedFilters,
-    ganttMode: get(ganttMode),
+    tableMode: get(tableMode),
   };
 
   const res = await clickupService.saveConfig(

@@ -7,7 +7,7 @@ export default {
   'login.info-post': ' pour obtenir un jeton personnel',
   'time-tracked-today': "Temps suivi aujourd'hui",
   'switch-kanban': 'Passer à Kanban',
-  'switch-gantt': 'Passer à Gantt',
+  'switch-table': 'Passer à table',
   'save-fitlers': 'Enregistrer les filtres',
   'kanban.previous-status': 'Statut précédent',
   'kanban.next-status': 'Statut suivant',

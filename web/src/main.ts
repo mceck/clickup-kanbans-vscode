@@ -1,5 +1,5 @@
 import './app.css';
-import App from './pages/KanbanApp.svelte';
+import App from './App.svelte';
 import { mount } from 'svelte';
 
 const app = mount(App, {

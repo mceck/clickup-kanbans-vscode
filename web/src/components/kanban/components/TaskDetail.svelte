@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import type { Task, Comment } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
-  import AssigneeBadge from '../../commons/assignees-selector/AssigneeBadge.svelte';
-  import Icon from '../../commons/Icon.svelte';
+  import AssigneeBadge from '../../shared/assignees-selector/AssigneeBadge.svelte';
+  import Icon from '../../shared/Icon.svelte';
   import CommentText from './CommentText.svelte';
   import { t } from '../../../store/i18n';
 

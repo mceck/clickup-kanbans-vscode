@@ -45,6 +45,6 @@ You can change language and date formatting in the settings
 ## dev
 
 Build the webview in watch mode
-`yarn watch`
+`yarn dev`
 
 Than start the extension in debug from vscode (Run->Start debugging or F5)

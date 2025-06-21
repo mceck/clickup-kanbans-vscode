@@ -36,7 +36,7 @@ export default {
   'global.closed': 'geschlossen',
   'global.tags': 'Tags',
   'global.from': 'Von',
-  'global.to': 'bis',
+  'global.to': 'Bis',
   'global.statuses': 'Status',
   'global.week': 'Woche',
   'global.search': 'Suche',
@@ -49,7 +49,6 @@ export default {
   'global.time-track-info': 'z.B. 1 Std. 30 Min.',
   'global.select-view': 'Ansicht auswählen...',
   'global.select-list': 'Listen auswählen...',
-  'global.follow': 'Folgen...',
   'global.search-tag': 'Tag durchsuchen',
   'global.add-comment': 'Kommentar hinzufügen',
   'errors.next-status':

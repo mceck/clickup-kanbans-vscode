@@ -4,11 +4,11 @@
   import type { Interval, Task, User } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
   import ActionBar from './ActionBar.svelte';
-  import AssigneesSelector from '../../commons/assignees-selector/AssigneesSelector.svelte';
-  import TimeTrackInput from '../../commons/TimeTrackInput.svelte';
-  import Icon from '../../commons/Icon.svelte';
+  import AssigneesSelector from '../../shared/assignees-selector/AssigneesSelector.svelte';
+  import TimeTrackInput from '../../shared/TimeTrackInput.svelte';
+  import Icon from '../../shared/Icon.svelte';
   import TaskDetail from './TaskDetail.svelte';
-  import EditTracking from '../../commons/EditTracking.svelte';
+  import EditTracking from '../../shared/EditTracking.svelte';
   import { toHours } from '../../utils/formatters';
   import { tagList } from '../../../store/tags';
   import { outsideClickable } from '../../utils/clickOutside';
@@ -20,7 +20,12 @@
     onAddTrack?: (detail: { task: Task; time: number }) => void;
     onDeleteTrack?: (track: Interval) => void;
     onChangeTrack?: (detail: { track: Interval; time: number }) => void;
-    onUpdateTask?: (detail: { id: string; assignees?: { add?: string[]; rem?: string[] }; status?: string; refresh?: boolean }) => void;
+    onUpdateTask?: (detail: {
+      id: string;
+      assignees?: { add?: string[]; rem?: string[] };
+      status?: string;
+      refresh?: boolean;
+    }) => void;
     onAddTag?: (detail: { taskId: string; tag: string }) => void;
     onDeleteTag?: (detail: { taskId: string; tag: string }) => void;
   }

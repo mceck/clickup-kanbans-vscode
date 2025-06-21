@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { User } from '../../../interfaces/clickup';
-  import { userList } from '../../../store/users';
+  import { userList } from '../../../store/workspace';
   import AssigneeBadge from './AssigneeBadge.svelte';
   import Icon from '../Icon.svelte';
   import { outsideClickable } from '../../utils/clickOutside';
@@ -133,7 +133,7 @@
         <div
           class={`${
             small ? 'w-5 h-5 -ml-2' : 'w-8 h-8 -ml-2'
-          } cursor-pointer stroke-highlight fill-highlight hover:stroke-blue-300 hover:fill-blue-300`}
+          } cursor-pointer stroke-highlight fill-highlight hover:stroke-blue-300 hover:fill-blue-300 rounded-full backdrop-blur-[2px] bg-[rgba(30,30,30,0.7)]`}
           onclick={toggleSelector}
         >
           <Icon class="w-full" name="add-assignee" />

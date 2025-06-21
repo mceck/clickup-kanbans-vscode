@@ -1,9 +1,8 @@
 <script lang="ts">
-  
   import type { Task } from '../../../interfaces/clickup';
   import clickupService from '../../../services/clickup-service';
 
-  import Icon from '../../commons/Icon.svelte';
+  import Icon from '../../shared/Icon.svelte';
   import { t } from '../../../store/i18n';
 
   interface Props {
@@ -16,7 +15,15 @@
     onExpand?: (expanded: boolean) => void;
   }
 
-  let { task, statuses, expanded, onNext: propsOnNext, onPrev: propsOnPrev, onCheckout: propsOnCheckout, onExpand: propsOnExpand }: Props = $props();
+  let {
+    task,
+    statuses,
+    expanded,
+    onNext: propsOnNext,
+    onPrev: propsOnPrev,
+    onCheckout: propsOnCheckout,
+    onExpand: propsOnExpand,
+  }: Props = $props();
   let currentStatusIdx = $derived(
     statuses.findIndex((s) => task.status.status === s)
   );

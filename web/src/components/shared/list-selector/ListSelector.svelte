@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Folder, List, Space, View } from '../../../interfaces/clickup';
-  import { spacesTree } from '../../../store/spaces-tree';
+  import { spacesTree } from '../../../store/workspace';
   import SpaceBadge from './SpaceBadge.svelte';
   import clickupService from '../../../services/clickup-service';
   import Icon from '../Icon.svelte';
@@ -274,7 +274,7 @@
     onclickOutside={() => (showSelector = false)}
   >
     <input
-      class="rounded-2xl p-input cursor-pointer"
+      class="!rounded-full p-input cursor-pointer"
       bind:this={searchInput}
       bind:value={searchText}
       oninput={handleSearching}

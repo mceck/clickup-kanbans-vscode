@@ -1,7 +1,7 @@
 <script lang="ts">
   import moment from 'moment';
-  import Icon from '../../commons/Icon.svelte';
-  import Switch from '../../commons/Switch.svelte';
+  import Icon from '../../shared/Icon.svelte';
+  import Switch from '../../shared/Switch.svelte';
   import type { Interval } from '../../../interfaces/clickup';
   import { toHours } from '../../utils/formatters';
   import DayTotal from './DayTotal.svelte';
@@ -105,10 +105,7 @@
         <span class="mr-2 text-neutral-400"
           >{$t('timesheet.totals-filtered')}:
         </span>
-        <Switch
-          value={onlyFilteredTasks}
-          onChange={updateOnlyFiltered}
-        />
+        <Switch value={onlyFilteredTasks} onChange={updateOnlyFiltered} />
       </span>
     </p>
     {#each FERIAL_DAYS as day}
@@ -121,8 +118,8 @@
         {onlyFilteredTasks}
         hours={toHours(totalForDay(trackings, day, onlyFilteredTasks))}
         intervals={trackingsForDay(trackings, day)}
-        onUpdate={onUpdate}
-        onDelete={onDelete}
+        {onUpdate}
+        {onDelete}
       />
     {/each}
   </div>

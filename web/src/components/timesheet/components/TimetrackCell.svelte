@@ -1,6 +1,6 @@
 <script lang="ts">
   // import { createEventDispatcher } from 'svelte';
-  import TimeTrackInput from '../../commons/TimeTrackInput.svelte';
+  import TimeTrackInput from '../../shared/TimeTrackInput.svelte';
   import { toTime, toTimeInput } from '../../utils/formatters';
   import { outsideClickable } from '../../utils/clickOutside';
 

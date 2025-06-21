@@ -37,7 +37,7 @@ export default {
   'global.tags': 'Tags',
   'global.from': 'De',
   'global.to': 'à',
-  'global.statuses': 'Statuts',
+  'global.statuses': 'Status',
   'global.week': 'Semaine',
   'global.search': 'Rechercher',
   'global.configuration-name': 'Nom de la configuration',
@@ -49,7 +49,6 @@ export default {
   'global.time-track-info': 'ex. 1h 30m',
   'global.select-view': 'Sélectionner une vue...',
   'global.select-list': 'Sélectionner des listes...',
-  'global.follow': 'Suivre...',
   'global.search-tag': 'Rechercher un tag',
   'global.add-comment': 'Ajouter un commentaire',
   'errors.next-status':

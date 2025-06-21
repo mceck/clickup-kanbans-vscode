@@ -1,25 +1,22 @@
 <script lang="ts">
-  // import { createEventDispatcher } from 'svelte'; // Removed
-  import Icon from '../commons/Icon.svelte';
-  import StatusPicker from '../commons/StatusPicker.svelte';
-  import TagPicker from '../commons/TagPicker.svelte';
-  import { t } from '../../store/i18n';
+  import Icon from '../Icon.svelte';
+  import StatusPicker from '../StatusPicker.svelte';
+  import TagPicker from '../TagPicker.svelte';
+  import { t } from '../../../store/i18n';
 
   let {
     viewMode = $bindable(),
     filters = $bindable(),
     class: className,
-    onChangeFilters, // Added callback prop
-  }: { 
-    viewMode?: boolean, 
-    filters?: any, 
-    class?: string, 
-    onChangeFilters?: (filters: any) => void 
+    onChangeFilters,
+  }: {
+    viewMode?: boolean;
+    filters?: any;
+    class?: string;
+    onChangeFilters?: (filters: any) => void;
   } = $props();
 
   let collapsed = $state(true);
-
-  // const dispatch = createEventDispatcher(); // Removed
 
   function onChange() {
     onChangeFilters?.(filters);
@@ -40,7 +37,7 @@
   <div
     class="overflow-hidden w-full transition-all pt-2 {collapsed
       ? 'h-0'
-      : 'h-44'}"
+      : 'h-44 max-[350px]:h-52'}"
   >
     {#if !viewMode}
       <div class="flex justify-end items-center mt-1">
@@ -64,32 +61,33 @@
         <label for="inpt-closed" class="text-sm">{$t('global.closed')}</label>
       </div>
     {/if}
-    <div class="flex items-center mt-2">
-      <small class="w-10 flex-none">{$t('global.tags')}:</small>
-      <TagPicker bind:selected={filters.tags} onChange={onChange} />
-      {#if viewMode}
-          <input
-            class="ml-2 w-14!"
-            placeholder={$t('global.follow')}
-            bind:value={filters.follow}
-            onchange={onChange}
-          />
-      {/if}
+    <div class="flex items-center mt-2 max-w-[320px]">
+      <small class="w-12 pr-1 text-end flex-none">{$t('global.tags')}:</small>
+      <TagPicker bind:selected={filters.tags} {onChange} />
     </div>
-    <div class="flex items-center mt-2">
-      <small class="w-10 flex-none">{$t('global.statuses')}:</small>
+    <div class="flex items-center mt-2 max-w-[320px]">
+      <small class="w-12 pr-1 text-end flex-none"
+        >{$t('global.statuses')}:</small
+      >
       <StatusPicker bind:selected={filters.statuses} on:change={onChange} />
     </div>
-    <div class="flex items-center mt-2">
-      <small class="w-10 flex-none">{$t('global.from')}:</small>
-      <input type="date" bind:value={filters.due_date_gt} onchange={onChange} />
-      <small class="ml-2">{$t('global.to')}:</small>
-      <input
-        type="date"
-        class="ml-2"
-        bind:value={filters.due_date_lt}
-        onchange={onChange}
-      />
+    <div class="flex max-[350px]:flex-col">
+      <div class="flex items-center mt-2">
+        <small class="w-12 pr-1 text-end flex-none">{$t('global.from')}:</small>
+        <input
+          type="date"
+          bind:value={filters.due_date_gt}
+          onchange={onChange}
+        />
+      </div>
+      <div class="flex items-center mt-2">
+        <small class="w-12 pr-1 text-end flex-none">{$t('global.to')}:</small>
+        <input
+          type="date"
+          bind:value={filters.due_date_lt}
+          onchange={onChange}
+        />
+      </div>
     </div>
   </div>
 </div>

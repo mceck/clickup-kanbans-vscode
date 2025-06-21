@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import type { Task, User } from '../../interfaces/clickup';
   import moment from 'moment';
-  import AssigneeBadge from '../commons/assignees-selector/AssigneeBadge.svelte';
+  import AssigneeBadge from '../shared/assignees-selector/AssigneeBadge.svelte';
   import { toWeek } from '../utils/formatters';
 
   interface Props {
@@ -17,45 +17,46 @@
     tasks = [],
     users = [],
     timeSpan = 24 * 60 * 60 * 1000,
-    startDate = $bindable(moment()
-    .startOf('day')
-    .subtract(1, 'week')
-    .toDate()),
-    endDate = $bindable(moment().startOf('day').add(1, 'week').toDate())
+    startDate = $bindable(moment().startOf('day').subtract(1, 'week').toDate()),
+    endDate = $bindable(moment().startOf('day').add(1, 'week').toDate()),
   }: Props = $props();
 
   let timeSlots: { start: number; end: number }[] = $state([]);
   let period = $state(4);
 
-  let filteredTasks = $derived(tasks
-    .map((t) => ({
-      ...t,
-      start_date: t.start_date && new Date(parseInt(t.start_date.toString())),
-      due_date: t.due_date && new Date(parseInt(t.due_date.toString())),
-    }))
-    .filter(
-      (t) =>
-        t.start_date &&
-        t.due_date &&
-        t.assignees.length > 0 &&
-        ((moment(t.start_date).isAfter(startDate) &&
-          moment(t.start_date).isBefore(endDate)) ||
-          (moment(t.due_date).isBefore(endDate) &&
-            moment(t.due_date).isAfter(startDate)))
-    )
-    .map((t) => {
-      if (moment(t.start_date).isBefore(startDate)) {
-        t.start_date = startDate;
-      }
-      if (t.due_date > endDate) {
-        t.due_date = endDate;
-      }
-      return { ...t };
-    }));
+  let filteredTasks = $derived(
+    tasks
+      .map((t) => ({
+        ...t,
+        start_date: t.start_date && new Date(parseInt(t.start_date.toString())),
+        due_date: t.due_date && new Date(parseInt(t.due_date.toString())),
+      }))
+      .filter(
+        (t) =>
+          t.start_date &&
+          t.due_date &&
+          t.assignees.length > 0 &&
+          ((moment(t.start_date).isAfter(startDate) &&
+            moment(t.start_date).isBefore(endDate)) ||
+            (moment(t.due_date).isBefore(endDate) &&
+              moment(t.due_date).isAfter(startDate)))
+      )
+      .map((t) => {
+        if (moment(t.start_date).isBefore(startDate)) {
+          t.start_date = startDate;
+        }
+        if (t.due_date > endDate) {
+          t.due_date = endDate;
+        }
+        return { ...t };
+      })
+  );
 
-  let filteredUsers = $derived(users.filter((u) =>
-    filteredTasks.some((t) => t.assignees.map((e) => e.id).includes(u.id))
-  ));
+  let filteredUsers = $derived(
+    users.filter((u) =>
+      filteredTasks.some((t) => t.assignees.map((e) => e.id).includes(u.id))
+    )
+  );
 
   onMount(() => {
     calcTimeslots();

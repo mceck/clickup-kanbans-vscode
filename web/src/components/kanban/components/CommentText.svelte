@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Comment, CommentDetail } from '../../../interfaces/clickup';
   import { t } from '../../../store/i18n';
-  import Icon from '../../commons/Icon.svelte';
+  import Icon from '../../shared/Icon.svelte';
 
   interface Props {
     comment: Comment;

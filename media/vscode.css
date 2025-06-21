@@ -47,21 +47,22 @@ code {
 button {
   border: none;
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-  width: 100%;
   text-align: center;
-  outline: 1px solid transparent;
-  outline-offset: 2px !important;
-  color: var(--vscode-button-foreground);
-  background: var(--vscode-button-background);
 }
 
 button:hover {
   cursor: pointer;
-  background: var(--vscode-button-hoverBackground);
+  background-color: #2e2e2e;
+  color: white;
 }
 
 button:focus {
   outline-color: var(--vscode-focusBorder);
+}
+
+button:disabled {
+  color: var(--color-neutral-500);
+  cursor: not-allowed;
 }
 
 button.secondary {
@@ -78,11 +79,17 @@ textarea {
   display: block;
   width: 100%;
   border: none;
+  border-radius: 4px;
   font-family: var(--vscode-font-family);
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
   color: var(--vscode-input-foreground);
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);
+}
+
+input[type='checkbox'] {
+  accent-color: #2e2e2e !important;
+  outline: none !important;
 }
 
 input::placeholder,

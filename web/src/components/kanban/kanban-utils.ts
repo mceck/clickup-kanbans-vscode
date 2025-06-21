@@ -31,7 +31,10 @@ export function getAllStatuses(tasks: Task[]) {
   });
 }
 
-export function getAllStatusKeys(tasks: Task[], spaces: Space[]) {
+export function getAllStatusKeys(
+  tasks: Task[],
+  spaces: Space[]
+): Record<string, string[]> {
   return tasks.reduce((acc, t) => {
     return {
       ...acc,

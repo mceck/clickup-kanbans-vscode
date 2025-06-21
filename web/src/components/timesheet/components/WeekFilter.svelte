@@ -1,7 +1,7 @@
 <script lang="ts">
   import moment from 'moment';
   // import { createEventDispatcher } from 'svelte'; // Removed
-  import Icon from '../../commons/Icon.svelte';
+  import Icon from '../../shared/Icon.svelte';
   import { toWeek } from '../../utils/formatters';
   import { t } from '../../../store/i18n';
 
@@ -10,7 +10,8 @@
     onChangeWeek?: (newWeekValue?: string) => void;
   }
 
-  let { trackedWeek = $bindable(), onChangeWeek: propsOnChangeWeek }: Props = $props();
+  let { trackedWeek = $bindable(), onChangeWeek: propsOnChangeWeek }: Props =
+    $props();
 
   // const dispatch = createEventDispatcher(); // Removed
 

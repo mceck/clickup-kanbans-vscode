@@ -2,8 +2,8 @@
   import moment from 'moment';
   import type { Interval, PageFilters } from '../interfaces/clickup';
   import clickupService from '../services/clickup-service';
-  import Icon from './commons/Icon.svelte';
-  import EditTracking from './commons/EditTracking.svelte';
+  import Icon from './shared/Icon.svelte';
+  import EditTracking from './shared/EditTracking.svelte';
   import { toHours } from './utils/formatters';
   import { outsideClickable } from './utils/clickOutside';
   import { t } from '../store/i18n';
@@ -207,10 +207,10 @@
         <Icon name="ellipsis" class="flex-none" />
         {#if showSaveOptions}
           <ul
-            class="absolute p-2 w-24 top-6 right-full bg-screen rounded-lg border border-gray-600 shadow overflow-hidden z-10"
+            class="absolute !p-0 w-28 top-6 right-full bg-screen rounded-lg border border-gray-600 shadow overflow-hidden z-10"
           >
             <!-- svelte-ignore node_invalid_placement_ssr -->
-            <button onclick={() => saveFilters(true)}
+            <button class="w-full" onclick={() => saveFilters(true)}
               >{$t('global.save-as')}</button
             >
           </ul>

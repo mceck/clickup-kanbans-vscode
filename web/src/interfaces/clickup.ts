@@ -174,7 +174,6 @@ export interface PageFilters {
   subtasks: boolean;
   include_closed: boolean;
   allTracking: boolean;
-  follow?: string;
 }
 
 export interface View {

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { PageFilters } from '../../interfaces/clickup';
-  import AssigneesSelector from '../commons/assignees-selector/AssigneesSelector.svelte';
-  import ListSelector from '../commons/list-selector/ListSelector.svelte';
+  import type { PageFilters } from '../../../interfaces/clickup';
+  import AssigneesSelector from '../assignees-selector/AssigneesSelector.svelte';
+  import ListSelector from '../list-selector/ListSelector.svelte';
   import AdditionalFilters from './AdditionalFilters.svelte';
-  import { t } from '../../store/i18n';
+  import { t } from '../../../store/i18n';
 
   interface Props {
     filters: PageFilters;
@@ -12,7 +12,12 @@
     onSearch?: () => void;
   }
 
-  let { filters = $bindable(), viewMode, term = $bindable(), onSearch }: Props = $props();
+  let {
+    filters = $bindable(),
+    viewMode,
+    term = $bindable(),
+    onSearch,
+  }: Props = $props();
 
   function search() {
     onSearch?.();
@@ -21,7 +26,7 @@
 
 <div>
   <div class="flex justify-between w-full mt-3">
-    <div class="w-36 sm:w-72 flex-none">
+    <div class="max-w-36 sm:w-72 flex-none">
       <AssigneesSelector
         bind:selectedAssignees={filters.selectedAssignees}
         onAdd={() => viewMode || search()}
@@ -44,7 +49,7 @@
   <div class="relative mt-2">
     <span class="w-36 absolute right-0">
       <input
-        class="rounded-2xl search-input border"
+        class="!rounded-full search-input border"
         placeholder={$t('global.search')}
         bind:value={term}
       />

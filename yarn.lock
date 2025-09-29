@@ -528,7 +528,7 @@
   dependencies:
     uuid "*"
 
-"@types/vscode@^1.104.0":
+"@types/vscode@^1.51.0":
   version "1.104.0"
   resolved "https://registry.yarnpkg.com/@types/vscode/-/vscode-1.104.0.tgz#6e4d041d1ff5722db72c688518b330fcfb6fc658"
   integrity sha512-0KwoU2rZ2ecsTGFxo4K1+f+AErRsYW0fsp6A0zufzGuhyczc2IoKqYqcwXidKXmy2u8YB2GsYsOtiI9Izx3Tig==

@@ -3,7 +3,8 @@
 @theme {
   --color-primary: #0e639c;
   --color-highlight: #3794ff;
-  --color-screen: #1e1e1e;
+  --color-screen: var(--vscode-editor-background);
+  --color-black20: rgba(0, 0, 0, 0.2);
 }
 
 .link {

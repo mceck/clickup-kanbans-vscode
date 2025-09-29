@@ -133,7 +133,7 @@
         <div
           class={`${
             small ? 'w-5 h-5 -ml-2' : 'w-8 h-8 -ml-2'
-          } cursor-pointer stroke-highlight fill-highlight hover:stroke-blue-300 hover:fill-blue-300 rounded-full backdrop-blur-[2px] bg-[rgba(30,30,30,0.7)]`}
+          } cursor-pointer stroke-highlight fill-highlight hover:stroke-blue-300 hover:fill-blue-300 rounded-full backdrop-blur-[2px] bg-black20`}
           onclick={toggleSelector}
         >
           <Icon class="w-full" name="add-assignee" />
@@ -172,11 +172,11 @@
           onkeydown={handleKeyboard}
           oninput={() => (selected = filteredUsers.length ? 0 : -1)}
         />
-        <div class="w-72 h-80 overflow-auto" bind:this={scroller}>
+        <div class="w-64 h-80 overflow-auto" bind:this={scroller}>
           {#each filteredUsers as user, idx (user.id)}
             <div
               class="flex items-center cursor-pointer px-4 py-2"
-              class:bg-gray-700={idx === selected}
+              class:bg-black20={idx === selected}
               onclick={() => toggleAssignee(user)}
               onmouseenter={() => (selected = idx)}
             >

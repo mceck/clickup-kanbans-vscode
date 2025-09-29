@@ -67,7 +67,7 @@
   .search-input {
     padding: 0.25rem 1rem !important;
 
-    background-color: #1e1e1e !important;
+    background-color: var(--color-screen) !important;
     border: 1px solid #404040 !important;
   }
 </style>

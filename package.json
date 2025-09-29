@@ -9,17 +9,10 @@
   "description": "Clickup Kanbans",
   "version": "1.0.0",
   "engines": {
-    "vscode": "^1.51.0"
+    "vscode": "^1.104.0"
   },
   "categories": [
     "Other"
-  ],
-  "activationEvents": [
-    "onCommand:clickup-kanban.openKanban",
-    "onCommand:clickup-kanban.openTimesheet",
-    "onCommand:clickup-kanban.setToken",
-    "onCommand:clickup-kanban.setTeamId",
-    "onView:clickup-kanban-sidebar"
   ],
   "main": "./dist/extension.js",
   "contributes": {

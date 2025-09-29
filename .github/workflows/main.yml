@@ -21,7 +21,7 @@ jobs:
         run: yarn build-webapp
       - name: Publish to Visual Studio Marketplace
         id: packageExtension
-        uses: HaaLeo/publish-vscode-extension@v1
+        uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: ${{ secrets.VSCE_PAT }}
           registryUrl: https://marketplace.visualstudio.com

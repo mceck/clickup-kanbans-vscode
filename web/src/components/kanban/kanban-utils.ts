@@ -7,28 +7,21 @@ import type {
 } from '../../interfaces/clickup';
 
 export function getAllStatuses(tasks: Task[]) {
-  return (
-    Object.entries(
-      tasks.reduce(
-        (prev: any, val) => ({
-          ...prev,
-          [val.status.status]: {
-            ...val.status,
-            orderindex:
-              prev[val.status.status]?.orderindex <= val.status.orderindex!
-                ? val.status.orderindex
-                : prev[val.status.status]?.orderindex,
-          },
-        }),
-        {}
-      )
-    ) as [string, Status][]
-  ).sort(([_, a], [__, b]) => {
-    if (a.orderindex === b.orderindex) {
-      return 0;
-    }
-    return a.orderindex! < b.orderindex! ? -1 : 1;
-  });
+  return Object.entries(
+    tasks.reduce(
+      (prev: any, val) => ({
+        ...prev,
+        [val.status.status]: {
+          ...val.status,
+          orderindex:
+            prev[val.status.status]?.orderindex <= val.status.orderindex!
+              ? val.status.orderindex
+              : prev[val.status.status]?.orderindex,
+        },
+      }),
+      {}
+    )
+  ) as [string, Status][];
 }
 
 export function getAllStatusKeys(

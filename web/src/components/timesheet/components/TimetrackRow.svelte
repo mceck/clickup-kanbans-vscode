@@ -15,6 +15,11 @@
 
   let { trackedWeek, task, starred, trackings, onStar, onUpdateTrack }: Props =
     $props();
+
+  let isCompleted = $derived(
+    task.status?.status?.toLocaleLowerCase() === 'complete' ||
+    task.status?.status?.toLocaleLowerCase() === 'closed'
+  );  
 </script>
 
 <div class="flex w-full items-center py-4 border-b border-neutral-800">
@@ -27,7 +32,7 @@
       class="w-6"
     />
   </div>
-  <a class="w-6/12" href={task.url}>{task.name}</a>
+  <a class="w-6/12 {isCompleted ? '!text-gray-500' : ''}" href={task.url}>{task.name}</a>
   {#each FERIAL_DAYS as day}
     <TimetrackCell
       totalForDay={totalForTaskDay(trackings, task.id, day, trackedWeek)}

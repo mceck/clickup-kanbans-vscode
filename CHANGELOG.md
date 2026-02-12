@@ -4,6 +4,12 @@ All notable changes to the "clickup-kanbans" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.1.4]
+
+### Changed
+- update dependencies
+- change completed task color in timesheet
+
 ## [2.1.3]
 
 ### Added

@@ -35,6 +35,7 @@ export default {
   'global.subtasks': 'sotto-task',
   'global.closed': 'chiusi',
   'global.tags': 'Tag',
+  'global.query': 'Query',
   'global.from': 'Da',
   'global.to': 'A',
   'global.statuses': 'Stati',

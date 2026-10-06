@@ -35,6 +35,7 @@ export default {
   'global.subtasks': 'sous-tâches',
   'global.closed': 'fermé',
   'global.tags': 'Tags',
+  'global.query': 'Query',
   'global.from': 'De',
   'global.to': 'à',
   'global.statuses': 'Status',

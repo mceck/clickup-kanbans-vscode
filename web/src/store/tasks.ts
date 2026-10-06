@@ -128,6 +128,10 @@ export const refreshTasks = async () => {
       params.due_date_lt = new Date($filters.due_date_lt).getTime();
     }
 
+    if ($filters.query?.trim()) {
+      params.query = $filters.query.trim();
+    }
+
     const { data } = await clickupService.findTasks(params);
     newTasks = data || [];
   }

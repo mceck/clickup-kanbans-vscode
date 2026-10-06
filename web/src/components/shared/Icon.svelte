@@ -62,7 +62,7 @@
     'star-empty': starEmpty,
   };
 
-  const SvelteComponent = $derived((icons as any)[props.name]);
+  const SvelteComponent = $derived(icons[name]);
 </script>
 
 <span {...props} style="display: inline-flex;">

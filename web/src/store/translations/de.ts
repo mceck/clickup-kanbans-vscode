@@ -35,6 +35,7 @@ export default {
   'global.subtasks': 'Teilaufgaben',
   'global.closed': 'geschlossen',
   'global.tags': 'Tags',
+  'global.query': 'Query',
   'global.from': 'Von',
   'global.to': 'Bis',
   'global.statuses': 'Status',

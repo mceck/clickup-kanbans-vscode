@@ -38,9 +38,15 @@ class ClickupService extends BaseService {
     return responses.map((r) => r.tasks).flat();
   }
 
-  async findTasks(params?: any) {
+  async findTasks({ query, ...params }: any = {}) {
+    const queryString = [
+      this.toQueryString(params),
+      query?.replace(/^[?&]+/, ''),
+    ]
+      .filter(Boolean)
+      .join('&');
     const responses = await this.getAllPaginated(
-      `/v2/team/${this.teamId}/task?${this.toQueryString(params)}`
+      `/v2/team/${this.teamId}/task?${queryString}`
     );
     return responses.map((r) => r.tasks).flat();
   }

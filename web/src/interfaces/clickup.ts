@@ -173,6 +173,7 @@ export interface PageFilters {
   due_date_lt?: number;
   subtasks: boolean;
   include_closed: boolean;
+  query?: string;
   allTracking: boolean;
   tableMode: boolean;
   viewMode: boolean;

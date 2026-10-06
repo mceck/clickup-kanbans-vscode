@@ -37,7 +37,7 @@
   <div
     class="overflow-hidden w-full transition-all pt-2 {collapsed
       ? 'h-0'
-      : 'h-44 max-[350px]:h-52'}"
+      : viewMode ? 'h-44 max-[350px]:h-52' : 'h-56 max-[350px]:h-72'}"
   >
     {#if !viewMode}
       <div class="flex justify-end items-center mt-1">
@@ -89,5 +89,17 @@
         />
       </div>
     </div>
+    {#if !viewMode}
+      <div class="flex items-center mt-2 max-w-[320px]">
+        <small class="w-12 pr-1 text-end flex-none">{$t('global.query')}:</small
+        >
+        <input
+          class="w-full"
+          placeholder="tags[]=foo&key=value"
+          bind:value={filters.query}
+          onchange={onChange}
+        />
+      </div>
+    {/if}
   </div>
 </div>

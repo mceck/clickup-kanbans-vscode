@@ -16,6 +16,7 @@ const defaultFilters: PageFilters = {
   due_date_lt: undefined,
   subtasks: true,
   include_closed: false,
+  query: '',
   allTracking: false,
 };
 
@@ -39,7 +40,8 @@ export const hasFilters = derived(
     $activeFilters.selectedLists.length ||
     $activeFilters.tags.length ||
     $activeFilters.due_date_gt ||
-    $activeFilters.due_date_lt
+    $activeFilters.due_date_lt ||
+    $activeFilters.query?.trim()
 );
 
 export const initializeFilters = async () => {
